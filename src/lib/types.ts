@@ -1,0 +1,95 @@
+export type Condition =
+  | "clear"
+  | "partly-cloudy"
+  | "cloudy"
+  | "fog"
+  | "drizzle"
+  | "rain"
+  | "heavy-rain"
+  | "sleet"
+  | "snow"
+  | "heavy-snow"
+  | "thunder";
+
+export type Difficulty = "Easy" | "Moderate" | "Hard";
+
+/** How badly wind affects the route: a gusty day ruins an exposed ridge far more than a lowland walk. */
+export type Exposure = "low" | "medium" | "high" | "extreme";
+
+export type ForecastSource = "metoffice" | "openmeteo" | "demo";
+
+export interface Mountain {
+  id: string;
+  name: string;
+  area: string;
+  summit: { lat: number; lon: number; elevationM: number };
+  trailhead: { name: string; lat: number; lon: number };
+  difficulty: Difficulty;
+  exposure: Exposure;
+  /** 1 to 5: how rewarding a day out it is when the weather plays ball. */
+  quality: number;
+  route: string;
+  walkingHours: string;
+  stayNear: string;
+  /** Hand-checked drive from Brighton, used when live routing is unavailable. */
+  brightonDriveMinutes: number;
+}
+
+/** One forecast step (1 hour from Open-Meteo, 3 hours from the Met Office). */
+export interface Slot {
+  time: string;
+  hours: number;
+  tempC: number;
+  feelsLikeC: number;
+  windMph: number;
+  gustMph: number;
+  precipProb: number;
+  precipMm: number;
+  visibilityM: number | null;
+  thunderProb: number | null;
+  condition: Condition;
+}
+
+export interface DayForecast {
+  date: string;
+  slots: Slot[];
+  sunrise: string | null;
+  sunset: string | null;
+}
+
+export interface DestinationForecast {
+  source: ForecastSource;
+  issuedAt: string | null;
+  /** Height of the grid point the forecast describes, before any adjustment to summit height. */
+  modelElevationM: number | null;
+  days: DayForecast[];
+}
+
+export interface Drive {
+  minutes: number;
+  km: number;
+  method: "openrouteservice" | "estimate";
+}
+
+export interface Home {
+  label: string;
+  postcode: string | null;
+  lat: number;
+  lon: number;
+}
+
+export interface WeekendDestination {
+  mountain: Mountain;
+  forecast: DestinationForecast;
+  secondOpinion: DestinationForecast | null;
+  drive: Drive;
+}
+
+export interface WeekendResponse {
+  generatedAt: string;
+  home: Home;
+  weekend: { dates: [string, string]; daysAway: number };
+  destinations: WeekendDestination[];
+  notices: string[];
+  keys: { metOffice: boolean; routing: boolean };
+}

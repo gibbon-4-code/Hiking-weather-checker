@@ -39,7 +39,7 @@ export default async function SignInPage({ searchParams }: PageProps<"/signin">)
         <ul className="mb-8 space-y-3 text-sm">
           <li className="flex gap-3">
             <CloudSun className="mt-0.5 size-4 shrink-0 text-primary" />
-            Met Office summit forecasts for Saturday and Sunday on seven UK hills
+            Met Office summit forecasts for Saturday and Sunday on eight UK hills
           </li>
           <li className="flex gap-3">
             <Route className="mt-0.5 size-4 shrink-0 text-primary" />

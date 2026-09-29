@@ -106,4 +106,18 @@ export const MOUNTAINS: Mountain[] = [
     stayNear: "Aviemore",
     brightonDriveMinutes: 590,
   },
+  {
+    id: "bennachie",
+    name: "Bennachie",
+    area: "Aberdeenshire",
+    summit: { lat: 57.2908, lon: -2.5288, elevationM: 518 },
+    trailhead: { name: "Bennachie Centre", lat: 57.2848, lon: -2.5023 },
+    difficulty: "Easy",
+    exposure: "medium",
+    quality: 3,
+    route: "Maiden Causeway to Mither Tap, then the ridge to Oxen Craig",
+    walkingHours: "3–4 hrs · 10 km",
+    stayNear: "Inverurie",
+    brightonDriveMinutes: 630,
+  },
 ];

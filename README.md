@@ -1,6 +1,6 @@
 # Weekend Summits
 
-Where should I hike this weekend? One page that compares the Saturday and Sunday summit forecast for seven UK hiking destinations, then recommends one for someone based in Brighton. The recommendation weighs three things: the weather while you'd be walking, the drive, and how good the hike is.
+Where should I hike this weekend? One page that compares the Saturday and Sunday summit forecast for eight UK hiking destinations, then recommends one for someone based in Brighton. The recommendation weighs three things: the weather while you'd be walking, the drive, and how good the hike is.
 
 | Destination | Area | Height | Difficulty |
 | --- | --- | --- | --- |

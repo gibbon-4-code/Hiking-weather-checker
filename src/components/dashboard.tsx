@@ -19,6 +19,7 @@ import { recommend, scoreDestination, type DestinationScore } from "@/lib/scorin
 import type { WeekendResponse } from "@/lib/types";
 
 type SortKey = "overall" | "weather" | "nearest";
+type DayFilter = "sat" | "sun" | "both";
 const SORT_OPTIONS = [
   { value: "overall", label: "Best overall" },
   { value: "weather", label: "Best weather" },
@@ -43,7 +44,7 @@ export function Dashboard({
   const router = useRouter();
   const [state, setState] = useState<State>({ status: "loading" });
   const [reloadKey, setReloadKey] = useState(0);
-  const [dayFilter, setDayFilter] = useState<string>("both");
+  const [dayFilter, setDayFilter] = useState<DayFilter>("sat");
   const [sort, setSort] = useState<SortKey>("overall");
   const [openId, setOpenId] = useState<string | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -78,19 +79,21 @@ export function Dashboard({
 
   const recommendation = useMemo(() => recommend(scores), [scores]);
 
+  const data = state.status === "ready" ? state.data : null;
+  const dates = data?.weekend.dates ?? [];
+  const filterDate = dayFilter === "sat" ? dates[0] : dayFilter === "sun" ? dates[1] : undefined;
+
   const sorted = useMemo(() => {
     const valueFor = (s: DestinationScore) => {
-      const days = dayFilter === "both" ? s.days : s.days.filter((d) => d.date === dayFilter);
+      const days = filterDate ? s.days.filter((d) => d.date === filterDate) : s.days;
       if (sort === "nearest") return -s.destination.drive.minutes;
       const key = sort === "weather" ? "weather" : "total";
       return Math.max(-1, ...days.map((d) => (d.vetoes.length ? d[key] - 100 : d[key])));
     };
     return [...scores].sort((a, b) => valueFor(b) - valueFor(a));
-  }, [scores, sort, dayFilter]);
+  }, [scores, sort, filterDate]);
 
-  const data = state.status === "ready" ? state.data : null;
-  const dates = data?.weekend.dates ?? [];
-  const visibleDates = dayFilter === "both" ? dates : [dayFilter];
+  const visibleDates = filterDate ? [filterDate] : dates;
   const openScore = scores.find((s) => s.destination.mountain.id === openId) ?? null;
   const pickId = recommendation.pick?.score.destination.mountain.id;
   const allDemo = data?.destinations.every((d) => d.forecast.source === "demo");
@@ -186,11 +189,11 @@ export function Dashboard({
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <h2 className="font-heading text-lg font-semibold">All destinations</h2>
                 <div className="flex items-center gap-2">
-                  <Tabs value={dayFilter} onValueChange={(v) => setDayFilter(String(v))}>
+                  <Tabs value={dayFilter} onValueChange={(v) => setDayFilter(v as DayFilter)}>
                     <TabsList>
+                      <TabsTrigger value="sat">Sat</TabsTrigger>
+                      <TabsTrigger value="sun">Sun</TabsTrigger>
                       <TabsTrigger value="both">Both days</TabsTrigger>
-                      <TabsTrigger value={dates[0]}>Sat</TabsTrigger>
-                      <TabsTrigger value={dates[1]}>Sun</TabsTrigger>
                     </TabsList>
                   </Tabs>
                   <Select items={SORT_OPTIONS} value={sort} onValueChange={(v) => v && setSort(v as SortKey)}>

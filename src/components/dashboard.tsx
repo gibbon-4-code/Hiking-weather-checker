@@ -2,24 +2,24 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Info, LogOut, MapPin, Mountain, RefreshCw, Settings2, TriangleAlert } from "lucide-react";
+import { CalendarDays, Info, LogOut, MapPin, Mountain, RefreshCw, Settings2, TriangleAlert } from "lucide-react";
 import { DetailSheet } from "@/components/detail-sheet";
 import { MountainCard } from "@/components/mountain-card";
 import { RecommendationHero } from "@/components/recommendation-hero";
 import { SettingsDialog } from "@/components/settings-dialog";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { Viewer } from "@/auth";
-import { formatDayName } from "@/lib/dates";
+import { defaultHikeDate, formatDayName, isPlannableDate, planWindow } from "@/lib/dates";
 import { saveSettings, useSettings } from "@/lib/preferences";
 import { recommend, scoreDestination, type DestinationScore } from "@/lib/scoring";
 import type { WeekendResponse } from "@/lib/types";
 
 type SortKey = "overall" | "weather" | "nearest";
-type DayFilter = "sat" | "sun" | "both";
 const SORT_OPTIONS = [
   { value: "overall", label: "Best overall" },
   { value: "weather", label: "Best weather" },
@@ -44,14 +44,15 @@ export function Dashboard({
   const router = useRouter();
   const [state, setState] = useState<State>({ status: "loading" });
   const [reloadKey, setReloadKey] = useState(0);
-  const [dayFilter, setDayFilter] = useState<DayFilter>("sat");
+  const [date, setDate] = useState(() => defaultHikeDate());
   const [sort, setSort] = useState<SortKey>("overall");
   const [openId, setOpenId] = useState<string | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
 
   useEffect(() => {
     const controller = new AbortController();
-    fetch(`/api/weekend?postcode=${encodeURIComponent(settings.postcode)}`, { signal: controller.signal })
+    const params = new URLSearchParams({ postcode: settings.postcode, date });
+    fetch(`/api/weekend?${params}`, { signal: controller.signal })
       .then(async (res) => {
         const body = await res.json();
         if (res.status === 401) {
@@ -65,7 +66,13 @@ export function Dashboard({
         if (err.name !== "AbortError") setState({ status: "error", message: err.message });
       });
     return () => controller.abort();
-  }, [settings.postcode, reloadKey, router]);
+  }, [settings.postcode, date, reloadKey, router]);
+
+  const changeDate = useCallback((next: string) => {
+    if (!isPlannableDate(next)) return;
+    setState({ status: "loading" });
+    setDate(next);
+  }, []);
 
   const reload = useCallback(() => {
     setState({ status: "loading" });
@@ -80,20 +87,18 @@ export function Dashboard({
   const recommendation = useMemo(() => recommend(scores), [scores]);
 
   const data = state.status === "ready" ? state.data : null;
-  const dates = data?.weekend.dates ?? [];
-  const filterDate = dayFilter === "sat" ? dates[0] : dayFilter === "sun" ? dates[1] : undefined;
+  const range = planWindow();
 
   const sorted = useMemo(() => {
     const valueFor = (s: DestinationScore) => {
-      const days = filterDate ? s.days.filter((d) => d.date === filterDate) : s.days;
       if (sort === "nearest") return -s.destination.drive.minutes;
       const key = sort === "weather" ? "weather" : "total";
-      return Math.max(-1, ...days.map((d) => (d.vetoes.length ? d[key] - 100 : d[key])));
+      return Math.max(-1, ...s.days.map((d) => (d.vetoes.length ? d[key] - 100 : d[key])));
     };
     return [...scores].sort((a, b) => valueFor(b) - valueFor(a));
-  }, [scores, sort, filterDate]);
+  }, [scores, sort]);
 
-  const visibleDates = filterDate ? [filterDate] : dates;
+  const visibleDates = [date];
   const openScore = scores.find((s) => s.destination.mountain.id === openId) ?? null;
   const pickId = recommendation.pick?.score.destination.mountain.id;
   const allDemo = data?.destinations.every((d) => d.forecast.source === "demo");
@@ -110,7 +115,7 @@ export function Dashboard({
             <p className="flex items-center gap-1 truncate text-xs text-muted-foreground">
               <MapPin className="size-3" />
               {data ? `From ${data.home.label}` : "Loading"}
-              {dates.length === 2 && ` · ${formatDayName(dates[0], "short")} – ${formatDayName(dates[1], "short")}`}
+              {` · ${formatDayName(date, "short")}`}
             </p>
           </div>
           <Button variant="ghost" size="icon" onClick={reload} aria-label="Refresh forecast">
@@ -147,12 +152,28 @@ export function Dashboard({
           </Alert>
         )}
 
+        <div className="flex flex-wrap items-center gap-3">
+          <Label htmlFor="hike-date" className="text-muted-foreground">
+            <CalendarDays className="size-4" /> Hiking on
+          </Label>
+          <Input
+            id="hike-date"
+            type="date"
+            className="w-44"
+            value={date}
+            min={range.first}
+            max={range.last}
+            onChange={(e) => changeDate(e.target.value)}
+          />
+          <span className="text-xs text-muted-foreground">Up to two weeks ahead</span>
+        </div>
+
         {state.status === "loading" && <LoadingState />}
 
         {state.status === "error" && (
           <Alert variant="destructive">
             <TriangleAlert />
-            <AlertTitle>Couldn&apos;t load this weekend&apos;s forecast</AlertTitle>
+            <AlertTitle>Couldn&apos;t load the forecast</AlertTitle>
             <AlertDescription>
               <p>{state.message}</p>
               <div className="mt-3 flex gap-2">
@@ -171,6 +192,7 @@ export function Dashboard({
           <>
             <RecommendationHero
               recommendation={recommendation}
+              date={date}
               onOpen={setOpenId}
               maxDriveMinutes={settings.maxDriveMinutes}
             />
@@ -189,13 +211,6 @@ export function Dashboard({
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <h2 className="font-heading text-lg font-semibold">All destinations</h2>
                 <div className="flex items-center gap-2">
-                  <Tabs value={dayFilter} onValueChange={(v) => setDayFilter(v as DayFilter)}>
-                    <TabsList>
-                      <TabsTrigger value="sat">Sat</TabsTrigger>
-                      <TabsTrigger value="sun">Sun</TabsTrigger>
-                      <TabsTrigger value="both">Both days</TabsTrigger>
-                    </TabsList>
-                  </Tabs>
                   <Select items={SORT_OPTIONS} value={sort} onValueChange={(v) => v && setSort(v as SortKey)}>
                     <SelectTrigger className="w-36" aria-label="Sort destinations">
                       <SelectValue />

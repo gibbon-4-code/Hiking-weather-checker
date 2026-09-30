@@ -56,7 +56,7 @@ export function normaliseOpenMeteo(loc: OpenMeteoLocation, dates: string[]): Des
 /** One batched request covers every destination, forecast at each summit's own height. */
 export async function fetchOpenMeteo(
   mountains: Mountain[],
-  dates: [string, string],
+  dates: string[],
 ): Promise<DestinationForecast[]> {
   const params = new URLSearchParams({
     latitude: mountains.map((m) => m.summit.lat).join(","),
@@ -67,7 +67,7 @@ export async function fetchOpenMeteo(
     wind_speed_unit: "mph",
     timezone: "UTC",
     start_date: dates[0],
-    end_date: dates[1],
+    end_date: dates[dates.length - 1],
   });
   const res = await fetch(`${BASE}?${params}`, { next: { revalidate: 3600 } });
   if (!res.ok) throw new Error(`Open-Meteo ${res.status}`);

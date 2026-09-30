@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { WeatherIcon } from "@/components/weather-icon";
-import { formatClock, formatDayName, formatDuration } from "@/lib/dates";
+import { addDays, formatClock, formatDayName, formatDuration, planWindow } from "@/lib/dates";
 import { CONDITION_LABEL } from "@/lib/providers/conditions";
 import { summariseDay, type DestinationScore } from "@/lib/scoring";
 import type { DayForecast, ForecastSource, Home } from "@/lib/types";
@@ -39,9 +39,10 @@ export function DetailSheet({
 
 function DetailBody({ score, home }: { score: DestinationScore; home: Home }) {
   const { mountain, drive, forecast, secondOpinion } = score.destination;
-  const [sat] = forecast.days;
-  const checkin = sat?.date;
-  const checkout = forecast.days[1]?.date;
+  // A long drive means arriving the evening before, so book the night before the hike.
+  const hikeDate = forecast.days[0]?.date;
+  const checkin = hikeDate && hikeDate > planWindow().first ? addDays(hikeDate, -1) : undefined;
+  const checkout = hikeDate;
   const isMountain = mountain.summit.elevationM > 500;
 
   return (

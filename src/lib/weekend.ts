@@ -1,6 +1,6 @@
 import "server-only";
 import { BRIGHTON, MOUNTAINS } from "@/data/mountains";
-import { upcomingWeekend } from "@/lib/dates";
+import { daysBetween, planWindow } from "@/lib/dates";
 import { env } from "@/lib/env";
 import { demoForecast } from "@/lib/providers/demo";
 import { fetchMetOffice } from "@/lib/providers/metoffice";
@@ -11,13 +11,17 @@ import type { DestinationForecast, Drive, Home, WeekendResponse } from "@/lib/ty
 
 const fullyCovers = (f: DestinationForecast) => f.days.every(coversWalkingDay);
 
-export async function buildWeekend(home: Home = BRIGHTON): Promise<WeekendResponse> {
-  const weekend = upcomingWeekend();
+/** The Met Office site-specific forecast runs about a week ahead; past that, Open-Meteo covers alone. */
+const MET_OFFICE_DAYS_AHEAD = 6;
+
+export async function buildWeekend(date: string, home: Home = BRIGHTON): Promise<WeekendResponse> {
+  const dates = [date];
+  const daysAway = daysBetween(planWindow().first, date);
   const notices: string[] = [];
 
   const [metOffice, openMeteo, drives] = await Promise.all([
-    loadMetOffice(weekend.dates, notices),
-    loadOpenMeteo(weekend.dates, notices),
+    daysAway <= MET_OFFICE_DAYS_AHEAD ? loadMetOffice(dates, notices) : null,
+    loadOpenMeteo(dates, notices),
     loadDrives(home, notices),
   ]);
 
@@ -27,29 +31,29 @@ export async function buildWeekend(home: Home = BRIGHTON): Promise<WeekendRespon
     let forecast: DestinationForecast;
     if (met && fullyCovers(met)) forecast = met;
     else if (om && fullyCovers(om)) forecast = om;
-    else forecast = demoForecast(mountain, weekend.dates);
+    else forecast = demoForecast(mountain, dates);
     const secondOpinion = forecast.source === "metoffice" && om && fullyCovers(om) ? om : null;
     return { mountain, forecast, secondOpinion, drive: drives[i] };
   });
 
   const sources = new Set(destinations.map((d) => d.forecast.source));
   if (sources.has("demo")) {
-    notices.push("Some or all forecasts are demo data because no live weather source could cover the weekend.");
+    notices.push("Some or all forecasts are demo data because no live weather source could cover this day.");
   } else if (env.metOfficeKey && sources.has("openmeteo")) {
-    notices.push("The Met Office forecast doesn't reach the whole weekend yet, so Open-Meteo is filling the gap.");
+    notices.push("The Met Office forecast doesn't reach this day yet, so Open-Meteo is filling the gap.");
   }
 
   return {
     generatedAt: new Date().toISOString(),
     home,
-    weekend,
+    day: { date, daysAway },
     destinations,
     notices,
     keys: { metOffice: Boolean(env.metOfficeKey), routing: Boolean(env.orsKey) },
   };
 }
 
-async function loadMetOffice(dates: [string, string], notices: string[]) {
+async function loadMetOffice(dates: string[], notices: string[]) {
   if (!env.metOfficeKey || env.forceDemoData) return null;
   const key = env.metOfficeKey;
   const results = await Promise.allSettled(MOUNTAINS.map((m) => fetchMetOffice(m, dates, key)));
@@ -61,7 +65,7 @@ async function loadMetOffice(dates: [string, string], notices: string[]) {
   return results.map((r) => (r.status === "fulfilled" ? r.value : null));
 }
 
-async function loadOpenMeteo(dates: [string, string], notices: string[]) {
+async function loadOpenMeteo(dates: string[], notices: string[]) {
   if (env.forceDemoData) return null;
   try {
     return await fetchOpenMeteo(MOUNTAINS, dates);

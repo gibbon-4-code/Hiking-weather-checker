@@ -88,7 +88,8 @@ export interface WeekendDestination {
 export interface WeekendResponse {
   generatedAt: string;
   home: Home;
-  weekend: { dates: [string, string]; daysAway: number };
+  /** The day being planned for, and how many days from today it is. */
+  day: { date: string; daysAway: number };
   destinations: WeekendDestination[];
   notices: string[];
   keys: { metOffice: boolean; routing: boolean };

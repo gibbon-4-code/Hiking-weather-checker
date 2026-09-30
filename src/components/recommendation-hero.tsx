@@ -10,10 +10,12 @@ import type { Recommendation } from "@/lib/scoring";
 
 export function RecommendationHero({
   recommendation,
+  date,
   onOpen,
   maxDriveMinutes,
 }: {
   recommendation: Recommendation;
+  date: string;
   onOpen: (id: string) => void;
   maxDriveMinutes: number | null;
 }) {
@@ -25,10 +27,11 @@ export function RecommendationHero({
         <div className="flex items-start gap-3">
           <TriangleAlert className="mt-0.5 size-5 shrink-0" />
           <div>
-            <h2 className="font-heading text-lg font-semibold">No safe pick this weekend</h2>
+            <h2 className="font-heading text-lg font-semibold">No safe pick for {formatDayName(date)}</h2>
             <p className="mt-1 text-sm">
-              Every destination{maxDriveMinutes ? ` within ${formatDuration(maxDriveMinutes)}` : ""} has a safety warning on
-              both days. Check the cards below for the least-bad option, or widen your drive limit in Settings.
+              Every destination{maxDriveMinutes ? ` within ${formatDuration(maxDriveMinutes)}` : ""} has a safety warning
+              that day. Check the cards below for the least-bad option, try another day, or widen your drive limit in
+              Settings.
             </p>
           </div>
         </div>
@@ -44,7 +47,7 @@ export function RecommendationHero({
       <div className="grid gap-6 p-5 sm:p-7 lg:grid-cols-[1.4fr_1fr]">
         <div>
           <p className="flex items-center gap-2 text-sm font-medium uppercase tracking-wider text-primary-foreground/70">
-            <Compass className="size-4" /> This weekend, go to
+            <Compass className="size-4" /> Best bet: go to
           </p>
           <div className="mt-3 flex items-start gap-4">
             <ScoreBadge score={pick.day.total} size="lg" className="shrink-0 ring-4 ring-white/20" />
@@ -72,7 +75,9 @@ export function RecommendationHero({
               </Badge>
             )}
             <Badge className="bg-white/15 text-primary-foreground">{mountain.difficulty}</Badge>
-            <Badge className="bg-white/15 text-primary-foreground">{pick.day.confidence} confidence</Badge>
+            <Badge className="bg-white/15 text-primary-foreground">
+              {pick.day.confidence} confidence{pick.day.confidence === "Low" && " · check again nearer the day"}
+            </Badge>
           </div>
 
           <ul className="mt-5 space-y-2">

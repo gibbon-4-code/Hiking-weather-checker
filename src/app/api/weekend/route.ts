@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getViewer } from "@/auth";
 import { BRIGHTON } from "@/data/mountains";
+import { defaultHikeDate, isPlannableDate } from "@/lib/dates";
 import { authMode } from "@/lib/env";
 import { lookupPostcode, normalisePostcode, PostcodeError } from "@/lib/providers/postcode";
 import { buildWeekend } from "@/lib/weekend";
@@ -11,6 +12,11 @@ export async function GET(request: NextRequest) {
   }
   if (!(await getViewer())) {
     return NextResponse.json({ error: "Please sign in." }, { status: 401 });
+  }
+
+  const date = request.nextUrl.searchParams.get("date") ?? defaultHikeDate();
+  if (!isPlannableDate(date)) {
+    return NextResponse.json({ error: "Pick a day between today and two weeks from now." }, { status: 400 });
   }
 
   const postcode = request.nextUrl.searchParams.get("postcode");
@@ -25,10 +31,10 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const data = await buildWeekend(home);
+    const data = await buildWeekend(date, home);
     return NextResponse.json(data, { headers: { "Cache-Control": "private, max-age=300" } });
   } catch (err) {
     console.error("buildWeekend failed", err);
-    return NextResponse.json({ error: "Couldn't build this weekend's forecast." }, { status: 500 });
+    return NextResponse.json({ error: "Couldn't build the forecast for that day." }, { status: 500 });
   }
 }

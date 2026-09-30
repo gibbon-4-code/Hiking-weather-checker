@@ -20,27 +20,43 @@ export function londonParts(iso: string | Date) {
   };
 }
 
-function addDays(date: string, days: number) {
+export function addDays(date: string, days: number) {
   const d = new Date(`${date}T12:00:00Z`);
   d.setUTCDate(d.getUTCDate() + days);
   return d.toISOString().slice(0, 10);
 }
 
+export function daysBetween(from: string, to: string) {
+  return Math.round((Date.parse(`${to}T12:00:00Z`) - Date.parse(`${from}T12:00:00Z`)) / 86400000);
+}
+
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
+/** Today plus 13 more days: two weeks, well inside Open-Meteo's 16-day forecast. */
+export const PLAN_AHEAD_DAYS = 13;
+
+/** The first and last day you can plan a hike for, in UK time. */
+export function planWindow(now: Date = new Date()) {
+  const first = londonParts(now).date;
+  return { first, last: addDays(first, PLAN_AHEAD_DAYS) };
+}
+
 /**
- * The weekend to plan for, in UK time. Monday to Saturday gives the coming (or current)
- * Saturday and Sunday; on a Sunday the day is mostly gone, so it looks ahead to next weekend.
+ * The day picked when you haven't chosen one: the coming Saturday, or today if it is Saturday.
+ * On a Sunday the day is mostly gone, so it looks ahead to next Saturday.
  */
-export function upcomingWeekend(now: Date = new Date()) {
+export function defaultHikeDate(now: Date = new Date()) {
   const today = londonParts(now);
   const dow = WEEKDAYS.indexOf(today.weekday);
-  const daysToSaturday = dow === 0 ? 6 : 6 - dow;
-  const saturday = addDays(today.date, daysToSaturday);
-  return {
-    dates: [saturday, addDays(saturday, 1)] as [string, string],
-    daysAway: daysToSaturday,
-  };
+  return addDays(today.date, dow === 0 ? 6 : 6 - dow);
+}
+
+/** A real calendar date, written YYYY-MM-DD, that falls inside the planning window. */
+export function isPlannableDate(date: string, now: Date = new Date()) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || Number.isNaN(Date.parse(`${date}T12:00:00Z`))) return false;
+  if (new Date(`${date}T12:00:00Z`).toISOString().slice(0, 10) !== date) return false;
+  const { first, last } = planWindow(now);
+  return date >= first && date <= last;
 }
 
 export function formatDayName(date: string, style: "short" | "long" = "long") {

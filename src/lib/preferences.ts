@@ -1,15 +1,15 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
-import { BRIGHTON } from "@/data/mountains";
 import { DEFAULT_PREFERENCES, type Preferences } from "@/lib/scoring";
 
 export interface Settings extends Preferences {
-  postcode: string;
+  /** Where the drive starts: a UK postcode or a town name. */
+  from: string;
 }
 
 const KEY = "weekend-summits:settings";
-export const DEFAULT_SETTINGS: Settings = { ...DEFAULT_PREFERENCES, postcode: BRIGHTON.postcode ?? "BN1 1AA" };
+export const DEFAULT_SETTINGS: Settings = { ...DEFAULT_PREFERENCES, from: "Brighton" };
 
 const listeners = new Set<() => void>();
 let cachedRaw: string | null = null;
@@ -20,9 +20,11 @@ function read(): Settings {
   if (raw === cachedRaw) return cached;
   cachedRaw = raw;
   try {
-    const parsed = raw ? (JSON.parse(raw) as Partial<Settings>) : {};
+    // Older versions saved the starting point as "postcode".
+    const { postcode, ...parsed } = raw ? (JSON.parse(raw) as Partial<Settings> & { postcode?: string }) : {};
     cached = {
       ...DEFAULT_SETTINGS,
+      ...(postcode ? { from: postcode } : {}),
       ...parsed,
       weights: { ...DEFAULT_SETTINGS.weights, ...parsed.weights },
     };

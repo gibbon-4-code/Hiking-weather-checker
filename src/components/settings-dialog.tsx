@@ -10,20 +10,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { DEFAULT_SETTINGS, type Settings } from "@/lib/preferences";
 import type { Weights } from "@/lib/scoring";
-
-const DRIVE_OPTIONS = [
-  { value: "none", label: "No limit" },
-  { value: "90", label: "1h 30m (day trips only)" },
-  { value: "180", label: "3 hours" },
-  { value: "240", label: "4 hours" },
-  { value: "360", label: "6 hours" },
-];
 
 const WEIGHT_LABELS: { key: keyof Weights; label: string; hint: string }[] = [
   { key: "weather", label: "Weather", hint: "Dry, calm and clear on the summit" },
@@ -67,7 +56,7 @@ function SettingsForm({
     <form
       onSubmit={(e) => {
         e.preventDefault();
-        onSave({ ...draft, postcode: draft.postcode.trim() || DEFAULT_SETTINGS.postcode });
+        onSave(draft);
       }}
       className="grid gap-5"
     >
@@ -75,37 +64,6 @@ function SettingsForm({
         <DialogTitle>Your preferences</DialogTitle>
         <DialogDescription>Saved in this browser only.</DialogDescription>
       </DialogHeader>
-
-      <div className="grid gap-2">
-        <Label htmlFor="postcode">Starting from (UK postcode)</Label>
-        <Input
-          id="postcode"
-          value={draft.postcode}
-          onChange={(e) => setDraft({ ...draft, postcode: e.target.value })}
-          placeholder="BN1 1AA"
-          autoComplete="postal-code"
-        />
-      </div>
-
-      <div className="grid gap-2">
-        <Label>Maximum drive each way</Label>
-        <Select
-          items={DRIVE_OPTIONS}
-          value={draft.maxDriveMinutes === null ? "none" : String(draft.maxDriveMinutes)}
-          onValueChange={(v) => setDraft({ ...draft, maxDriveMinutes: v === "none" || v === null ? null : Number(v) })}
-        >
-          <SelectTrigger className="w-full">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {DRIVE_OPTIONS.map((o) => (
-              <SelectItem key={o.value} value={o.value}>
-                {o.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
 
       <fieldset className="grid gap-4">
         <legend className="mb-1 text-sm font-medium">What matters most?</legend>
@@ -133,7 +91,7 @@ function SettingsForm({
       </fieldset>
 
       <DialogFooter className="gap-2 sm:justify-between">
-        <Button type="button" variant="ghost" onClick={() => setDraft(DEFAULT_SETTINGS)}>
+        <Button type="button" variant="ghost" onClick={() => setDraft({ ...draft, weights: DEFAULT_SETTINGS.weights })}>
           Reset to defaults
         </Button>
         <div className="flex gap-2">

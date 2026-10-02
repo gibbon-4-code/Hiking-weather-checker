@@ -252,7 +252,14 @@ export function Dashboard({
         )}
       </main>
 
-      {data && <DetailSheet score={openScore} home={data.home} onClose={() => setOpenId(null)} />}
+      {data && (
+        <DetailSheet
+          score={openScore}
+          home={data.home}
+          secondOpinion={data.secondOpinion}
+          onClose={() => setOpenId(null)}
+        />
+      )}
       <SettingsDialog
         open={settingsOpen}
         onOpenChange={setSettingsOpen}
@@ -282,7 +289,6 @@ function LoadingState() {
 function Footer({ data }: { data: WeekendResponse }) {
   const sources = new Set(data.destinations.map((d) => d.forecast.source));
   const parts = [
-    sources.has("metoffice") && "Met Office Weather DataHub",
     sources.has("openmeteo") && "Open-Meteo",
     sources.has("demo") && "demo data",
   ].filter(Boolean);
@@ -294,7 +300,7 @@ function Footer({ data }: { data: WeekendResponse }) {
         {new Date(data.generatedAt).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/London" })}.
       </p>
       {!data.keys.metOffice && (
-        <p className="mt-1">Add a Met Office API key to use UK-specific forecasts; Open-Meteo is used until then.</p>
+        <p className="mt-1">Add a Met Office API key to see its forecast as a second opinion in each mountain&apos;s details.</p>
       )}
       <p className="mt-1">
         Always check the mountain forecast and conditions on the day. Scores are a planning aid, not a safety guarantee.

@@ -11,36 +11,29 @@ import type { DestinationForecast, Drive, Home, WeekendResponse } from "@/lib/ty
 
 const fullyCovers = (f: DestinationForecast) => f.days.every(coversWalkingDay);
 
-/** The Met Office site-specific forecast runs about a week ahead; past that, Open-Meteo covers alone. */
-const MET_OFFICE_DAYS_AHEAD = 6;
+/** The Met Office site-specific forecast runs about a week ahead. */
+export const MET_OFFICE_DAYS_AHEAD = 6;
 
+/**
+ * Every destination is ranked on Open-Meteo: one batched request covers the whole list for the full
+ * two weeks, so scores are comparable. The Met Office charges one call per mountain, so it is only
+ * asked for a second opinion when someone opens a mountain's details (see `buildSecondOpinion`).
+ */
 export async function buildWeekend(date: string, home: Home = BRIGHTON): Promise<WeekendResponse> {
   const dates = [date];
   const daysAway = daysBetween(planWindow().first, date);
   const notices: string[] = [];
 
-  const [metOffice, openMeteo, drives] = await Promise.all([
-    daysAway <= MET_OFFICE_DAYS_AHEAD ? loadMetOffice(dates, notices) : null,
-    loadOpenMeteo(dates, notices),
-    loadDrives(home, notices),
-  ]);
+  const [openMeteo, drives] = await Promise.all([loadOpenMeteo(dates, notices), loadDrives(home, notices)]);
 
   const destinations = MOUNTAINS.map((mountain, i) => {
-    const met = metOffice?.[i] ?? null;
     const om = openMeteo?.[i] ?? null;
-    let forecast: DestinationForecast;
-    if (met && fullyCovers(met)) forecast = met;
-    else if (om && fullyCovers(om)) forecast = om;
-    else forecast = demoForecast(mountain, dates);
-    const secondOpinion = forecast.source === "metoffice" && om && fullyCovers(om) ? om : null;
-    return { mountain, forecast, secondOpinion, drive: drives[i] };
+    const forecast: DestinationForecast = om && fullyCovers(om) ? om : demoForecast(mountain, dates);
+    return { mountain, forecast, drive: drives[i] };
   });
 
-  const sources = new Set(destinations.map((d) => d.forecast.source));
-  if (sources.has("demo")) {
+  if (destinations.some((d) => d.forecast.source === "demo")) {
     notices.push("Some or all forecasts are demo data because no live weather source could cover this day.");
-  } else if (env.metOfficeKey && sources.has("openmeteo")) {
-    notices.push("The Met Office forecast doesn't reach this day yet, so Open-Meteo is filling the gap.");
   }
 
   return {
@@ -50,20 +43,21 @@ export async function buildWeekend(date: string, home: Home = BRIGHTON): Promise
     destinations,
     notices,
     keys: { metOffice: Boolean(env.metOfficeKey), routing: Boolean(env.orsKey) },
+    secondOpinion: Boolean(env.metOfficeKey) && !env.forceDemoData && daysAway <= MET_OFFICE_DAYS_AHEAD,
   };
 }
 
-async function loadMetOffice(dates: string[], notices: string[]) {
+/** The Met Office forecast for one mountain, or null when there's no key or it can't cover the day. */
+export async function buildSecondOpinion(mountainId: string, date: string): Promise<DestinationForecast | null> {
+  const mountain = MOUNTAINS.find((m) => m.id === mountainId);
+  if (!mountain) throw new UnknownMountainError(mountainId);
   if (!env.metOfficeKey || env.forceDemoData) return null;
-  const key = env.metOfficeKey;
-  const results = await Promise.allSettled(MOUNTAINS.map((m) => fetchMetOffice(m, dates, key)));
-  const failed = results.filter((r) => r.status === "rejected");
-  if (failed.length) {
-    console.error("Met Office failures", failed.map((f) => String((f as PromiseRejectedResult).reason)));
-    notices.push(`The Met Office didn't respond for ${failed.length} of ${MOUNTAINS.length} destinations; using Open-Meteo for those.`);
-  }
-  return results.map((r) => (r.status === "fulfilled" ? r.value : null));
+  if (daysBetween(planWindow().first, date) > MET_OFFICE_DAYS_AHEAD) return null;
+  const forecast = await fetchMetOffice(mountain, [date], env.metOfficeKey);
+  return fullyCovers(forecast) ? forecast : null;
 }
+
+export class UnknownMountainError extends Error {}
 
 async function loadOpenMeteo(dates: string[], notices: string[]) {
   if (env.forceDemoData) return null;

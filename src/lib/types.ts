@@ -81,7 +81,6 @@ export interface Home {
 export interface WeekendDestination {
   mountain: Mountain;
   forecast: DestinationForecast;
-  secondOpinion: DestinationForecast | null;
   drive: Drive;
 }
 
@@ -93,4 +92,6 @@ export interface WeekendResponse {
   destinations: WeekendDestination[];
   notices: string[];
   keys: { metOffice: boolean; routing: boolean };
+  /** Whether a Met Office second opinion can be fetched for this day (needs a key, and it only reaches ~7 days). */
+  secondOpinion: boolean;
 }

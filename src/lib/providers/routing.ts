@@ -46,10 +46,25 @@ async function orsMatrix(home: Home, mountains: Mountain[], apiKey: string): Pro
   });
 }
 
-/** Road times barely change, so one call per home location per day is plenty. */
+/**
+ * Road times barely change, so one call per home location per day is plenty. The cache key includes
+ * the trailheads too: the saved answer is a list in mountain order, and Vercel keeps cached data
+ * across deploys, so adding a mountain must not reuse a list built for the old line-up.
+ */
 export function getDrives(home: Home, mountains: Mountain[], apiKey: string) {
   const key = `${home.lat.toFixed(3)},${home.lon.toFixed(3)}`;
-  return unstable_cache(() => orsMatrix(home, mountains, apiKey), ["ors-matrix", key], {
+  const lineUp = fingerprint(mountains.map((m) => `${m.id}@${m.trailhead.lat},${m.trailhead.lon}`).join("|"));
+  return unstable_cache(() => orsMatrix(home, mountains, apiKey), ["ors-matrix", key, lineUp], {
     revalidate: 86400,
   })();
+}
+
+/** A short, stable label for a long string (FNV-1a), to keep cache keys small. */
+export function fingerprint(text: string) {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < text.length; i++) {
+    h ^= text.charCodeAt(i);
+    h = Math.imul(h, 0x01000193);
+  }
+  return (h >>> 0).toString(36);
 }

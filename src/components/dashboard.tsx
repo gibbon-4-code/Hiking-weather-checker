@@ -2,19 +2,18 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { CalendarDays, Info, LogOut, MapPin, Mountain, RefreshCw, Settings2, TriangleAlert } from "lucide-react";
+import { Info, LogOut, MapPin, Mountain, RefreshCw, Settings2, TriangleAlert } from "lucide-react";
 import { DetailSheet } from "@/components/detail-sheet";
 import { MountainCard } from "@/components/mountain-card";
+import { PlannerBar } from "@/components/planner-bar";
 import { RecommendationHero } from "@/components/recommendation-hero";
 import { SettingsDialog } from "@/components/settings-dialog";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { Viewer } from "@/auth";
-import { defaultHikeDate, formatDayName, isPlannableDate, planWindow } from "@/lib/dates";
+import { defaultHikeDate, formatDayName, formatDuration, isPlannableDate } from "@/lib/dates";
 import { saveSettings, useSettings } from "@/lib/preferences";
 import { recommend, scoreDestination, type DestinationScore } from "@/lib/scoring";
 import type { WeekendResponse } from "@/lib/types";
@@ -51,7 +50,7 @@ export function Dashboard({
 
   useEffect(() => {
     const controller = new AbortController();
-    const params = new URLSearchParams({ postcode: settings.postcode, date });
+    const params = new URLSearchParams({ from: settings.from, date });
     fetch(`/api/weekend?${params}`, { signal: controller.signal })
       .then(async (res) => {
         const body = await res.json();
@@ -66,13 +65,21 @@ export function Dashboard({
         if (err.name !== "AbortError") setState({ status: "error", message: err.message });
       });
     return () => controller.abort();
-  }, [settings.postcode, date, reloadKey, router]);
+  }, [settings.from, date, reloadKey, router]);
 
   const changeDate = useCallback((next: string) => {
     if (!isPlannableDate(next)) return;
     setState({ status: "loading" });
     setDate(next);
   }, []);
+
+  const changeFrom = useCallback(
+    (from: string) => {
+      setState({ status: "loading" });
+      saveSettings({ ...settings, from });
+    },
+    [settings],
+  );
 
   const reload = useCallback(() => {
     setState({ status: "loading" });
@@ -87,7 +94,6 @@ export function Dashboard({
   const recommendation = useMemo(() => recommend(scores), [scores]);
 
   const data = state.status === "ready" ? state.data : null;
-  const range = planWindow();
 
   const sorted = useMemo(() => {
     const valueFor = (s: DestinationScore) => {
@@ -97,6 +103,9 @@ export function Dashboard({
     };
     return [...scores].sort((a, b) => valueFor(b) - valueFor(a));
   }, [scores, sort]);
+
+  const withinReach = sorted.filter((s) => !s.beyondMaxDrive);
+  const outOfReach = sorted.length - withinReach.length;
 
   const visibleDates = [date];
   const openScore = scores.find((s) => s.destination.mountain.id === openId) ?? null;
@@ -152,21 +161,14 @@ export function Dashboard({
           </Alert>
         )}
 
-        <div className="flex flex-wrap items-center gap-3">
-          <Label htmlFor="hike-date" className="text-muted-foreground">
-            <CalendarDays className="size-4" /> Hiking on
-          </Label>
-          <Input
-            id="hike-date"
-            type="date"
-            className="w-44"
-            value={date}
-            min={range.first}
-            max={range.last}
-            onChange={(e) => changeDate(e.target.value)}
-          />
-          <span className="text-xs text-muted-foreground">Up to two weeks ahead</span>
-        </div>
+        <PlannerBar
+          from={settings.from}
+          onFromChange={changeFrom}
+          maxDriveMinutes={settings.maxDriveMinutes}
+          onMaxDriveChange={(maxDriveMinutes) => saveSettings({ ...settings, maxDriveMinutes })}
+          date={date}
+          onDateChange={changeDate}
+        />
 
         {state.status === "loading" && <LoadingState />}
 
@@ -176,12 +178,9 @@ export function Dashboard({
             <AlertTitle>Couldn&apos;t load the forecast</AlertTitle>
             <AlertDescription>
               <p>{state.message}</p>
-              <div className="mt-3 flex gap-2">
+              <div className="mt-3">
                 <Button size="sm" variant="outline" onClick={reload}>
                   Try again
-                </Button>
-                <Button size="sm" variant="ghost" onClick={() => setSettingsOpen(true)}>
-                  Check your postcode
                 </Button>
               </div>
             </AlertDescription>
@@ -209,7 +208,9 @@ export function Dashboard({
 
             <section className="space-y-4">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <h2 className="font-heading text-lg font-semibold">All destinations</h2>
+                <h2 className="font-heading text-lg font-semibold">
+                  {outOfReach ? "Within reach" : "All destinations"}
+                </h2>
                 <div className="flex items-center gap-2">
                   <Select items={SORT_OPTIONS} value={sort} onValueChange={(v) => v && setSort(v as SortKey)}>
                     <SelectTrigger className="w-36" aria-label="Sort destinations">
@@ -227,7 +228,7 @@ export function Dashboard({
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {sorted.map((s) => (
+                {withinReach.map((s) => (
                   <MountainCard
                     key={s.destination.mountain.id}
                     score={s}
@@ -237,6 +238,13 @@ export function Dashboard({
                   />
                 ))}
               </div>
+              {outOfReach > 0 && settings.maxDriveMinutes !== null && (
+                <p className="text-sm text-muted-foreground">
+                  {withinReach.length === 0
+                    ? `Nothing is within ${formatDuration(settings.maxDriveMinutes)} of ${data.home.label}. Drag the Max drive slider to see some options.`
+                    : `${outOfReach} more ${outOfReach === 1 ? "destination is" : "destinations are"} over ${formatDuration(settings.maxDriveMinutes)} away. Drag the Max drive slider to include ${outOfReach === 1 ? "it" : "them"}.`}
+                </p>
+              )}
             </section>
 
             <Footer data={data} />
@@ -250,7 +258,6 @@ export function Dashboard({
         onOpenChange={setSettingsOpen}
         settings={settings}
         onSave={(next) => {
-          if (next.postcode !== settings.postcode) setState({ status: "loading" });
           saveSettings(next);
           setSettingsOpen(false);
         }}

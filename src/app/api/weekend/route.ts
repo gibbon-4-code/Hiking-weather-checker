@@ -3,7 +3,7 @@ import { getViewer } from "@/auth";
 import { BRIGHTON } from "@/data/mountains";
 import { defaultHikeDate, isPlannableDate } from "@/lib/dates";
 import { authMode } from "@/lib/env";
-import { lookupPostcode, normalisePostcode, PostcodeError } from "@/lib/providers/postcode";
+import { LocationError, lookupLocation, normalisePostcode } from "@/lib/providers/location";
 import { buildWeekend } from "@/lib/weekend";
 
 export async function GET(request: NextRequest) {
@@ -19,14 +19,15 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Pick a day between today and two weeks from now." }, { status: 400 });
   }
 
-  const postcode = request.nextUrl.searchParams.get("postcode");
+  // A UK postcode or a town name. Brighton is the default and keeps its hand-checked drive times.
+  const from = request.nextUrl.searchParams.get("from")?.trim();
   let home = BRIGHTON;
-  if (postcode && normalisePostcode(postcode) !== BRIGHTON.postcode) {
+  if (from && !isBrighton(from)) {
     try {
-      home = await lookupPostcode(postcode);
+      home = await lookupLocation(from);
     } catch (err) {
-      if (err instanceof PostcodeError) return NextResponse.json({ error: err.message }, { status: 400 });
-      return NextResponse.json({ error: "Couldn't look up that postcode right now." }, { status: 502 });
+      if (err instanceof LocationError) return NextResponse.json({ error: err.message }, { status: 400 });
+      return NextResponse.json({ error: "Couldn't look up that place right now." }, { status: 502 });
     }
   }
 
@@ -37,4 +38,8 @@ export async function GET(request: NextRequest) {
     console.error("buildWeekend failed", err);
     return NextResponse.json({ error: "Couldn't build the forecast for that day." }, { status: 500 });
   }
+}
+
+function isBrighton(from: string) {
+  return from.toLowerCase() === "brighton" || normalisePostcode(from) === BRIGHTON.postcode;
 }

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { MOUNTAINS } from "@/data/mountains";
+import { BRIGHTON, MOUNTAINS } from "@/data/mountains";
+import { estimateDrive } from "@/lib/providers/routing";
 import {
   DEFAULT_PREFERENCES,
   recommend,
@@ -51,7 +52,7 @@ function day(date: string, over: Partial<Slot> & { condition?: Condition } = {})
   return { date, slots, sunrise: null, sunset: null };
 }
 
-function destination(mountain: Mountain, days: DayForecast[], minutes = mountain.brightonDriveMinutes): WeekendDestination {
+function destination(mountain: Mountain, days: DayForecast[], minutes = estimateDrive(BRIGHTON, mountain).minutes): WeekendDestination {
   return {
     mountain,
     forecast: { source: "openmeteo", issuedAt: null, modelElevationM: null, days },

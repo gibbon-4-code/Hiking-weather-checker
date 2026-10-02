@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Pick a day between today and two weeks from now." }, { status: 400 });
   }
 
-  // A UK postcode or a town name. Brighton is the default and keeps its hand-checked drive times.
+  // A UK postcode or a town name. Brighton is the default, so it skips the lookup.
   const from = request.nextUrl.searchParams.get("from")?.trim();
   let home = BRIGHTON;
   if (from && !isBrighton(from)) {

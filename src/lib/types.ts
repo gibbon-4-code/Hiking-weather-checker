@@ -31,8 +31,6 @@ export interface Mountain {
   route: string;
   walkingHours: string;
   stayNear: string;
-  /** Hand-checked drive from Brighton, used when live routing is unavailable. */
-  brightonDriveMinutes: number;
 }
 
 /** One forecast step (1 hour from Open-Meteo, 3 hours from the Met Office). */

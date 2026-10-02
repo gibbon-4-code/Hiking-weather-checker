@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { BedDouble, ExternalLink, MapPin, Navigation, ShieldAlert, Sunrise, Sunset } from "lucide-react";
 import { DayStats } from "@/components/day-stats";
 import { HourlyChart } from "@/components/hourly-chart";
@@ -11,7 +12,7 @@ import { WeatherIcon } from "@/components/weather-icon";
 import { addDays, formatClock, formatDayName, formatDuration, planWindow } from "@/lib/dates";
 import { CONDITION_LABEL } from "@/lib/providers/conditions";
 import { summariseDay, type DestinationScore } from "@/lib/scoring";
-import type { DayForecast, ForecastSource, Home } from "@/lib/types";
+import type { DayForecast, DestinationForecast, ForecastSource, Home } from "@/lib/types";
 
 const SOURCE_LABEL: Record<ForecastSource, string> = {
   metoffice: "Met Office",
@@ -22,23 +23,27 @@ const SOURCE_LABEL: Record<ForecastSource, string> = {
 export function DetailSheet({
   score,
   home,
+  secondOpinion,
   onClose,
 }: {
   score: DestinationScore | null;
   home: Home;
+  /** Whether to ask the Met Office for its view of this mountain. */
+  secondOpinion: boolean;
   onClose: () => void;
 }) {
   return (
     <Sheet open={score !== null} onOpenChange={(open) => !open && onClose()}>
       <SheetContent side="right" className="w-full overflow-y-auto data-[side=right]:sm:max-w-xl">
-        {score && <DetailBody score={score} home={home} />}
+        {score && <DetailBody score={score} home={home} secondOpinion={secondOpinion} />}
       </SheetContent>
     </Sheet>
   );
 }
 
-function DetailBody({ score, home }: { score: DestinationScore; home: Home }) {
-  const { mountain, drive, forecast, secondOpinion } = score.destination;
+function DetailBody({ score, home, secondOpinion }: { score: DestinationScore; home: Home; secondOpinion: boolean }) {
+  const { mountain, drive, forecast } = score.destination;
+  const metOffice = useMetOffice(mountain.id, forecast.days[0]?.date, secondOpinion);
   // A long drive means arriving the evening before, so book the night before the hike.
   const hikeDate = forecast.days[0]?.date;
   const checkin = hikeDate && hikeDate > planWindow().first ? addDays(hikeDate, -1) : undefined;
@@ -77,7 +82,7 @@ function DetailBody({ score, home }: { score: DestinationScore; home: Home }) {
         {score.days.map((dayScore) => {
           const day = forecast.days.find((d) => d.date === dayScore.date);
           if (!day) return null;
-          const other = secondOpinion?.days.find((d) => d.date === day.date);
+          const other = metOffice.forecast?.days.find((d) => d.date === day.date);
           return (
             <section key={day.date} className="space-y-3">
               <div className="flex items-center justify-between">
@@ -104,6 +109,12 @@ function DetailBody({ score, home }: { score: DestinationScore; home: Home }) {
               <SlotTable day={day} />
               <SunTimes day={day} />
               {other && <SecondOpinion day={other} />}
+              {metOffice.status === "loading" && (
+                <p className="text-xs text-muted-foreground">Asking the Met Office for a second opinion…</p>
+              )}
+              {metOffice.status === "failed" && (
+                <p className="text-xs text-muted-foreground">The Met Office didn&apos;t respond, so there&apos;s no second opinion.</p>
+              )}
               <Separator />
             </section>
           );
@@ -142,9 +153,6 @@ function DetailBody({ score, home }: { score: DestinationScore; home: Home }) {
         <p className="text-xs text-muted-foreground">
           Forecast from {SOURCE_LABEL[forecast.source]}
           {forecast.issuedAt ? `, model run ${new Date(forecast.issuedAt).toLocaleString("en-GB", { timeZone: "Europe/London" })}` : ""}.
-          {forecast.source === "metoffice" && forecast.modelElevationM !== null && (
-            <> The Met Office grid point sits at {Math.round(forecast.modelElevationM)} m, so temperatures are adjusted to the {mountain.summit.elevationM} m summit. Summit winds are often stronger than forecast.</>
-          )}
           {forecast.source === "openmeteo" && <> Forecast is calculated for the {mountain.summit.elevationM} m summit.</>}
         </p>
       </div>
@@ -229,12 +237,40 @@ function SunTimes({ day }: { day: DayForecast }) {
   );
 }
 
+type MetOfficeState =
+  | { status: "off" | "loading" | "failed"; forecast: null }
+  | { status: "ready"; forecast: DestinationForecast | null };
+
+/** Fetches the Met Office forecast for one mountain when its details open: one call, not one per mountain. */
+function useMetOffice(id: string, date: string | undefined, enabled: boolean): MetOfficeState {
+  const key = `${id}:${date}`;
+  const [result, setResult] = useState<{ key: string; state: MetOfficeState } | null>(null);
+
+  useEffect(() => {
+    if (!enabled || !date) return;
+    const controller = new AbortController();
+    fetch(`/api/second-opinion?${new URLSearchParams({ id, date })}`, { signal: controller.signal })
+      .then(async (res) => {
+        if (!res.ok) throw new Error(`Second opinion failed (${res.status})`);
+        const body = (await res.json()) as { forecast: DestinationForecast | null };
+        setResult({ key, state: { status: "ready", forecast: body.forecast } });
+      })
+      .catch((err: Error) => {
+        if (err.name !== "AbortError") setResult({ key, state: { status: "failed", forecast: null } });
+      });
+    return () => controller.abort();
+  }, [id, date, enabled, key]);
+
+  if (!enabled || !date) return { status: "off", forecast: null };
+  return result?.key === key ? result.state : { status: "loading", forecast: null };
+}
+
 function SecondOpinion({ day }: { day: DayForecast }) {
   const s = summariseDay(day);
   if (!s) return null;
   return (
     <p className="rounded-lg bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
-      <span className="font-medium text-foreground">Second opinion (Open-Meteo, at summit height):</span>{" "}
+      <span className="font-medium text-foreground">Second opinion (Met Office, adjusted to summit height):</span>{" "}
       {CONDITION_LABEL[s.condition].toLowerCase()}, {s.maxPrecipProb}% rain, gusts {s.maxGustMph} mph,{" "}
       {Math.round(s.minTempC)}–{Math.round(s.maxTempC)}°C.
     </p>

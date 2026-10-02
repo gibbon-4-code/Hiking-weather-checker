@@ -55,7 +55,6 @@ function destination(mountain: Mountain, days: DayForecast[], minutes = mountain
   return {
     mountain,
     forecast: { source: "openmeteo", issuedAt: null, modelElevationM: null, days },
-    secondOpinion: null,
     drive: { minutes, km: 100, method: "estimate" },
   };
 }

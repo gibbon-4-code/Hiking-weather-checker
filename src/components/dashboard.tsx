@@ -19,6 +19,8 @@ import { recommend, scoreDestination, type DestinationScore } from "@/lib/scorin
 import type { WeekendResponse } from "@/lib/types";
 
 type SortKey = "overall" | "weather" | "nearest";
+/** Cards shown at first, and how many more each "Show more" adds. */
+const PAGE_SIZE = 12;
 const SORT_OPTIONS = [
   { value: "overall", label: "Best overall" },
   { value: "weather", label: "Best weather" },
@@ -45,6 +47,7 @@ export function Dashboard({
   const [reloadKey, setReloadKey] = useState(0);
   const [date, setDate] = useState(() => defaultHikeDate());
   const [sort, setSort] = useState<SortKey>("overall");
+  const [shown, setShown] = useState(PAGE_SIZE);
   const [openId, setOpenId] = useState<string | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
 
@@ -228,7 +231,7 @@ export function Dashboard({
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {withinReach.map((s) => (
+                {withinReach.slice(0, shown).map((s) => (
                   <MountainCard
                     key={s.destination.mountain.id}
                     score={s}
@@ -238,6 +241,13 @@ export function Dashboard({
                   />
                 ))}
               </div>
+              {withinReach.length > shown && (
+                <div className="flex justify-center">
+                  <Button variant="outline" onClick={() => setShown((n) => n + PAGE_SIZE)}>
+                    Show {Math.min(PAGE_SIZE, withinReach.length - shown)} more of {withinReach.length - shown}
+                  </Button>
+                </div>
+              )}
               {outOfReach > 0 && settings.maxDriveMinutes !== null && (
                 <p className="text-sm text-muted-foreground">
                   {withinReach.length === 0

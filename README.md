@@ -1,16 +1,8 @@
 # Weekend Summits
 
-Where should I hike this weekend? One page that compares the Saturday and Sunday summit forecast for eight UK hiking destinations, then recommends one for someone based in Brighton. The recommendation weighs three things: the weather while you'd be walking, the drive, and how good the hike is.
+Where should I hike, and when? Tell it where you're starting from (a postcode or a town), how long you'll drive and which day (up to two weeks ahead), and it ranks around 80 hikes across England and Wales, with Scotland to follow. The recommendation weighs three things: the weather while you'd be walking, the drive, and how good the hike is.
 
-| Destination | Area | Height | Difficulty |
-| --- | --- | --- | --- |
-| Ditchling Beacon | South Downs | 248 m | Easy |
-| Seven Sisters | South Downs coast | 80 m | Easy |
-| Pen y Fan | Brecon Beacons | 886 m | Moderate |
-| Yr Wyddfa (Snowdon) | Snowdonia | 1085 m | Hard |
-| Tryfan & the Glyderau | Snowdonia | 918 m | Hard |
-| Scafell Pike | Lake District | 978 m | Hard |
-| Cairn Gorm & Ben Macdui | Cairngorms | 1245 m | Hard |
+The destinations run from easy South Downs and Peak District walks to the big days in the Lake District and Snowdonia. They live in `src/data/mountains/`, one file per country.
 
 Built with Next.js 16, TypeScript, Tailwind CSS, shadcn/ui and Auth.js.
 
@@ -18,15 +10,17 @@ Built with Next.js 16, TypeScript, Tailwind CSS, shadcn/ui and Auth.js.
 
 ```
 Browser ──> /api/weekend (Next.js server, needs sign-in)
-               ├─ Met Office Weather DataHub   (MET_OFFICE_API_KEY, main forecast)
-               ├─ Open-Meteo                   (no key: backup, second opinion, sunrise and sunset)
+               ├─ Open-Meteo                   (no key: forecast for every destination, sunrise and sunset)
                ├─ OpenRouteService             (ORS_API_KEY, road drive times)
-               └─ postcodes.io                 (no key: turns your postcode into coordinates)
+               └─ postcodes.io                 (no key: turns your postcode or town into coordinates)
+        ──> /api/second-opinion (needs sign-in, when you open a destination's details)
+               └─ Met Office Weather DataHub   (MET_OFFICE_API_KEY, optional)
 ```
 
-- **API keys never reach the browser.** Only the server route reads them (`src/lib/env.ts` is marked `server-only`), and the browser only ever calls `/api/weekend`.
-- **Each part falls back.** Without a Met Office key it uses Open-Meteo. Without a routing key it estimates drive times. If every weather source fails, it uses generated demo data with a clear label.
-- **Caching keeps you inside the free plans.** Forecasts are cached for an hour and drive times for a day. The route needs sign-in, so strangers can't use up your allowance.
+- **API keys never reach the browser.** Only the server reads them (`src/lib/env.ts` is marked `server-only`).
+- **One request covers every destination.** Open-Meteo forecasts all of them in a single batched call, and OpenRouteService returns every drive time in one matrix call. The Met Office charges one call per mountain, so it's only asked about the mountain you open.
+- **Each part falls back.** Without a routing key it estimates drive times from straight-line distance. If the weather source fails, it uses generated demo data with a clear label.
+- **Caching keeps you inside the free plans.** Forecasts are cached for an hour and drive times for a day. The routes need sign-in, so strangers can't use up your allowance.
 - **Scoring runs in the browser** (`src/lib/scoring.ts`), so changing the weights in Settings updates the ranking instantly. It only looks at 09:00 to 16:00, counts wind for more on exposed ridges, trusts forecasts four or more days out less, and never recommends a day with dangerous gusts, thunder, heavy snow or severe wind chill.
 
 ## Run it locally
@@ -47,7 +41,7 @@ Other commands: `npm test`, `npm run lint`, `npm run typecheck`, `npm run build`
 
 All of these are free. Put the values in `.env.local`, which git ignores, and never in the code.
 
-1. **Met Office Weather DataHub.** Sign up at <https://datahub.metoffice.gov.uk>, subscribe to the free **Site Specific** plan, and copy the API key into `MET_OFFICE_API_KEY`. The app makes at most 7 calls an hour, well inside the free daily limit.
+1. **Met Office Weather DataHub.** Sign up at <https://datahub.metoffice.gov.uk>, subscribe to the free **Site Specific** plan, and copy the API key into `MET_OFFICE_API_KEY`. It is optional: the app only calls it when you open a destination, once per mountain per hour.
 2. **OpenRouteService.** Sign up at <https://openrouteservice.org/dev/#/signup>, create a token, and put it in `ORS_API_KEY`.
 3. **GitHub sign-in.**
    - Go to <https://github.com/settings/developers> and choose **New OAuth App**.
@@ -86,7 +80,9 @@ src/
     api/weekend/route.ts      combines forecasts and drive times (needs sign-in)
     api/auth/[...nextauth]/   Auth.js handlers
   auth.ts                     Auth.js setup and allowlist
-  data/mountains.ts           the destinations: add more here
+  data/mountains/             the destinations, one file per country
+scripts/
+  check-mountains.mts         checks the destinations against OpenStreetMap
   lib/
     env.ts                    server-only reading and checking of keys
     weekend.ts                works out the weekend and applies the fallbacks
@@ -97,7 +93,19 @@ src/
 
 ## Adding a destination
 
-Add an entry to `src/data/mountains.ts` with the summit coordinates and height, trailhead coordinates, difficulty, exposure (`low`, `medium`, `high` or `extreme`), a 1 to 5 quality rating, and a typical drive time from Brighton. Everything else picks it up automatically.
+1. Add an entry to the right file in `src/data/mountains/`. Each entry needs the summit position and height, the trailhead car park's position, the difficulty, the exposure (`low`, `medium`, `high` or `extreme`), a 1 to 5 quality rating, the route, the walking time and a town to stay in.
+2. Check it against OpenStreetMap:
+   ```bash
+   npm run check:mountains -- src/data/mountains/wales.ts
+   ```
+   This looks for a named peak near each summit and a car park near each trailhead, and lists anything that doesn't line up, with nearby alternatives. Add `--fix` to copy OpenStreetMap's summit position and height into the file wherever the name matches.
+3. Run `npm test`. A data test checks every entry is complete, inside Great Britain and has its trailhead within 12 km of its summit.
+
+Everything else in the app picks the new entry up automatically.
+
+## Credits
+
+Summit positions and heights, and trailhead car parks, were checked against [OpenStreetMap](https://www.openstreetmap.org/copyright) data, © OpenStreetMap contributors, available under the Open Database Licence. Weather from [Open-Meteo](https://open-meteo.com/) (CC BY 4.0) and, optionally, the Met Office.
 
 ## Disclaimer
 

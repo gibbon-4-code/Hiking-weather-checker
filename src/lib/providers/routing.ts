@@ -13,14 +13,27 @@ export function haversineKm(a: { lat: number; lon: number }, b: { lat: number; l
   return 2 * R * Math.asin(Math.sqrt(x));
 }
 
-const isBrighton = (home: Home) => haversineKm(home, { lat: 50.8263, lon: -0.1408 }) < 8;
+/**
+ * Average speeds for successive stretches of a drive. Every trip starts and ends on slow roads
+ * (towns, lanes, Lake District passes); only long trips spend much time on motorways.
+ */
+const DRIVE_STAGES = [
+  { km: 50, kph: 45 },
+  { km: 100, kph: 65 },
+  { km: Infinity, kph: 95 },
+];
 
-/** Straight-line distance scaled to typical UK road distance and average speeds. */
+/** Straight-line distance scaled to typical UK road distance, then timed stage by stage. */
 export function estimateDrive(home: Home, mountain: Mountain): Drive {
   const km = haversineKm(home, mountain.trailhead) * 1.3;
-  if (isBrighton(home)) return { minutes: mountain.brightonDriveMinutes, km: Math.round(km), method: "estimate" };
-  const avgKph = km < 40 ? 50 : 85;
-  return { minutes: Math.round((km / avgKph) * 60 + 10), km: Math.round(km), method: "estimate" };
+  let left = km;
+  let minutes = 10;
+  for (const stage of DRIVE_STAGES) {
+    const part = Math.min(left, stage.km);
+    minutes += (part / stage.kph) * 60;
+    left -= part;
+  }
+  return { minutes: Math.round(minutes), km: Math.round(km), method: "estimate" };
 }
 
 async function orsMatrix(home: Home, mountains: Mountain[], apiKey: string): Promise<Drive[]> {

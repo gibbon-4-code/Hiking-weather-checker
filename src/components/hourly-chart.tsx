@@ -23,8 +23,8 @@ export function HourlyChart({ slots }: { slots: Slot[] }) {
   return (
     <figure>
       <svg viewBox={`0 0 ${W} ${H}`} className="w-full" role="img" aria-label="Chance of rain and summit gusts through the day">
-        <line x1={PAD.left} x2={W - PAD.right} y1={dangerY} y2={dangerY} className="stroke-rose-300" strokeDasharray="3 3" />
-        <text x={W - PAD.right} y={dangerY - 3} textAnchor="end" className="fill-rose-500 text-[8px]">
+        <line x1={PAD.left} x2={W - PAD.right} y1={dangerY} y2={dangerY} className="stroke-clay/50" strokeDasharray="3 3" />
+        <text x={W - PAD.right} y={dangerY - 3} textAnchor="end" className="fill-clay text-[8px]">
           50 mph gusts
         </text>
         {slots.map((s, i) => (
@@ -35,10 +35,10 @@ export function HourlyChart({ slots }: { slots: Slot[] }) {
             y={yRain(s.precipProb)}
             height={Math.max(0, PAD.top + innerH - yRain(s.precipProb))}
             rx={1.5}
-            className="fill-sky-300/70"
+            className="fill-lake/40"
           />
         ))}
-        <path d={gustPath} fill="none" className="stroke-slate-700" strokeWidth={1.5} strokeLinejoin="round" />
+        <path d={gustPath} fill="none" className="stroke-bark" strokeWidth={1.5} strokeLinejoin="round" />
         {slots.map((s, i) =>
           i % labelEvery === 0 ? (
             <text key={s.time} x={x(i)} y={H - 6} textAnchor="middle" className="fill-muted-foreground text-[8px]">
@@ -49,10 +49,10 @@ export function HourlyChart({ slots }: { slots: Slot[] }) {
       </svg>
       <figcaption className="mt-1 flex gap-4 text-[11px] text-muted-foreground">
         <span className="flex items-center gap-1">
-          <span className="inline-block size-2 rounded-sm bg-sky-300" /> Chance of rain
+          <span className="inline-block size-2 rounded-sm bg-lake/40" /> Chance of rain
         </span>
         <span className="flex items-center gap-1">
-          <span className="inline-block h-0.5 w-3 bg-slate-700" /> Gusts (mph)
+          <span className="inline-block h-0.5 w-3 bg-bark" /> Gusts (mph)
         </span>
       </figcaption>
     </figure>

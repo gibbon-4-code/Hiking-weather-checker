@@ -2,14 +2,18 @@
 
 import { useEffect, useState } from "react";
 import { BedDouble, ExternalLink, MapPin, Navigation, ShieldAlert, Sunrise, Sunset } from "lucide-react";
-import { DayStats } from "@/components/day-stats";
+import { DifficultyTag } from "@/components/difficulty-tag";
+import { HillPhoto, PhotoCredit } from "@/components/hill-photo";
 import { HourlyChart } from "@/components/hourly-chart";
+import { ConditionStats } from "@/components/results/condition-stats";
+import { HourlyStrip } from "@/components/results/hourly-strip";
 import { ScoreBadge } from "@/components/score-badge";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { WeatherIcon } from "@/components/weather-icon";
 import { addDays, formatClock, formatDayName, formatDuration, planWindow } from "@/lib/dates";
+import { directionsUrl } from "@/lib/links";
 import { CONDITION_LABEL } from "@/lib/providers/conditions";
 import { summariseDay, type DestinationScore } from "@/lib/scoring";
 import type { DayForecast, DestinationForecast, ForecastSource, Home } from "@/lib/types";
@@ -34,7 +38,7 @@ export function DetailSheet({
 }) {
   return (
     <Sheet open={score !== null} onOpenChange={(open) => !open && onClose()}>
-      <SheetContent side="right" className="w-full overflow-y-auto data-[side=right]:sm:max-w-xl">
+      <SheetContent side="right" className="w-full gap-0 overflow-y-auto bg-surface data-[side=right]:sm:max-w-xl">
         {score && <DetailBody score={score} home={home} secondOpinion={secondOpinion} />}
       </SheetContent>
     </Sheet>
@@ -52,15 +56,22 @@ function DetailBody({ score, home, secondOpinion }: { score: DestinationScore; h
 
   return (
     <>
-      <SheetHeader className="pr-12">
-        <SheetTitle className="font-heading text-xl">{mountain.name}</SheetTitle>
+      <div className="relative aspect-[16/10] shrink-0 bg-dune/50">
+        <HillPhoto id={mountain.id} alt={`${mountain.name}, ${mountain.area}`} eager className="size-full" />
+        <PhotoCredit id={mountain.id} className="absolute bottom-2 right-3 rounded bg-bark/60 px-1.5 py-0.5 text-white/90" />
+      </div>
+      <SheetHeader className="px-6 pt-5">
+        <div>
+          <DifficultyTag difficulty={mountain.difficulty} />
+        </div>
+        <SheetTitle className="font-display text-4xl font-extrabold leading-none text-bark">{mountain.name}</SheetTitle>
         <SheetDescription>
-          {mountain.area} · {mountain.summit.elevationM} m · {mountain.difficulty}
+          {mountain.area} · {mountain.summit.elevationM} m · {formatDuration(drive.minutes)} drive
         </SheetDescription>
       </SheetHeader>
 
-      <div className="space-y-6 px-4 pb-8">
-        <section className="rounded-xl bg-muted/50 p-4 text-sm">
+      <div className="space-y-6 px-6 pb-8">
+        <section className="rounded-xl bg-sand/70 p-4 text-sm">
           <p className="font-medium">{mountain.route}</p>
           <p className="mt-1 text-muted-foreground">
             {mountain.walkingHours} · starts at {mountain.trailhead.name}
@@ -86,7 +97,7 @@ function DetailBody({ score, home, secondOpinion }: { score: DestinationScore; h
           return (
             <section key={day.date} className="space-y-3">
               <div className="flex items-center justify-between">
-                <h3 className="font-heading text-lg font-semibold">{formatDayName(day.date)}</h3>
+                <h3 className="font-display text-2xl font-bold text-bark">{formatDayName(day.date)}</h3>
                 <div className="flex items-center gap-2">
                   <Badge variant="outline">{dayScore.confidence} confidence</Badge>
                   <ScoreBadge score={dayScore.total} />
@@ -94,7 +105,7 @@ function DetailBody({ score, home, secondOpinion }: { score: DestinationScore; h
               </div>
 
               {dayScore.vetoes.length > 0 && (
-                <div className="flex gap-2 rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-800">
+                <div className="flex gap-2 rounded-lg bg-clay/10 p-3 text-sm text-clay-deep ring-1 ring-clay/30">
                   <ShieldAlert className="mt-0.5 size-4 shrink-0" />
                   <div>
                     <p className="font-medium">Not recommended</p>
@@ -103,8 +114,9 @@ function DetailBody({ score, home, secondOpinion }: { score: DestinationScore; h
                 </div>
               )}
 
-              <DayStats summary={dayScore.summary} />
+              <ConditionStats summary={dayScore.summary} className="rounded-xl bg-sand/70 p-4" />
               <ScoreBreakdown weather={dayScore.weather} travel={dayScore.travel} quality={dayScore.quality} />
+              <HourlyStrip slots={day.slots} />
               <HourlyChart slots={day.slots} />
               <SlotTable day={day} />
               <SunTimes day={day} />
@@ -121,10 +133,10 @@ function DetailBody({ score, home, secondOpinion }: { score: DestinationScore; h
         })}
 
         <section className="space-y-2 text-sm">
-          <h3 className="font-heading font-semibold">Plan the trip</h3>
+          <h3 className="font-display text-xl font-bold text-bark">Plan the trip</h3>
           <div className="grid gap-2 sm:grid-cols-2">
             <ExternalButton
-              href={`https://www.google.com/maps/dir/?api=1&origin=${home.lat},${home.lon}&destination=${mountain.trailhead.lat},${mountain.trailhead.lon}&travelmode=driving`}
+              href={directionsUrl(home, mountain)}
               icon={<MapPin className="size-4" />}
             >
               Directions to {mountain.trailhead.name}
@@ -174,8 +186,8 @@ function ScoreBreakdown({ weather, travel, quality }: { weather: number; travel:
             <span>{r.label}</span>
             <span className="tabular-nums">{r.value}</span>
           </div>
-          <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-muted">
-            <div className="h-full rounded-full bg-primary" style={{ width: `${r.value}%` }} />
+          <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-dune/50">
+            <div className="h-full rounded-full bg-moss" style={{ width: `${r.value}%` }} />
           </div>
         </div>
       ))}
@@ -185,9 +197,9 @@ function ScoreBreakdown({ weather, travel, quality }: { weather: number; travel:
 
 function SlotTable({ day }: { day: DayForecast }) {
   return (
-    <div className="overflow-x-auto rounded-lg border">
+    <div className="overflow-x-auto rounded-xl ring-1 ring-dune/70">
       <table className="w-full text-xs tabular-nums">
-        <thead className="bg-muted/50 text-muted-foreground">
+        <thead className="bg-sand/70 text-muted-foreground">
           <tr>
             <th className="px-2 py-1.5 text-left font-medium">Time</th>
             <th className="px-2 py-1.5 text-left font-medium">Weather</th>
@@ -201,7 +213,7 @@ function SlotTable({ day }: { day: DayForecast }) {
           {day.slots
             .filter((_, i) => day.slots[0]?.hours === 3 || i % 2 === 0)
             .map((s) => (
-              <tr key={s.time} className="border-t">
+              <tr key={s.time} className="border-t border-dune/60">
                 <td className="px-2 py-1.5">{formatClock(s.time)}</td>
                 <td className="px-2 py-1.5">
                   <span className="flex items-center gap-1.5">
@@ -211,8 +223,8 @@ function SlotTable({ day }: { day: DayForecast }) {
                 </td>
                 <td className="px-2 py-1.5 text-right">{Math.round(s.tempC)}°</td>
                 <td className="px-2 py-1.5 text-right">{Math.round(s.feelsLikeC)}°</td>
-                <td className={`px-2 py-1.5 text-right ${s.gustMph >= 45 ? "font-semibold text-rose-700" : ""}`}>{s.gustMph}</td>
-                <td className="px-2 py-1.5 text-right text-sky-700">{s.precipProb}%</td>
+                <td className={`px-2 py-1.5 text-right ${s.gustMph >= 45 ? "font-semibold text-clay" : ""}`}>{s.gustMph}</td>
+                <td className="px-2 py-1.5 text-right text-lake">{s.precipProb}%</td>
               </tr>
             ))}
         </tbody>
@@ -227,10 +239,10 @@ function SunTimes({ day }: { day: DayForecast }) {
   return (
     <p className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
       <span className="flex items-center gap-1">
-        <Sunrise className="size-3.5 text-amber-500" /> {formatClock(day.sunrise)}
+        <Sunrise className="size-3.5 text-ochre" /> {formatClock(day.sunrise)}
       </span>
       <span className="flex items-center gap-1">
-        <Sunset className="size-3.5 text-orange-500" /> {formatClock(day.sunset)}
+        <Sunset className="size-3.5 text-clay" /> {formatClock(day.sunset)}
       </span>
       <span>{formatDuration(minutes)} of daylight</span>
     </p>
@@ -269,7 +281,7 @@ function SecondOpinion({ day }: { day: DayForecast }) {
   const s = summariseDay(day);
   if (!s) return null;
   return (
-    <p className="rounded-lg bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
+    <p className="rounded-xl bg-lake/10 px-3 py-2 text-xs text-muted-foreground">
       <span className="font-medium text-foreground">Second opinion (Met Office, adjusted to summit height):</span>{" "}
       {CONDITION_LABEL[s.condition].toLowerCase()}, {s.maxPrecipProb}% rain, gusts {s.maxGustMph} mph,{" "}
       {Math.round(s.minTempC)}–{Math.round(s.maxTempC)}°C.
@@ -283,7 +295,7 @@ function ExternalButton({ href, icon, children }: { href: string; icon: React.Re
       href={href}
       target="_blank"
       rel="noreferrer"
-      className="flex items-center gap-2 rounded-lg border px-3 py-2 font-medium transition-colors hover:bg-muted"
+      className="flex items-center gap-2 rounded-xl px-3 py-2.5 font-semibold text-pine ring-1 ring-inset ring-dune transition-colors hover:bg-sand"
     >
       {icon}
       <span className="truncate">{children}</span>

@@ -53,3 +53,15 @@ export function saveSettings(next: Settings) {
 export function useSettings() {
   return useSyncExternalStore(subscribe, read, () => DEFAULT_SETTINGS);
 }
+
+/**
+ * Whether this browser has saved a search before, so first-time visitors see the landing page.
+ * Null while the page is still being rendered on the server, where there is no localStorage.
+ */
+export function useHasSavedSettings() {
+  return useSyncExternalStore<boolean | null>(
+    subscribe,
+    () => window.localStorage.getItem(KEY) !== null,
+    () => null,
+  );
+}

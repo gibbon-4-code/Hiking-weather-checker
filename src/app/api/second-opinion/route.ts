@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { getViewer } from "@/auth";
 import { isPlannableDate } from "@/lib/dates";
 import { authMode } from "@/lib/env";
-import { buildSecondOpinion, UnknownMountainError } from "@/lib/weekend";
+import { buildSecondOpinion, UnknownMountainError } from "@/lib/plan";
 
 /** The Met Office view of one mountain, fetched only when someone opens its details. */
 export async function GET(request: NextRequest) {

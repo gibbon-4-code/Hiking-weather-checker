@@ -14,9 +14,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Weekend Summits: where to hike this weekend",
+  title: "Summit Planner",
   description:
-    "Summit forecasts for Snowdonia, the Lake District, the Brecon Beacons, the Cairngorms and the South Downs, with one recommendation for the weekend.",
+    "Pick a day, a starting point and how far you'll drive, and get the best hike for the weather from around 140 across England, Wales and Scotland.",
 };
 
 export const viewport: Viewport = {

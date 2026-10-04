@@ -76,18 +76,18 @@ export interface Home {
   lon: number;
 }
 
-export interface WeekendDestination {
+export interface Destination {
   mountain: Mountain;
   forecast: DestinationForecast;
   drive: Drive;
 }
 
-export interface WeekendResponse {
+export interface PlanResponse {
   generatedAt: string;
   home: Home;
   /** The day being planned for, and how many days from today it is. */
   day: { date: string; daysAway: number };
-  destinations: WeekendDestination[];
+  destinations: Destination[];
   notices: string[];
   keys: { metOffice: boolean; routing: boolean };
   /** Whether a Met Office second opinion can be fetched for this day (needs a key, and it only reaches ~7 days). */

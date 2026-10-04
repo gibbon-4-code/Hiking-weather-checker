@@ -1,6 +1,6 @@
 import { formatDuration, londonParts } from "@/lib/dates";
 import { conditionSeverity } from "@/lib/providers/conditions";
-import type { Condition, DayForecast, Exposure, Mountain, WeekendDestination } from "@/lib/types";
+import type { Condition, DayForecast, Exposure, Mountain, Destination } from "@/lib/types";
 
 export interface Weights {
   weather: number;
@@ -136,7 +136,7 @@ export interface DayScore {
 }
 
 export interface DestinationScore {
-  destination: WeekendDestination;
+  destination: Destination;
   days: DayScore[];
   best: DayScore | null;
   needsOvernight: boolean;
@@ -144,7 +144,7 @@ export interface DestinationScore {
 }
 
 export function scoreDestination(
-  d: WeekendDestination,
+  d: Destination,
   prefs: Preferences,
   today: Date = new Date(),
 ): DestinationScore {

@@ -16,7 +16,7 @@ import type { Viewer } from "@/auth";
 import { defaultHikeDate, formatDayName, formatDuration, isPlannableDate } from "@/lib/dates";
 import { saveSettings, useSettings } from "@/lib/preferences";
 import { recommend, scoreDestination, type DestinationScore } from "@/lib/scoring";
-import type { WeekendResponse } from "@/lib/types";
+import type { PlanResponse } from "@/lib/types";
 
 type SortKey = "overall" | "weather" | "nearest";
 /** Cards shown at first, and how many more each "Show more" adds. */
@@ -30,7 +30,7 @@ const SORT_OPTIONS = [
 type State =
   | { status: "loading" }
   | { status: "error"; message: string }
-  | { status: "ready"; data: WeekendResponse };
+  | { status: "ready"; data: PlanResponse };
 
 export function Dashboard({
   viewer,
@@ -54,7 +54,7 @@ export function Dashboard({
   useEffect(() => {
     const controller = new AbortController();
     const params = new URLSearchParams({ from: settings.from, date });
-    fetch(`/api/weekend?${params}`, { signal: controller.signal })
+    fetch(`/api/plan?${params}`, { signal: controller.signal })
       .then(async (res) => {
         const body = await res.json();
         if (res.status === 401) {
@@ -62,7 +62,7 @@ export function Dashboard({
           return;
         }
         if (!res.ok) throw new Error(body.error ?? `Request failed (${res.status})`);
-        setState({ status: "ready", data: body as WeekendResponse });
+        setState({ status: "ready", data: body as PlanResponse });
       })
       .catch((err: Error) => {
         if (err.name !== "AbortError") setState({ status: "error", message: err.message });
@@ -123,7 +123,7 @@ export function Dashboard({
             <Mountain className="size-5" />
           </div>
           <div className="min-w-0 flex-1">
-            <h1 className="font-heading text-base font-semibold leading-tight">Weekend Summits</h1>
+            <h1 className="font-heading text-base font-semibold leading-tight">Summit Planner</h1>
             <p className="flex items-center gap-1 truncate text-xs text-muted-foreground">
               <MapPin className="size-3" />
               {data ? `From ${data.home.label}` : "Loading"}
@@ -296,7 +296,7 @@ function LoadingState() {
   );
 }
 
-function Footer({ data }: { data: WeekendResponse }) {
+function Footer({ data }: { data: PlanResponse }) {
   const sources = new Set(data.destinations.map((d) => d.forecast.source));
   const parts = [
     sources.has("openmeteo") && "Open-Meteo",

@@ -1,6 +1,7 @@
 import { formatDuration, londonParts } from "@/lib/dates";
 import { conditionSeverity } from "@/lib/providers/conditions";
 import type { Condition, DayForecast, Exposure, Mountain, Destination } from "@/lib/types";
+import { matchesWalk, type WalkLength } from "@/lib/walks";
 
 export interface Weights {
   weather: number;
@@ -12,11 +13,14 @@ export interface Preferences {
   weights: Weights;
   /** null means no limit. */
   maxDriveMinutes: number | null;
+  /** null means any length of walk. */
+  walk: WalkLength | null;
 }
 
 export const DEFAULT_PREFERENCES: Preferences = {
   weights: { weather: 60, travel: 20, quality: 20 },
   maxDriveMinutes: null,
+  walk: null,
 };
 
 /** Only the hours you'd actually be on the hill count towards the score. */
@@ -141,6 +145,7 @@ export interface DestinationScore {
   best: DayScore | null;
   needsOvernight: boolean;
   beyondMaxDrive: boolean;
+  wrongWalkLength: boolean;
 }
 
 export function scoreDestination(
@@ -186,6 +191,7 @@ export function scoreDestination(
     best,
     needsOvernight: d.drive.minutes > OVERNIGHT_MINUTES,
     beyondMaxDrive: prefs.maxDriveMinutes !== null && d.drive.minutes > prefs.maxDriveMinutes,
+    wrongWalkLength: !matchesWalk(d.mountain, prefs.walk ?? null),
   };
 }
 
@@ -200,7 +206,10 @@ export interface Recommendation {
   runnerUp: (Pick & { why: string }) | null;
 }
 
-const eligible = (s: DestinationScore) => !s.beyondMaxDrive && s.days.some((d) => !d.vetoes.length);
+/** Hills that fit the search: close enough, and the length of walk you're after. */
+export const inSearch = (s: DestinationScore) => !s.beyondMaxDrive && !s.wrongWalkLength;
+
+const eligible = (s: DestinationScore) => inSearch(s) && s.days.some((d) => !d.vetoes.length);
 
 function bestSafeDay(s: DestinationScore) {
   return s.days.filter((d) => !d.vetoes.length).sort((a, b) => b.total - a.total)[0];

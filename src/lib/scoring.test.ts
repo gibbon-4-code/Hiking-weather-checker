@@ -128,6 +128,15 @@ describe("recommend", () => {
     expect(recommend(scores).pick?.score.destination.mountain.id).toBe("ditchling-beacon");
   });
 
+  it("only picks the length of walk asked for", () => {
+    const prefs = { ...DEFAULT_PREFERENCES, walk: "full" as const };
+    const scores = [byId("ditchling-beacon"), byId("yr-wyddfa")].map((m) =>
+      scoreDestination(destination(m, DATES.map((d) => day(d))), prefs, TODAY),
+    );
+    expect(scores.map((s) => s.wrongWalkLength)).toEqual([true, false]);
+    expect(recommend(scores).pick?.score.destination.mountain.id).toBe("yr-wyddfa");
+  });
+
   it("returns no pick when everything is unsafe", () => {
     const stormy = DATES.map((d) => day(d, { condition: "thunder" }));
     const scores = [scoreDestination(destination(byId("tryfan"), stormy), DEFAULT_PREFERENCES, TODAY)];

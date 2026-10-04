@@ -1,8 +1,8 @@
 # Weekend Summits
 
-Where should I hike, and when? Tell it where you're starting from (a postcode or a town), how long you'll drive and which day (up to two weeks ahead), and it ranks around 80 hikes across England and Wales, with Scotland to follow. The recommendation weighs three things: the weather while you'd be walking, the drive, and how good the hike is.
+Where should I hike, and when? Tell it where you're starting from (a postcode or a town), how long you'll drive and which day (up to two weeks ahead), and it ranks around 140 hikes across England, Wales and Scotland. The recommendation weighs three things: the weather while you'd be walking, the drive, and how good the hike is.
 
-The destinations run from easy South Downs and Peak District walks to the big days in the Lake District and Snowdonia. They live in `src/data/mountains/`, one file per country.
+The destinations run from easy South Downs and Peak District walks to the big days in the Lake District, Snowdonia, Glen Coe, Skye and Torridon. They live in `src/data/mountains/`, one file per country.
 
 Built with Next.js 16, TypeScript, Tailwind CSS, shadcn/ui and Auth.js.
 
@@ -98,7 +98,7 @@ scripts/
    ```bash
    npm run check:mountains -- src/data/mountains/wales.ts
    ```
-   This looks for a named peak near each summit and a car park near each trailhead, and lists anything that doesn't line up, with nearby alternatives. Add `--fix` to copy OpenStreetMap's summit position and height into the file wherever the name matches.
+   This looks for a named peak near each summit and a car park near each trailhead, and lists anything that doesn't line up, with nearby alternatives. Add `--fix` to copy OpenStreetMap's summit position and height into the file wherever the name matches. The public Overpass server is shared and sometimes overloaded; if it keeps timing out, point the script at a mirror, for example `OVERPASS_URL=https://maps.mail.ru/osm/tools/overpass/api/interpreter`.
 3. Run `npm test`. A data test checks every entry is complete, inside Great Britain and has its trailhead within 12 km of its summit.
 
 Everything else in the app picks the new entry up automatically.

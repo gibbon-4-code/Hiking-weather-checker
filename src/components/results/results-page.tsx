@@ -112,12 +112,11 @@ export function ResultsPage({
     <div className="min-h-svh w-full bg-sand">
       <AppHeader viewer={viewer} signOutAction={signOutAction} onSettings={() => setSettingsOpen(true)}>
         <SearchSummary
+          search={search}
           from={data?.home.label ?? search.from}
           dateLabel={formatDayName(search.date, "short")}
           walkLabel={walkLabel(search.walk)}
-          driveLabel={driveLimitLabel(search.maxDriveMinutes).replace("Up to", "Drive up to")}
-          editHref={`/?${query}`}
-        />
+          driveLabel={driveLimitLabel(search.maxDriveMinutes).replace("Up to", "Drive up to")}        />
       </AppHeader>
 
       <main className="mx-auto max-w-6xl space-y-6 px-5 pb-24 pt-8 md:px-8">

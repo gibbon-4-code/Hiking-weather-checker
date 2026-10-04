@@ -13,6 +13,7 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "
 import { TripFacts } from "@/components/trip-facts";
 import { WeatherIcon } from "@/components/weather-icon";
 import { WeatherRating } from "@/components/weather-rating";
+import { DESCRIPTIONS } from "@/data/mountains/descriptions";
 import { addDays, formatClock, formatDayName, formatDuration, planWindow } from "@/lib/dates";
 import { directionsUrl } from "@/lib/links";
 import { CONDITION_LABEL } from "@/lib/providers/conditions";
@@ -74,6 +75,9 @@ function DetailBody({ score, home, secondOpinion }: { score: DestinationScore; h
       <div className="space-y-6 px-6 pb-8">
         <section className="space-y-4">
           <TripFacts score={score} size="lg" className="sm:grid-cols-2" />
+          {DESCRIPTIONS[mountain.id] && (
+            <p className="text-[15px] leading-relaxed text-muted-foreground">{DESCRIPTIONS[mountain.id]}</p>
+          )}
           <p className="text-[15px] leading-relaxed text-bark">
             {mountain.route}, starting from {mountain.trailhead.name}.
           </p>

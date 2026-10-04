@@ -7,11 +7,12 @@ import { HillPhoto, PhotoCredit } from "@/components/hill-photo";
 import { HourlyChart } from "@/components/hourly-chart";
 import { ConditionStats } from "@/components/results/condition-stats";
 import { HourlyStrip } from "@/components/results/hourly-strip";
-import { ScoreBadge } from "@/components/score-badge";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { TripFacts } from "@/components/trip-facts";
 import { WeatherIcon } from "@/components/weather-icon";
+import { WeatherRating } from "@/components/weather-rating";
 import { addDays, formatClock, formatDayName, formatDuration, planWindow } from "@/lib/dates";
 import { directionsUrl } from "@/lib/links";
 import { CONDITION_LABEL } from "@/lib/providers/conditions";
@@ -66,21 +67,21 @@ function DetailBody({ score, home, secondOpinion }: { score: DestinationScore; h
         </div>
         <SheetTitle className="font-display text-4xl font-extrabold leading-none text-bark">{mountain.name}</SheetTitle>
         <SheetDescription>
-          {mountain.area} · {mountain.summit.elevationM} m · {formatDuration(drive.minutes)} drive
+          {mountain.area} · {mountain.summit.elevationM} m
         </SheetDescription>
       </SheetHeader>
 
       <div className="space-y-6 px-6 pb-8">
-        <section className="rounded-xl bg-sand/70 p-4 text-sm">
-          <p className="font-medium">{mountain.route}</p>
-          <p className="mt-1 text-muted-foreground">
-            {mountain.walkingHours} · starts at {mountain.trailhead.name}
+        <section className="space-y-4">
+          <TripFacts score={score} size="lg" className="sm:grid-cols-2" />
+          <p className="text-[15px] leading-relaxed text-bark">
+            {mountain.route}, starting from {mountain.trailhead.name}.
           </p>
-          <p className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-muted-foreground">
+          <p className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
             <span className="flex items-center gap-1">
               <Navigation className="size-3.5" />
-              {formatDuration(drive.minutes)} · {drive.km} km from {home.label}
-              {drive.method === "estimate" ? " (estimate)" : ""}
+              {drive.km} km from {home.label}
+              {drive.method === "estimate" ? " (estimated drive)" : ""}
             </span>
             {score.needsOvernight && (
               <span className="flex items-center gap-1">
@@ -98,10 +99,7 @@ function DetailBody({ score, home, secondOpinion }: { score: DestinationScore; h
             <section key={day.date} className="space-y-3">
               <div className="flex items-center justify-between">
                 <h3 className="font-display text-2xl font-bold text-bark">{formatDayName(day.date)}</h3>
-                <div className="flex items-center gap-2">
-                  <Badge variant="outline">{dayScore.confidence} confidence</Badge>
-                  <ScoreBadge score={dayScore.total} />
-                </div>
+                <Badge variant="outline">{dayScore.confidence} confidence</Badge>
               </div>
 
               {dayScore.vetoes.length > 0 && (
@@ -114,6 +112,7 @@ function DetailBody({ score, home, secondOpinion }: { score: DestinationScore; h
                 </div>
               )}
 
+              <WeatherRating day={dayScore} size="lg" />
               <ConditionStats summary={dayScore.summary} className="rounded-xl bg-sand/70 p-4" />
               <ScoreBreakdown weather={dayScore.weather} travel={dayScore.travel} quality={dayScore.quality} />
               <HourlyStrip slots={day.slots} />

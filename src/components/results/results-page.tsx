@@ -17,7 +17,7 @@ import { saveSettings, useSettings } from "@/lib/preferences";
 import { inSearch, recommend, scoreDestination } from "@/lib/scoring";
 import { driveLimitLabel, searchQuery, type Search } from "@/lib/search";
 import type { PlanResponse } from "@/lib/types";
-import { walkLabel } from "@/lib/walks";
+import { walkHours, walkLabel } from "@/lib/walks";
 
 /** Cards shown at first, and how many more each "Show more" adds. */
 const PAGE_SIZE = 12;
@@ -87,7 +87,7 @@ export function ResultsPage({
       .map((score) => ({ score, day: score.days.find((d) => d.date === search.date) ?? null }));
     const rank = ({ score, day }: ResultItem) => {
       if (sort === "drive") return -score.destination.drive.minutes;
-      if (sort === "elevation") return score.destination.mountain.summit.elevationM;
+      if (sort === "walk") return -walkHours(score.destination.mountain);
       // Unsafe days sink below every safe one, however good the rest of the score is.
       return day ? (day.vetoes.length ? day.total - 100 : day.total) : -200;
     };

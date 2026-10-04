@@ -19,6 +19,12 @@ export function walkHours(mountain: Pick<Mountain, "walkingHours">) {
   return Number(match[2] ?? match[1]);
 }
 
+/** "3–4 hrs · 13 km" split into the time and the distance. */
+export function walkParts(mountain: Pick<Mountain, "walkingHours">) {
+  const [time, distance] = mountain.walkingHours.split(" · ");
+  return { time, distance: distance ?? null };
+}
+
 export function matchesWalk(mountain: Pick<Mountain, "walkingHours">, walk: WalkLength | null) {
   if (walk === null) return true;
   const hours = walkHours(mountain);

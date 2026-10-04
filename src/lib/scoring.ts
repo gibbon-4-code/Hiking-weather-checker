@@ -1,5 +1,5 @@
 import { formatDuration, londonParts } from "@/lib/dates";
-import { conditionSeverity } from "@/lib/providers/conditions";
+import { CONDITION_LABEL, conditionSeverity } from "@/lib/providers/conditions";
 import type { Condition, DayForecast, Exposure, Mountain, Destination } from "@/lib/types";
 import { matchesWalk, type WalkLength } from "@/lib/walks";
 
@@ -273,6 +273,28 @@ export function scoreTone(score: number) {
   if (score >= 55) return "good" as const;
   if (score >= 35) return "mixed" as const;
   return "poor" as const;
+}
+
+export type WeatherVerdict = "Great" | "Good" | "Fair" | "Poor";
+
+const VERDICT: Record<ReturnType<typeof scoreTone>, WeatherVerdict> = {
+  great: "Great",
+  good: "Good",
+  mixed: "Fair",
+  poor: "Poor",
+};
+
+export function weatherVerdict(score: number) {
+  return VERDICT[scoreTone(score)];
+}
+
+/** One line on the summit weather, for when the full stats would be too much. */
+export function weatherSummary(s: DaySummary) {
+  const rain =
+    s.maxPrecipProb < 10 ? "dry" : s.maxPrecipProb < 50 && s.precipMm < 1 ? "chance of a shower" : "rain likely";
+  const wind =
+    s.maxGustMph < 25 ? "light wind" : s.maxGustMph <= 32 ? "breezy on top" : `windy on top, gusts ${s.maxGustMph} mph`;
+  return `${CONDITION_LABEL[s.condition]}, ${Math.round(s.minTempC)}–${Math.round(s.maxTempC)}° · ${rain} · ${wind}`;
 }
 
 function clamp(n: number, min: number, max: number) {

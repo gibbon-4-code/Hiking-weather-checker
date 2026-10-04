@@ -8,6 +8,7 @@ export interface Settings extends Preferences {
   from: string;
 }
 
+// Still named after the old "Weekend Summits" app: renaming it would wipe everyone's saved settings.
 const KEY = "weekend-summits:settings";
 export const DEFAULT_SETTINGS: Settings = { ...DEFAULT_PREFERENCES, from: "Brighton" };
 

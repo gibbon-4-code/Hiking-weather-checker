@@ -7,7 +7,7 @@ import { fetchMetOffice } from "@/lib/providers/metoffice";
 import { fetchOpenMeteo } from "@/lib/providers/openmeteo";
 import { estimateDrive, getDrives } from "@/lib/providers/routing";
 import { coversWalkingDay } from "@/lib/providers/shared";
-import type { DestinationForecast, Drive, Home, WeekendResponse } from "@/lib/types";
+import type { DestinationForecast, Drive, Home, PlanResponse } from "@/lib/types";
 
 const fullyCovers = (f: DestinationForecast) => f.days.every(coversWalkingDay);
 
@@ -19,7 +19,7 @@ export const MET_OFFICE_DAYS_AHEAD = 6;
  * two weeks, so scores are comparable. The Met Office charges one call per mountain, so it is only
  * asked for a second opinion when someone opens a mountain's details (see `buildSecondOpinion`).
  */
-export async function buildWeekend(date: string, home: Home = BRIGHTON): Promise<WeekendResponse> {
+export async function buildPlan(date: string, home: Home = BRIGHTON): Promise<PlanResponse> {
   const dates = [date];
   const daysAway = daysBetween(planWindow().first, date);
   const notices: string[] = [];

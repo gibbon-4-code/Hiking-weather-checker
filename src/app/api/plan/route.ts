@@ -4,7 +4,7 @@ import { BRIGHTON } from "@/data/mountains";
 import { defaultHikeDate, isPlannableDate } from "@/lib/dates";
 import { authMode } from "@/lib/env";
 import { LocationError, lookupLocation, normalisePostcode } from "@/lib/providers/location";
-import { buildWeekend } from "@/lib/weekend";
+import { buildPlan } from "@/lib/plan";
 
 export async function GET(request: NextRequest) {
   if (authMode === "misconfigured") {
@@ -32,10 +32,10 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const data = await buildWeekend(date, home);
+    const data = await buildPlan(date, home);
     return NextResponse.json(data, { headers: { "Cache-Control": "private, max-age=300" } });
   } catch (err) {
-    console.error("buildWeekend failed", err);
+    console.error("buildPlan failed", err);
     return NextResponse.json({ error: "Couldn't build the forecast for that day." }, { status: 500 });
   }
 }

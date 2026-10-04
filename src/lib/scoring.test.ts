@@ -10,7 +10,7 @@ import {
   weatherScore,
   type DaySummary,
 } from "@/lib/scoring";
-import type { Condition, DayForecast, Mountain, Slot, WeekendDestination } from "@/lib/types";
+import type { Condition, DayForecast, Mountain, Slot, Destination } from "@/lib/types";
 
 const byId = (id: string) => MOUNTAINS.find((m) => m.id === id) as Mountain;
 const TODAY = new Date("2026-09-29T09:00:00Z");
@@ -52,7 +52,7 @@ function day(date: string, over: Partial<Slot> & { condition?: Condition } = {})
   return { date, slots, sunrise: null, sunset: null };
 }
 
-function destination(mountain: Mountain, days: DayForecast[], minutes = estimateDrive(BRIGHTON, mountain).minutes): WeekendDestination {
+function destination(mountain: Mountain, days: DayForecast[], minutes = estimateDrive(BRIGHTON, mountain).minutes): Destination {
   return {
     mountain,
     forecast: { source: "openmeteo", issuedAt: null, modelElevationM: null, days },

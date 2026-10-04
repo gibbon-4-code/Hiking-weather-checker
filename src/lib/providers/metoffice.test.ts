@@ -36,7 +36,7 @@ const sample: MetOfficeResponse = {
 describe("normaliseMetOffice", () => {
   const f = normaliseMetOffice(sample, snowdon, ["2026-10-03", "2026-10-04"]);
 
-  it("groups three-hourly steps into the weekend days only", () => {
+  it("groups three-hourly steps into the chosen days only", () => {
     expect(f.days.map((d) => d.slots.length)).toEqual([1, 1]);
   });
 

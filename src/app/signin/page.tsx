@@ -31,8 +31,8 @@ export default async function SignInPage({ searchParams }: PageProps<"/signin">)
             <Mountain className="size-6" />
           </div>
           <div>
-            <h1 className="font-heading text-2xl font-semibold tracking-tight">Weekend Summits</h1>
-            <p className="text-sm text-muted-foreground">Where should you hike this weekend?</p>
+            <h1 className="font-heading text-2xl font-semibold tracking-tight">Summit Planner</h1>
+            <p className="text-sm text-muted-foreground">Where should you hike next?</p>
           </div>
         </div>
 

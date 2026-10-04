@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { MOUNTAINS } from "@/data/mountains";
+import { DESCRIPTIONS } from "@/data/mountains/descriptions";
 import { PHOTOS } from "@/data/mountains/photos";
 import { haversineKm } from "@/lib/providers/routing";
 
@@ -43,5 +44,16 @@ describe("photos", () => {
   it("has no photos for destinations that no longer exist", () => {
     const ids = new Set(MOUNTAINS.map((m) => m.id));
     expect(Object.keys(PHOTOS).filter((id) => !ids.has(id))).toEqual([]);
+  });
+});
+
+describe("descriptions", () => {
+  it("has a description for every destination", () => {
+    for (const m of MOUNTAINS) expect(DESCRIPTIONS[m.id]?.trim(), m.id).toBeTruthy();
+  });
+
+  it("has no descriptions for destinations that no longer exist", () => {
+    const ids = new Set(MOUNTAINS.map((m) => m.id));
+    expect(Object.keys(DESCRIPTIONS).filter((id) => !ids.has(id))).toEqual([]);
   });
 });

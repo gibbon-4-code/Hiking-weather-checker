@@ -1,9 +1,8 @@
 import { Moon, ShieldAlert } from "lucide-react";
 import { DifficultyTag } from "@/components/difficulty-tag";
 import { HillPhoto } from "@/components/hill-photo";
-import { ScoreBadge } from "@/components/score-badge";
-import { WeatherIcon } from "@/components/weather-icon";
-import { formatDuration } from "@/lib/dates";
+import { TripFacts } from "@/components/trip-facts";
+import { WeatherRating } from "@/components/weather-rating";
 import type { DayScore, DestinationScore } from "@/lib/scoring";
 import { cn } from "@/lib/utils";
 
@@ -17,8 +16,7 @@ export function ResultCards({ items, onOpen }: { items: ResultItem[]; onOpen: (i
   return (
     <ul className="grid gap-x-6 gap-y-9 sm:grid-cols-2 lg:grid-cols-3">
       {items.map(({ score, day }) => {
-        const { mountain, drive } = score.destination;
-        const s = day?.summary;
+        const { mountain } = score.destination;
         const vetoed = !!day?.vetoes.length;
         return (
           <li key={mountain.id}>
@@ -33,11 +31,17 @@ export function ResultCards({ items, onOpen }: { items: ResultItem[]; onOpen: (i
                   alt={`${mountain.name}, ${mountain.area}`}
                   className={cn("size-full transition-transform duration-250 ease-out group-hover:scale-[1.03]", vetoed && "grayscale-[60%]")}
                 />
-                {day && <ScoreBadge score={day.total} size="md" className="absolute left-3 top-3" />}
-                {s && (
+                {day ? (
+                  <WeatherRating day={day} size="md" className="absolute left-3 top-3" />
+                ) : (
+                  <span className="absolute left-3 top-3 rounded-full bg-surface/95 px-2.5 py-1 text-xs font-semibold text-muted-foreground">
+                    No forecast yet
+                  </span>
+                )}
+                {score.needsOvernight && (
                   <span className="absolute right-3 top-3 flex items-center gap-1.5 rounded-full bg-surface/95 px-2.5 py-1 text-xs font-semibold text-bark">
-                    <WeatherIcon condition={s.condition} className="size-3.5" />
-                    {Math.round(s.minTempC)}–{Math.round(s.maxTempC)}°
+                    <Moon className="size-3.5" aria-hidden="true" />
+                    Overnight
                   </span>
                 )}
                 {vetoed && (
@@ -47,33 +51,18 @@ export function ResultCards({ items, onOpen }: { items: ResultItem[]; onOpen: (i
                   </span>
                 )}
               </div>
-              <div className="mt-3 flex items-center gap-2 text-sm">
+              <h3 className="mt-3.5 font-display text-xl font-extrabold leading-tight text-bark transition-colors group-hover:text-moss">
+                {mountain.name}
+              </h3>
+              <div className="mt-1 flex items-center gap-2 text-sm text-muted-foreground">
                 <DifficultyTag difficulty={mountain.difficulty} />
-                <span className="truncate text-muted-foreground">{mountain.area}</span>
-              </div>
-              <h3 className="mt-1.5 text-lg font-bold text-bark group-hover:text-moss">{mountain.name}</h3>
-              <p className="mt-1 text-sm text-muted-foreground">
-                {mountain.walkingHours} · {mountain.summit.elevationM} m
-              </p>
-              <p className="mt-auto flex flex-wrap items-center gap-x-3 pt-2 text-sm text-bark">
-                <span>
-                  {formatDuration(drive.minutes)} drive{drive.method === "estimate" && <span title="Estimated drive time"> ≈</span>}
+                <span className="truncate">
+                  {mountain.area} · {mountain.summit.elevationM} m
                 </span>
-                {score.needsOvernight && (
-                  <span className="flex items-center gap-1 text-muted-foreground">
-                    <Moon className="size-3.5" />
-                    Overnight
-                  </span>
-                )}
-                {s ? (
-                  <>
-                    <span className={cn(s.maxPrecipProb >= 30 && "font-semibold text-lake")}>{s.maxPrecipProb}% rain</span>
-                    <span>Gusts {s.maxGustMph} mph</span>
-                  </>
-                ) : (
-                  <span className="text-muted-foreground">No forecast yet</span>
-                )}
-              </p>
+              </div>
+              <div className="mt-auto pt-3">
+                <TripFacts score={score} className="border-t border-dune/60 pt-3" />
+              </div>
             </button>
           </li>
         );

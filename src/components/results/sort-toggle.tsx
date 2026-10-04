@@ -1,11 +1,11 @@
 import { cn } from "@/lib/utils";
 
-export type SortKey = "score" | "drive" | "elevation";
+export type SortKey = "score" | "drive" | "walk";
 
 const OPTIONS: { key: SortKey; label: string }[] = [
   { key: "score", label: "Best conditions" },
   { key: "drive", label: "Shortest drive" },
-  { key: "elevation", label: "Highest" },
+  { key: "walk", label: "Shortest walk" },
 ];
 
 export function SortToggle({ value, onChange }: { value: SortKey; onChange: (value: SortKey) => void }) {

@@ -14,9 +14,10 @@ import { SortToggle, type SortKey } from "@/components/results/sort-toggle";
 import { SettingsDialog } from "@/components/settings-dialog";
 import { formatDayName } from "@/lib/dates";
 import { saveSettings, useSettings } from "@/lib/preferences";
-import { recommend, scoreDestination } from "@/lib/scoring";
+import { inSearch, recommend, scoreDestination } from "@/lib/scoring";
 import { driveLimitLabel, searchQuery, type Search } from "@/lib/search";
 import type { PlanResponse } from "@/lib/types";
+import { walkLabel } from "@/lib/walks";
 
 /** Cards shown at first, and how many more each "Show more" adds. */
 const PAGE_SIZE = 12;
@@ -73,16 +74,16 @@ export function ResultsPage({
 
   const scores = useMemo(() => {
     if (!data) return [];
-    const prefs = { weights: settings.weights, maxDriveMinutes: search.maxDriveMinutes };
+    const prefs = { weights: settings.weights, maxDriveMinutes: search.maxDriveMinutes, walk: search.walk };
     return data.destinations.map((d) => scoreDestination(d, prefs));
-  }, [data, settings.weights, search.maxDriveMinutes]);
+  }, [data, settings.weights, search.maxDriveMinutes, search.walk]);
 
   const { pick, runnerUp } = useMemo(() => recommend(scores), [scores]);
   const pickId = pick?.score.destination.mountain.id;
 
   const items: ResultItem[] = useMemo(() => {
     const withDay = scores
-      .filter((s) => !s.beyondMaxDrive && s.destination.mountain.id !== pickId)
+      .filter((s) => inSearch(s) && s.destination.mountain.id !== pickId)
       .map((score) => ({ score, day: score.days.find((d) => d.date === search.date) ?? null }));
     const rank = ({ score, day }: ResultItem) => {
       if (sort === "drive") return -score.destination.drive.minutes;
@@ -93,9 +94,18 @@ export function ResultsPage({
     return withDay.sort((a, b) => rank(b) - rank(a));
   }, [scores, pickId, sort, search.date]);
 
-  const outOfReach = scores.filter((s) => s.beyondMaxDrive).length;
+  // Hills hidden by only one of the filters, so each "widen" link says what it would bring back.
+  const outOfReach = scores.filter((s) => s.beyondMaxDrive && !s.wrongWalkLength).length;
+  const otherWalks = scores.filter((s) => s.wrongWalkLength && !s.beyondMaxDrive).length;
   const openScore = scores.find((s) => s.destination.mountain.id === openId) ?? null;
   const widenHref = search.maxDriveMinutes !== null ? `/results?${searchQuery({ ...search, maxDriveMinutes: null })}` : null;
+  const anyWalkHref = search.walk !== null ? `/results?${searchQuery({ ...search, walk: null })}` : null;
+  const filterLabel = [
+    search.walk !== null && `with ${walkLabel(search.walk).replace("Walk", "walks")}`,
+    search.maxDriveMinutes !== null && `within a ${driveLimitLabel(search.maxDriveMinutes).replace("Up to ", "").replace(/s$/, "")} drive`,
+  ]
+    .filter(Boolean)
+    .join(", ");
   const close = useCallback(() => setOpenId(null), []);
 
   return (
@@ -104,7 +114,8 @@ export function ResultsPage({
         <SearchSummary
           from={data?.home.label ?? search.from}
           dateLabel={formatDayName(search.date, "short")}
-          driveLabel={driveLimitLabel(search.maxDriveMinutes)}
+          walkLabel={walkLabel(search.walk)}
+          driveLabel={driveLimitLabel(search.maxDriveMinutes).replace("Up to", "Drive up to")}
           editHref={`/?${query}`}
         />
       </AppHeader>
@@ -171,7 +182,7 @@ export function ResultsPage({
                     <p className="mt-1 text-sm text-muted-foreground">
                       {items.length} {pick ? "other " : ""}
                       {items.length === 1 ? "hill" : "hills"}{" "}
-                      {search.maxDriveMinutes === null ? "ranked by conditions" : `within ${driveLimitLabel(search.maxDriveMinutes).replace("Up to ", "")}`}
+                      {filterLabel || "ranked by conditions"}
                     </p>
                   </div>
                   <div className="flex items-center gap-2">
@@ -210,16 +221,36 @@ export function ResultsPage({
                     </Link>
                   </p>
                 )}
+                {otherWalks > 0 && anyWalkHref && (
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    {otherWalks} more {otherWalks === 1 ? "hill is" : "hills are"} in range but {otherWalks === 1 ? "is" : "are"} a different length of walk.{" "}
+                    <Link href={anyWalkHref} className="font-medium text-moss underline underline-offset-4">
+                      Allow any walk
+                    </Link>
+                  </p>
+                )}
               </section>
             ) : !pick ? (
               <div className="py-24 text-center">
-                <h1 className="font-display text-4xl font-extrabold text-bark">No hills within that drive</h1>
-                <p className="mt-2 text-muted-foreground">Try allowing a longer drive from {data.home.label}.</p>
-                {widenHref && (
-                  <Link href={widenHref} className={`${primaryButton} mt-6`}>
-                    Show every hill
-                  </Link>
-                )}
+                <h1 className="font-display text-4xl font-extrabold text-bark">
+                  {search.walk !== null ? "No walks like that within that drive" : "No hills within that drive"}
+                </h1>
+                <p className="mt-2 text-muted-foreground">
+                  Try allowing a longer drive from {data.home.label}
+                  {search.walk !== null ? " or a different length of walk" : ""}.
+                </p>
+                <div className="mt-6 flex flex-wrap justify-center gap-3">
+                  {widenHref && (
+                    <Link href={widenHref} className={primaryButton}>
+                      Allow any drive
+                    </Link>
+                  )}
+                  {anyWalkHref && (
+                    <Link href={anyWalkHref} className={primaryButton}>
+                      Allow any walk
+                    </Link>
+                  )}
+                </div>
               </div>
             ) : null}
 

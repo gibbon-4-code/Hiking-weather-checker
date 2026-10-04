@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowRight, CalendarDays, Car, MapPin } from "lucide-react";
+import { ArrowRight, CalendarDays, Car, Footprints, MapPin } from "lucide-react";
 import type { Viewer } from "@/auth";
 import { AppHeader } from "@/components/app-header";
 import { HillPhoto, PhotoCredit } from "@/components/hill-photo";
@@ -11,6 +11,7 @@ import { addDays, defaultHikeDate, formatDayName, isPlannableDate, planWindow } 
 import { saveSettings, useHasSavedSettings, useSettings } from "@/lib/preferences";
 import { DRIVE_OPTIONS, searchQuery, type Search } from "@/lib/search";
 import { cn } from "@/lib/utils";
+import { WALK_OPTIONS } from "@/lib/walks";
 
 /** The landing photo: Great Langdale from above Windermere. */
 const COVER_PHOTO = "langdale-pikes";
@@ -36,6 +37,7 @@ export function Landing({
     from: hasSaved ? settings.from : "",
     date: defaultHikeDate(),
     maxDriveMinutes: hasSaved ? settings.maxDriveMinutes : 180,
+    walk: hasSaved ? settings.walk : null,
   };
 
   return (
@@ -76,6 +78,7 @@ function SearchForm({ initial }: { initial: Search }) {
   const settings = useSettings();
   const [from, setFrom] = useState(initial.from);
   const [maxDrive, setMaxDrive] = useState(initial.maxDriveMinutes);
+  const [walk, setWalk] = useState(initial.walk);
   const [date, setDate] = useState(initial.date);
   const [error, setError] = useState("");
 
@@ -96,8 +99,8 @@ function SearchForm({ initial }: { initial: Search }) {
           return;
         }
         // Remember it, so the next visit starts from the same place.
-        saveSettings({ ...settings, from: next, maxDriveMinutes: maxDrive });
-        router.push(`/results?${searchQuery({ from: next, date, maxDriveMinutes: maxDrive })}`);
+        saveSettings({ ...settings, from: next, maxDriveMinutes: maxDrive, walk });
+        router.push(`/results?${searchQuery({ from: next, date, maxDriveMinutes: maxDrive, walk })}`);
       }}
     >
       <div
@@ -144,6 +147,13 @@ function SearchForm({ initial }: { initial: Search }) {
       )}
 
       <div className="mt-7 space-y-3">
+        <ChipGroup label="Walking for" icon={<Footprints className="size-4" />}>
+          {WALK_OPTIONS.map((o) => (
+            <Chip key={o.label} selected={walk === o.value} onClick={() => setWalk(o.value)}>
+              {o.label}
+            </Chip>
+          ))}
+        </ChipGroup>
         <ChipGroup label="Drive up to" icon={<Car className="size-4" />}>
           {DRIVE_OPTIONS.map((o) => (
             <Chip key={o.label} selected={maxDrive === o.minutes} onClick={() => setMaxDrive(o.minutes)}>

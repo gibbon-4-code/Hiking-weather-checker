@@ -11,26 +11,29 @@ describe("parseSearch", () => {
   });
 
   it("reads a full search", () => {
-    expect(parseSearch({ from: "Leeds", date: "2026-10-11", drive: "180" }, NOW)).toEqual({
+    expect(parseSearch({ from: "Leeds", date: "2026-10-11", drive: "180", walk: "short" }, NOW)).toEqual({
       from: "Leeds",
       date: "2026-10-11",
       maxDriveMinutes: 180,
+      walk: "short",
     });
   });
 
-  it("falls back to the coming Saturday and no drive limit", () => {
-    expect(parseSearch({ from: "Leeds", date: "2027-01-01", drive: "lots" }, NOW)).toEqual({
+  it("falls back to the coming Saturday, no drive limit and any walk", () => {
+    expect(parseSearch({ from: "Leeds", date: "2027-01-01", drive: "lots", walk: "marathon" }, NOW)).toEqual({
       from: "Leeds",
       date: "2026-10-10",
       maxDriveMinutes: null,
+      walk: null,
     });
   });
 
   it("round-trips through the query string", () => {
-    const search = { from: "Bishop's Stortford", date: "2026-10-10", maxDriveMinutes: 120 };
+    const search = { from: "Bishop's Stortford", date: "2026-10-10", maxDriveMinutes: 120, walk: "half" as const };
     const params = Object.fromEntries(new URLSearchParams(searchQuery(search)));
     expect(parseSearch(params, NOW)).toEqual(search);
     expect(searchQuery({ ...search, maxDriveMinutes: null })).not.toContain("drive");
+    expect(searchQuery({ ...search, walk: null })).not.toContain("walk");
   });
 });
 

@@ -1,9 +1,11 @@
 import { redirect } from "next/navigation";
 import { getViewer, signOut } from "@/auth";
-import { Dashboard } from "@/components/dashboard";
+import { Landing } from "@/components/landing";
+import { MOUNTAINS } from "@/data/mountains";
 import { authMode } from "@/lib/env";
+import { parseSearch } from "@/lib/search";
 
-export default async function Home() {
+export default async function Home({ searchParams }: PageProps<"/">) {
   const viewer = await getViewer();
   if (!viewer) redirect("/signin");
 
@@ -13,10 +15,11 @@ export default async function Home() {
   }
 
   return (
-    <Dashboard
+    <Landing
       viewer={viewer}
       signOutAction={authMode === "enabled" ? signOutAction : null}
-      localPreview={authMode === "local-bypass"}
+      mountainCount={MOUNTAINS.length}
+      search={parseSearch(await searchParams)}
     />
   );
 }

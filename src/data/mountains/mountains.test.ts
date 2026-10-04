@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { MOUNTAINS } from "@/data/mountains";
+import { PHOTOS } from "@/data/mountains/photos";
 import { haversineKm } from "@/lib/providers/routing";
 
 /** Roughly Great Britain and its islands, including Shetland. */
@@ -23,5 +24,24 @@ describe("mountain list", () => {
     expect(Number.isInteger(m.quality)).toBe(true);
     for (const text of [m.name, m.area, m.trailhead.name, m.route, m.stayNear]) expect(text.trim()).not.toBe("");
     expect(m.walkingHours).toMatch(/hrs? · \d+ km$/);
+  });
+});
+
+describe("photos", () => {
+  it("has a credited, openly licensed photo for every destination", () => {
+    for (const m of MOUNTAINS) {
+      const photo = PHOTOS[m.id];
+      expect(photo, m.id).toBeDefined();
+      // Wikimedia's resized copy, without tracking parameters.
+      expect(photo.src).toMatch(/^https:\/\/(upload|thumb)\.wikimedia\.org\/[^?]+$/);
+      expect(photo.page).toMatch(/^https:\/\/commons\.wikimedia\.org\//);
+      expect(photo.author.trim(), m.id).not.toBe("");
+      expect(photo.license.trim(), m.id).not.toBe("");
+    }
+  });
+
+  it("has no photos for destinations that no longer exist", () => {
+    const ids = new Set(MOUNTAINS.map((m) => m.id));
+    expect(Object.keys(PHOTOS).filter((id) => !ids.has(id))).toEqual([]);
   });
 });

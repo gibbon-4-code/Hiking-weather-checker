@@ -1,21 +1,39 @@
-import { scoreTone } from "@/lib/scoring";
 import { cn } from "@/lib/utils";
 
-const TONES = {
-  great: "bg-emerald-100 text-emerald-800 ring-emerald-200",
-  good: "bg-lime-100 text-lime-800 ring-lime-200",
-  mixed: "bg-amber-100 text-amber-800 ring-amber-200",
-  poor: "bg-rose-100 text-rose-800 ring-rose-200",
+const SIZES = {
+  sm: "h-7 min-w-7 px-2 text-xs",
+  md: "h-9 min-w-9 px-2.5 text-sm",
+  lg: "size-14 text-xl",
 };
 
-export function ScoreBadge({ score, size = "sm", className }: { score: number; size?: "sm" | "lg"; className?: string }) {
+/** The 0–100 hill score: green when it's a good day, ochre when it's middling, clay when it's poor. */
+export function ScoreBadge({
+  score,
+  size = "sm",
+  inverted = false,
+  className,
+}: {
+  score: number;
+  size?: keyof typeof SIZES;
+  /** Light badge for use on photos and dark panels. */
+  inverted?: boolean;
+  className?: string;
+}) {
+  const tone = inverted
+    ? "bg-surface text-pine"
+    : score >= 75
+      ? "bg-moss text-surface"
+      : score >= 55
+        ? "bg-ochre text-surface"
+        : "bg-clay text-surface";
   return (
     <span
-      title="Hiking score out of 100"
+      title="Hill score out of 100"
+      aria-label={`Hill score ${score} out of 100`}
       className={cn(
-        "inline-flex items-center justify-center rounded-full font-semibold tabular-nums ring-1",
-        size === "lg" ? "size-16 text-2xl" : "h-6 min-w-9 px-2 text-xs",
-        TONES[scoreTone(score)],
+        "inline-flex shrink-0 items-center justify-center rounded-full font-bold tabular-nums",
+        SIZES[size],
+        tone,
         className,
       )}
     >

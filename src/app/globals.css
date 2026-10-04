@@ -135,8 +135,14 @@
   body {
     @apply bg-background text-foreground;
   }
+  /*
+   * Everything is sized in rem, so growing the root size on wide screens scales the whole layout
+   * (text, spacing and the max-width column) instead of leaving a small island in the middle.
+   * 16px up to 1440px wide, rising to 20px at 2240px.
+   */
   html {
     @apply font-sans;
+    font-size: clamp(1rem, calc(1rem + (100vw - 90rem) * 0.005), 1.25rem);
   }
 }
 /* A sturdy, slightly condensed cut of Archivo for headings. */

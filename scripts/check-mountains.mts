@@ -29,7 +29,8 @@ interface OsmElement {
   tags?: Record<string, string>;
 }
 
-const OVERPASS = "https://overpass-api.de/api/interpreter";
+/** The main public server; set OVERPASS_URL to use a mirror when it's overloaded. */
+const OVERPASS = process.env.OVERPASS_URL ?? "https://overpass-api.de/api/interpreter";
 const PEAK_RADIUS_M = 3000;
 const PARKING_RADIUS_M = 600;
 /** How far to look for alternatives when a trailhead has no car park beside it. */

@@ -33,7 +33,7 @@ export function AppHeader({
             <path d="M1 17 L9 5 L13 10 L18 2 L27 17 Z" fill="currentColor" />
           </svg>
           <span className={cn("font-display text-lg font-extrabold", children && "hidden sm:inline")}>
-            Weekend Summits
+            Summit Planner
           </span>
         </Link>
         <div className="flex min-w-0 flex-1 justify-center">{children}</div>

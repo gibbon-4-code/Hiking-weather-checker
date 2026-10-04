@@ -1,15 +1,15 @@
-# Weekend Summits
+# Summit Planner
 
-Where should I hike, and when? Tell it where you're starting from (a postcode or a town), how long you'll drive and which day (up to two weeks ahead), and it ranks around 80 hikes across England and Wales, with Scotland to follow. The recommendation weighs three things: the weather while you'd be walking, the drive, and how good the hike is.
+Where should I hike, and when? Tell it where you're starting from (a postcode or a town), how long you'll drive and which day (up to two weeks ahead), and it ranks around 140 hikes across England, Wales and Scotland. The recommendation weighs three things: the weather while you'd be walking, the drive, and how good the hike is.
 
-The destinations run from easy South Downs and Peak District walks to the big days in the Lake District and Snowdonia. They live in `src/data/mountains/`, one file per country.
+The destinations run from easy South Downs and Peak District walks to the big days in the Lake District, Snowdonia, Glen Coe, Skye and Torridon. They live in `src/data/mountains/`, one file per country.
 
 Built with Next.js 16, TypeScript, Tailwind CSS, shadcn/ui and Auth.js.
 
 ## How it works
 
 ```
-Browser ──> /api/weekend (Next.js server, needs sign-in)
+Browser ──> /api/plan (Next.js server, needs sign-in)
                ├─ Open-Meteo                   (no key: forecast for every destination, sunrise and sunset)
                ├─ OpenRouteService             (ORS_API_KEY, road drive times)
                └─ postcodes.io                 (no key: turns your postcode or town into coordinates)
@@ -77,7 +77,8 @@ src/
   app/
     page.tsx                  dashboard (needs sign-in)
     signin/page.tsx           GitHub sign-in
-    api/weekend/route.ts      combines forecasts and drive times (needs sign-in)
+    api/plan/route.ts         combines forecasts and drive times (needs sign-in)
+    api/second-opinion/       Met Office view of one destination (needs sign-in)
     api/auth/[...nextauth]/   Auth.js handlers
   auth.ts                     Auth.js setup and allowlist
   data/mountains/             the destinations, one file per country
@@ -85,7 +86,7 @@ scripts/
   check-mountains.mts         checks the destinations against OpenStreetMap
   lib/
     env.ts                    server-only reading and checking of keys
-    weekend.ts                works out the weekend and applies the fallbacks
+    plan.ts                   builds the plan for a day and applies the fallbacks
     scoring.ts                weather, travel and quality scores, safety vetoes, recommendation
     providers/                Met Office, Open-Meteo, OpenRouteService, postcodes.io, demo data
   components/                 dashboard, cards, detail panel, chart, settings
@@ -98,7 +99,7 @@ scripts/
    ```bash
    npm run check:mountains -- src/data/mountains/wales.ts
    ```
-   This looks for a named peak near each summit and a car park near each trailhead, and lists anything that doesn't line up, with nearby alternatives. Add `--fix` to copy OpenStreetMap's summit position and height into the file wherever the name matches.
+   This looks for a named peak near each summit and a car park near each trailhead, and lists anything that doesn't line up, with nearby alternatives. Add `--fix` to copy OpenStreetMap's summit position and height into the file wherever the name matches. The public Overpass server is shared and sometimes overloaded; if it keeps timing out, point the script at a mirror, for example `OVERPASS_URL=https://maps.mail.ru/osm/tools/overpass/api/interpreter`.
 3. Run `npm test`. A data test checks every entry is complete, inside Great Britain and has its trailhead within 12 km of its summit.
 
 Everything else in the app picks the new entry up automatically.

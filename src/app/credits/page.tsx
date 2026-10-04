@@ -3,14 +3,14 @@ import Link from "next/link";
 import { MOUNTAINS } from "@/data/mountains";
 import { PHOTOS } from "@/data/mountains/photos";
 
-export const metadata: Metadata = { title: "Photo credits · Weekend Summits" };
+export const metadata: Metadata = { title: "Photo credits · Summit Planner" };
 
 /** Every photo's author and licence, as their licences ask. Public, like the photos themselves. */
 export default function Credits() {
   return (
     <main className="mx-auto w-full max-w-3xl px-5 py-12 md:px-8">
       <Link href="/" className="text-sm font-medium text-moss underline underline-offset-4">
-        Back to Weekend Summits
+        Back to Summit Planner
       </Link>
       <h1 className="mt-6 font-display text-4xl font-extrabold text-bark">Photo credits</h1>
       <p className="mt-2 text-muted-foreground">

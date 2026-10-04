@@ -16,7 +16,7 @@ import { formatDayName } from "@/lib/dates";
 import { saveSettings, useSettings } from "@/lib/preferences";
 import { recommend, scoreDestination } from "@/lib/scoring";
 import { driveLimitLabel, searchQuery, type Search } from "@/lib/search";
-import type { WeekendResponse } from "@/lib/types";
+import type { PlanResponse } from "@/lib/types";
 
 /** Cards shown at first, and how many more each "Show more" adds. */
 const PAGE_SIZE = 12;
@@ -24,7 +24,7 @@ const PAGE_SIZE = 12;
 type State =
   | { status: "loading" }
   | { status: "error"; message: string }
-  | { status: "ready"; data: WeekendResponse };
+  | { status: "ready"; data: PlanResponse };
 
 export function ResultsPage({
   viewer,
@@ -52,7 +52,7 @@ export function ResultsPage({
   useEffect(() => {
     const controller = new AbortController();
     const params = new URLSearchParams({ from: search.from, date: search.date });
-    fetch(`/api/weekend?${params}`, { signal: controller.signal })
+    fetch(`/api/plan?${params}`, { signal: controller.signal })
       .then(async (res) => {
         const body = await res.json();
         if (res.status === 401) {
@@ -60,7 +60,7 @@ export function ResultsPage({
           return;
         }
         if (!res.ok) throw new Error(body.error ?? `Request failed (${res.status})`);
-        setResult({ key: fetchKey, state: { status: "ready", data: body as WeekendResponse } });
+        setResult({ key: fetchKey, state: { status: "ready", data: body as PlanResponse } });
       })
       .catch((err: Error) => {
         if (err.name !== "AbortError") setResult({ key: fetchKey, state: { status: "error", message: err.message } });
@@ -261,7 +261,7 @@ function ResultsSkeleton() {
   );
 }
 
-function Footer({ data }: { data: WeekendResponse }) {
+function Footer({ data }: { data: PlanResponse }) {
   const sources = new Set(data.destinations.map((d) => d.forecast.source));
   const parts = [sources.has("openmeteo") && "Open-Meteo", sources.has("demo") && "demo data"].filter(Boolean);
   return (

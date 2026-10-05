@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Summit Planner",
   description:
-    "Pick a day, a starting point and how far you'll drive, and get the best hike for the weather from around 140 across England, Wales and Scotland.",
+    "Pick a day, a starting point and how far you'll drive, and get the best hike for the weather from around 200 across England, Wales and Scotland.",
 };
 
 export const viewport: Viewport = {

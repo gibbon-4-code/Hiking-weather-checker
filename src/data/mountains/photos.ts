@@ -17,16 +17,46 @@ export const PHOTOS: Record<string, Photo> = {
     author: "Hassocks5489",
     license: "Public domain",
   },
+  "devils-dyke": {
+    src: "https://upload.wikimedia.org/wikipedia/commons/b/bf/Devil%27s_Dyke_-_geograph.org.uk_-_30789.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:Devil%27s_Dyke_-_geograph.org.uk_-_30789.jpg",
+    author: "Val Vannet",
+    license: "CC BY-SA 2.0",
+  },
+  "chanctonbury-ring": {
+    src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f3/Chanctonbury_Ring_south-east_view.jpg/1280px-Chanctonbury_Ring_south-east_view.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:Chanctonbury_Ring_south-east_view.jpg",
+    author: "Prioryman",
+    license: "CC BY-SA 3.0",
+  },
   "seven-sisters": {
     src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/16/Coastguard_Cottages_-_view_towards_the_Seven_Sisters_-_geograph.org.uk_-_6833312.jpg/1280px-Coastguard_Cottages_-_view_towards_the_Seven_Sisters_-_geograph.org.uk_-_6833312.jpg",
     page: "https://commons.wikimedia.org/wiki/File:Coastguard_Cottages_-_view_towards_the_Seven_Sisters_-_geograph.org.uk_-_6833312.jpg",
     author: "Ian Hawfinch",
     license: "CC BY-SA 2.0",
   },
+  "firle-beacon": {
+    src: "https://upload.wikimedia.org/wikipedia/commons/8/8e/Firle_Beacon_-_geograph.org.uk_-_961577.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:Firle_Beacon_-_geograph.org.uk_-_961577.jpg",
+    author: "Simon Carey",
+    license: "CC BY-SA 2.0",
+  },
+  "windover-hill": {
+    src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/38/Long_Man_of_Wilmington.jpg/1280px-Long_Man_of_Wilmington.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:Long_Man_of_Wilmington.jpg",
+    author: "Cupcakekid",
+    license: "CC BY 2.5",
+  },
   "black-down-sussex": {
     src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/85/Blackdown.jpg/1280px-Blackdown.jpg",
     page: "https://commons.wikimedia.org/wiki/File:Blackdown.jpg",
     author: "Marknesbitt",
+    license: "Public domain",
+  },
+  "gibbet-hill": {
+    src: "https://upload.wikimedia.org/wikipedia/commons/6/64/Celtic_cross_on_Gibbet_Hill.JPG",
+    page: "https://commons.wikimedia.org/wiki/File:Celtic_cross_on_Gibbet_Hill.JPG",
+    author: "Charlesdrakew",
     license: "Public domain",
   },
   "butser-hill": {
@@ -35,11 +65,23 @@ export const PHOTOS: Record<string, Photo> = {
     author: "Aprocryphan",
     license: "CC BY-SA 4.0",
   },
+  "old-winchester-hill": {
+    src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/ca/Old_Winchester_Hill_hill_fort.jpg/1280px-Old_Winchester_Hill_hill_fort.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:Old_Winchester_Hill_hill_fort.jpg",
+    author: "Hunanuk",
+    license: "CC BY-SA 4.0",
+  },
   "leith-hill": {
     src: "https://upload.wikimedia.org/wikipedia/commons/7/78/Leith_hill_tower.JPG",
     page: "https://commons.wikimedia.org/wiki/File:Leith_hill_tower.JPG",
     author: "Jimseviltwin",
     license: "CC BY-SA 3.0",
+  },
+  "holmbury-hill": {
+    src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/74/Holmbury_Hill_look_south.jpg/1280px-Holmbury_Hill_look_south.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:Holmbury_Hill_look_south.jpg",
+    author: "Frege100",
+    license: "CC BY-SA 4.0",
   },
   "box-hill": {
     src: "https://upload.wikimedia.org/wikipedia/commons/6/67/Towards_Box_Hill_-_geograph.org.uk_-_1805314.jpg",
@@ -53,11 +95,41 @@ export const PHOTOS: Record<string, Photo> = {
     author: "Pointillist",
     license: "CC BY-SA 3.0",
   },
+  "white-horse-hill": {
+    src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/eb/Uffington_White_Horse_from_the_Dragon_Mound%2C_Oxfordshire.jpg/1280px-Uffington_White_Horse_from_the_Dragon_Mound%2C_Oxfordshire.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:Uffington_White_Horse_from_the_Dragon_Mound,_Oxfordshire.jpg",
+    author: "Rosser1954",
+    license: "CC BY-SA 4.0",
+  },
+  "walbury-hill": {
+    src: "https://upload.wikimedia.org/wikipedia/commons/b/b1/Walbury_Hill_-_geograph.org.uk_-_763923.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:Walbury_Hill_-_geograph.org.uk_-_763923.jpg",
+    author: "Andrew Smith",
+    license: "CC BY-SA 2.0",
+  },
+  "cleeve-hill": {
+    src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/27/Cleeve_Hill_-_geograph.org.uk_-_5152750.jpg/1280px-Cleeve_Hill_-_geograph.org.uk_-_5152750.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:Cleeve_Hill_-_geograph.org.uk_-_5152750.jpg",
+    author: "David P Howard",
+    license: "CC BY-SA 2.0",
+  },
   "golden-cap": {
     src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0d/Golden_Cap_from_Charmouth_beach.jpg/1280px-Golden_Cap_from_Charmouth_beach.jpg",
     page: "https://commons.wikimedia.org/wiki/File:Golden_Cap_from_Charmouth_beach.jpg",
     author: "Kevin Walsh",
     license: "CC BY 2.0",
+  },
+  "pilsdon-pen": {
+    src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7e/Pilsdon_Pen_from_the_southeast.jpg/1280px-Pilsdon_Pen_from_the_southeast.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:Pilsdon_Pen_from_the_southeast.jpg",
+    author: "Bermicourt",
+    license: "CC BY-SA 4.0",
+  },
+  "swyre-head": {
+    src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5c/Swyre_Head_from_St_Aldhelm%27s_Head.JPG/1280px-Swyre_Head_from_St_Aldhelm%27s_Head.JPG",
+    page: "https://commons.wikimedia.org/wiki/File:Swyre_Head_from_St_Aldhelm%27s_Head.JPG",
+    author: "Bermicourt",
+    license: "CC BY-SA 3.0",
   },
   "black-down-mendip": {
     src: "https://upload.wikimedia.org/wikipedia/commons/d/dc/Crook_Peak_towards_Compton_Hill.jpg",
@@ -65,10 +137,22 @@ export const PHOTOS: Record<string, Photo> = {
     author: "George Evans",
     license: "CC BY-SA 2.0",
   },
+  "wills-neck": {
+    src: "https://upload.wikimedia.org/wikipedia/commons/0/04/WillsNeckTrigpoint.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:WillsNeckTrigpoint.jpg",
+    author: "Richard Baker",
+    license: "CC BY-SA 2.0",
+  },
   "dunkery-beacon": {
     src: "https://upload.wikimedia.org/wikipedia/commons/0/00/Dunkery_Beacon.jpg",
     page: "https://commons.wikimedia.org/wiki/File:Dunkery_Beacon.jpg",
     author: "Mark J",
+    license: "CC BY-SA 2.0",
+  },
+  "great-hangman": {
+    src: "https://upload.wikimedia.org/wikipedia/commons/c/cd/Great_Hangman.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:Great_Hangman.jpg",
+    author: "Martin Bodman",
     license: "CC BY-SA 2.0",
   },
   "haytor": {
@@ -82,6 +166,12 @@ export const PHOTOS: Record<string, Photo> = {
     page: "https://commons.wikimedia.org/wiki/File:High_Willhays.jpg",
     author: "StephenDawson",
     license: "CC BY-SA 2.0",
+  },
+  "great-mis-tor": {
+    src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/be/Great_Mis_Tor_from_Roos_Tor.jpg/1280px-Great_Mis_Tor_from_Roos_Tor.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:Great_Mis_Tor_from_Roos_Tor.jpg",
+    author: "Nilfanion",
+    license: "CC BY-SA 3.0",
   },
   "brown-willy": {
     src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/42/Brown_Willy.jpg/1280px-Brown_Willy.jpg",
@@ -125,6 +215,12 @@ export const PHOTOS: Record<string, Photo> = {
     author: "Alex Bishton",
     license: "CC BY-SA 4.0",
   },
+  "shutlingsloe": {
+    src: "https://upload.wikimedia.org/wikipedia/commons/c/c9/Shutlingsloe.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:Shutlingsloe.jpg",
+    author: "Ian Warburton",
+    license: "CC BY-SA 2.0",
+  },
   "thorpe-cloud": {
     src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/92/Dovedale.JPG/1280px-Dovedale.JPG",
     page: "https://commons.wikimedia.org/wiki/File:Dovedale.JPG",
@@ -149,11 +245,23 @@ export const PHOTOS: Record<string, Photo> = {
     author: "Smith.myles",
     license: "CC BY-SA 3.0",
   },
+  "derwent-edge": {
+    src: "https://upload.wikimedia.org/wikipedia/commons/1/14/Salt_cellar_2_%282%29.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:Salt_cellar_2_(2).jpg",
+    author: "Mick Knapton",
+    license: "CC BY-SA 3.0",
+  },
   "stanage-edge": {
     src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f0/StanageEdge.jpg/1280px-StanageEdge.jpg",
     page: "https://commons.wikimedia.org/wiki/File:StanageEdge.jpg",
     author: "Rob Bendall (Highfields)",
     license: "Attribution",
+  },
+  "higger-tor": {
+    src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6d/Higger_Tor_1.jpg/1280px-Higger_Tor_1.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:Higger_Tor_1.jpg",
+    author: "Oosoom",
+    license: "CC BY-SA 3.0",
   },
   "kinder-scout": {
     src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/95/KinderScoutPlateau.jpg/1280px-KinderScoutPlateau.jpg",
@@ -167,6 +275,12 @@ export const PHOTOS: Record<string, Photo> = {
     author: "Stephen Burton",
     license: "CC BY-SA 2.0",
   },
+  "black-hill": {
+    src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/61/Black_Hill_%28Peak_District%29.jpg/1280px-Black_Hill_%28Peak_District%29.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:Black_Hill_(Peak_District).jpg",
+    author: "StephenDawson",
+    license: "CC BY-SA 2.0",
+  },
   "pendle-hill": {
     src: "https://upload.wikimedia.org/wikipedia/commons/5/5f/Pendle_Hill_and_the_Ribble_Valley_-_geograph.org.uk_-_72304.jpg",
     page: "https://commons.wikimedia.org/wiki/File:Pendle_Hill_and_the_Ribble_Valley_-_geograph.org.uk_-_72304.jpg",
@@ -178,6 +292,12 @@ export const PHOTOS: Record<string, Photo> = {
     page: "https://commons.wikimedia.org/wiki/File:View_towards_Dalehead_Farm_-_geograph.org.uk_-_1004377.jpg",
     author: "Gordon Hatton",
     license: "CC BY-SA 2.0",
+  },
+  "ilkley-moor": {
+    src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c4/Cowcalf.jpg/1280px-Cowcalf.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:Cowcalf.jpg",
+    author: "TJBlackwell",
+    license: "CC BY-SA 3.0",
   },
   "ingleborough": {
     src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3d/Ingleborough%2C_north_face.jpg/1280px-Ingleborough%2C_north_face.jpg",
@@ -203,11 +323,29 @@ export const PHOTOS: Record<string, Photo> = {
     author: "Chris Heaton",
     license: "CC BY-SA 2.0",
   },
+  "great-whernside": {
+    src: "https://upload.wikimedia.org/wikipedia/commons/0/05/Great_Whernside.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:Great_Whernside.jpg",
+    author: "StephenDawson",
+    license: "CC BY-SA 2.0",
+  },
+  "the-calf": {
+    src: "https://upload.wikimedia.org/wikipedia/commons/8/85/The_Calf_summit.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:The_Calf_summit.jpg",
+    author: "John Illingworth",
+    license: "CC BY-SA 2.0",
+  },
   "roseberry-topping": {
     src: "https://upload.wikimedia.org/wikipedia/commons/3/37/Roseberry_topping_north_side.jpg",
     page: "https://commons.wikimedia.org/wiki/File:Roseberry_topping_north_side.jpg",
     author: "ChrisO",
     license: "CC BY-SA 2.5",
+  },
+  "hasty-bank": {
+    src: "https://upload.wikimedia.org/wikipedia/commons/b/bd/Hasty_Bank_and_The_Wainstones_-_geograph.org.uk_-_196026.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:Hasty_Bank_and_The_Wainstones_-_geograph.org.uk_-_196026.jpg",
+    author: "Scott Rimmer",
+    license: "CC BY-SA 2.0",
   },
   "cross-fell": {
     src: "https://upload.wikimedia.org/wikipedia/commons/9/9f/Crossfell.jpg",
@@ -221,15 +359,45 @@ export const PHOTOS: Record<string, Photo> = {
     author: "Ann Bowker",
     license: "Attribution",
   },
+  "gummers-how": {
+    src: "https://upload.wikimedia.org/wikipedia/commons/7/72/Gummer%27s_How_from_Lakeside.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:Gummer%27s_How_from_Lakeside.jpg",
+    author: "StephenDawson",
+    license: "CC BY-SA 2.0",
+  },
+  "wansfell": {
+    src: "https://upload.wikimedia.org/wikipedia/commons/8/8c/Wansfell_from_Garburn_Track.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:Wansfell_from_Garburn_Track.jpg",
+    author: "Mick Knapton",
+    license: "CC BY-SA 3.0",
+  },
   "helm-crag": {
     src: "https://upload.wikimedia.org/wikipedia/commons/c/c7/Helm_Crag_from_Gibson_Knott.jpg",
     page: "https://commons.wikimedia.org/wiki/File:Helm_Crag_from_Gibson_Knott.jpg",
     author: "Harthacanute",
     license: "Public domain",
   },
+  "red-screes": {
+    src: "https://upload.wikimedia.org/wikipedia/commons/4/4d/Red_Screes_-_geograph.org.uk_-_741181.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:Red_Screes_-_geograph.org.uk_-_741181.jpg",
+    author: "David Brown",
+    license: "CC BY-SA 2.0",
+  },
   "catbells": {
     src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d7/Cat_Bells_and_Friars_Crag.jpg/1280px-Cat_Bells_and_Friars_Crag.jpg",
     page: "https://commons.wikimedia.org/wiki/File:Cat_Bells_and_Friars_Crag.jpg",
+    author: "Mick Knapton",
+    license: "CC BY-SA 3.0",
+  },
+  "latrigg": {
+    src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/83/Latrigg_from_Fitz_Park%2C_Keswick.jpg/1280px-Latrigg_from_Fitz_Park%2C_Keswick.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:Latrigg_from_Fitz_Park,_Keswick.jpg",
+    author: "Mick Knapton",
+    license: "CC BY-SA 3.0",
+  },
+  "walla-crag": {
+    src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/28/Walla_Crag_from_Hause_Gate_%282%29.JPG/1280px-Walla_Crag_from_Hause_Gate_%282%29.JPG",
+    page: "https://commons.wikimedia.org/wiki/File:Walla_Crag_from_Hause_Gate_(2).JPG",
     author: "Mick Knapton",
     license: "CC BY-SA 3.0",
   },
@@ -239,10 +407,22 @@ export const PHOTOS: Record<string, Photo> = {
     author: "StephenDawson",
     license: "CC BY-SA 2.0",
   },
+  "hallin-fell": {
+    src: "https://upload.wikimedia.org/wikipedia/commons/6/60/Hallin_fell_from_Bonscale_Pike.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:Hallin_fell_from_Bonscale_Pike.jpg",
+    author: "JoelHockley",
+    license: "CC BY-SA 4.0",
+  },
   "coniston-old-man": {
     src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/53/Old_Man_of_Coniston_-_panoramio.jpg/1280px-Old_Man_of_Coniston_-_panoramio.jpg",
     page: "https://commons.wikimedia.org/wiki/File:Old_Man_of_Coniston_-_panoramio.jpg",
     author: "slippymark",
+    license: "CC BY-SA 3.0",
+  },
+  "black-combe": {
+    src: "https://upload.wikimedia.org/wikipedia/commons/e/e5/Black_combe_from_foxfield.JPG",
+    page: "https://commons.wikimedia.org/wiki/File:Black_combe_from_foxfield.JPG",
+    author: "Silence-is-infinite",
     license: "CC BY-SA 3.0",
   },
   "langdale-pikes": {
@@ -257,6 +437,24 @@ export const PHOTOS: Record<string, Photo> = {
     author: "Tango22",
     license: "CC BY-SA 3.0",
   },
+  "dale-head": {
+    src: "https://upload.wikimedia.org/wikipedia/commons/d/d7/Dale_Head_-_geograph.org.uk_-_1722827.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:Dale_Head_-_geograph.org.uk_-_1722827.jpg",
+    author: "Mick Garratt",
+    license: "CC BY-SA 2.0",
+  },
+  "rannerdale-knotts": {
+    src: "https://upload.wikimedia.org/wikipedia/commons/8/82/Rannerdale_Knotts.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:Rannerdale_Knotts.jpg",
+    author: "Archie424",
+    license: "Public domain",
+  },
+  "mellbreak": {
+    src: "https://upload.wikimedia.org/wikipedia/commons/6/68/Mellbreak_and_Loweswater_-_geograph.org.uk_-_1303832.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:Mellbreak_and_Loweswater_-_geograph.org.uk_-_1303832.jpg",
+    author: "Kenneth Yarham",
+    license: "CC BY-SA 2.0",
+  },
   "skiddaw": {
     src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4e/Skiddaw_%28cropped%29.JPG/1280px-Skiddaw_%28cropped%29.JPG",
     page: "https://commons.wikimedia.org/wiki/File:Skiddaw_(cropped).JPG",
@@ -268,6 +466,12 @@ export const PHOTOS: Record<string, Photo> = {
     page: "https://commons.wikimedia.org/wiki/File:Fairfield.jpg",
     author: "Paul Kennedy",
     license: "Attribution",
+  },
+  "st-sunday-crag": {
+    src: "https://upload.wikimedia.org/wikipedia/commons/2/29/St_sunday_crag.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:St_sunday_crag.jpg",
+    author: "Mick Garratt",
+    license: "CC BY-SA 2.0",
   },
   "high-street": {
     src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/96/High_Street_and_Small_Water_from_Harter_Fell.jpg/1280px-High_Street_and_Small_Water_from_Harter_Fell.jpg",
@@ -311,6 +515,12 @@ export const PHOTOS: Record<string, Photo> = {
     author: "Mark J",
     license: "Copyrighted free use",
   },
+  "crinkle-crags": {
+    src: "https://upload.wikimedia.org/wikipedia/commons/7/70/Crinkle_Crags_from_Cold_Pike.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:Crinkle_Crags_from_Cold_Pike.jpg",
+    author: "Mick Knapton",
+    license: "CC BY-SA 3.0",
+  },
   "helvellyn": {
     src: "https://upload.wikimedia.org/wikipedia/commons/9/92/Helvellyn%28SimonLedingham%29Dec2004.jpg",
     page: "https://commons.wikimedia.org/wiki/File:Helvellyn(SimonLedingham)Dec2004.jpg",
@@ -353,10 +563,22 @@ export const PHOTOS: Record<string, Photo> = {
     author: "Jim Goldsmith",
     license: "CC BY-SA 2.0",
   },
+  "carningli": {
+    src: "https://upload.wikimedia.org/wikipedia/commons/a/a9/Carningli_fort_from_Carningli_common_looking_east_-_geograph.org.uk_-_331090.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:Carningli_fort_from_Carningli_common_looking_east_-_geograph.org.uk_-_331090.jpg",
+    author: "ceridwen",
+    license: "CC BY-SA 2.0",
+  },
   "skirrid": {
     src: "https://upload.wikimedia.org/wikipedia/commons/f/f8/Ysgyryd_Fawr_-_geograph.org.uk_-_889586.jpg",
     page: "https://commons.wikimedia.org/wiki/File:Ysgyryd_Fawr_-_geograph.org.uk_-_889586.jpg",
     author: "Stuart Wilding",
+    license: "CC BY-SA 2.0",
+  },
+  "blorenge": {
+    src: "https://upload.wikimedia.org/wikipedia/commons/e/e5/Blorenge_from_Abergavenny%2C_Monmouthshire_-_geograph.org.uk_-_84043.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:Blorenge_from_Abergavenny,_Monmouthshire_-_geograph.org.uk_-_84043.jpg",
+    author: "Ralph Rawlinson",
     license: "CC BY-SA 2.0",
   },
   "sugar-loaf": {
@@ -364,6 +586,12 @@ export const PHOTOS: Record<string, Photo> = {
     page: "https://commons.wikimedia.org/wiki/File:Sugarloaf.JPG",
     author: "Snalwibma",
     license: "CC BY-SA 3.0",
+  },
+  "pen-cerrig-calch": {
+    src: "https://upload.wikimedia.org/wikipedia/commons/4/42/Pen_Cerrig-calch_-_geograph.org.uk_-_737354.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:Pen_Cerrig-calch_-_geograph.org.uk_-_737354.jpg",
+    author: "Charles Fryett",
+    license: "CC BY-SA 2.0",
   },
   "waun-fach": {
     src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/07/Waunfach.JPG/1280px-Waunfach.JPG",
@@ -389,11 +617,29 @@ export const PHOTOS: Record<string, Photo> = {
     author: "Gabby77",
     license: "Public domain",
   },
+  "pumlumon": {
+    src: "https://upload.wikimedia.org/wikipedia/commons/8/88/Pumlumon_Fawr.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:Pumlumon_Fawr.jpg",
+    author: "Richard Webb",
+    license: "CC BY-SA 2.0",
+  },
   "holyhead-mountain": {
     src: "https://upload.wikimedia.org/wikipedia/commons/b/bb/Holyheadmountain.jpg",
     page: "https://commons.wikimedia.org/wiki/File:Holyheadmountain.jpg",
     author: "Cod",
     license: "Attribution",
+  },
+  "great-orme": {
+    src: "https://upload.wikimedia.org/wikipedia/commons/d/d1/Llandudno_%26_Great_Orme.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:Llandudno_%26_Great_Orme.jpg",
+    author: "Harvey Milligan",
+    license: "CC BY-SA 4.0",
+  },
+  "conwy-mountain": {
+    src: "https://upload.wikimedia.org/wikipedia/commons/1/16/Conwy_Mountain_-_geograph.org.uk_-_52174.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:Conwy_Mountain_-_geograph.org.uk_-_52174.jpg",
+    author: "Chris Shaw",
+    license: "CC BY-SA 2.0",
   },
   "yr-eifl": {
     src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1e/Clogwyni_serth_Yr_Eifl.jpg/1280px-Clogwyni_serth_Yr_Eifl.jpg",
@@ -405,6 +651,12 @@ export const PHOTOS: Record<string, Photo> = {
     src: "https://upload.wikimedia.org/wikipedia/commons/e/ef/MoelFamauSummit%28JohnSTurner%29Feb2004.jpg",
     page: "https://commons.wikimedia.org/wiki/File:MoelFamauSummit(JohnSTurner)Feb2004.jpg",
     author: "Euchiasmus",
+    license: "CC BY-SA 2.0",
+  },
+  "dinas-bran": {
+    src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/41/Above_the_Valley_%2852831034885%29.jpg/1280px-Above_the_Valley_%2852831034885%29.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:Above_the_Valley_(52831034885).jpg",
+    author: "Simaron from Lower Saxony, Germany",
     license: "CC BY-SA 2.0",
   },
   "cadair-berwyn": {
@@ -437,10 +689,22 @@ export const PHOTOS: Record<string, Photo> = {
     author: "Velela",
     license: "Public domain",
   },
+  "moelwyn-mawr": {
+    src: "https://upload.wikimedia.org/wikipedia/commons/b/b4/The_summit_of_Moelwyn_Mawr.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:The_summit_of_Moelwyn_Mawr.jpg",
+    author: "Nigel Brown",
+    license: "CC BY-SA 2.0",
+  },
   "moel-hebog": {
     src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ad/Moel_Hebog.jpg/1280px-Moel_Hebog.jpg",
     page: "https://commons.wikimedia.org/wiki/File:Moel_Hebog.jpg",
     author: "Stemonitis",
+    license: "Public domain",
+  },
+  "mynydd-mawr": {
+    src: "https://upload.wikimedia.org/wikipedia/commons/f/f5/Mynydmawrr.JPG",
+    page: "https://commons.wikimedia.org/wiki/File:Mynydmawrr.JPG",
+    author: "Gabby77",
     license: "Public domain",
   },
   "nantlle-ridge": {
@@ -465,6 +729,12 @@ export const PHOTOS: Record<string, Photo> = {
     src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6c/Snowdon_massif.jpg/1280px-Snowdon_massif.jpg",
     page: "https://commons.wikimedia.org/wiki/File:Snowdon_massif.jpg",
     author: "Stemonitis",
+    license: "CC BY-SA 3.0",
+  },
+  "snowdon-horseshoe": {
+    src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/aa/Crib_Goch%2C_Snowdonia%2C_Wales_-_August_2007.jpg/1280px-Crib_Goch%2C_Snowdonia%2C_Wales_-_August_2007.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:Crib_Goch,_Snowdonia,_Wales_-_August_2007.jpg",
+    author: "Diliff",
     license: "CC BY-SA 3.0",
   },
   "tryfan": {
@@ -497,11 +767,23 @@ export const PHOTOS: Record<string, Photo> = {
     author: "Kim Traynor",
     license: "CC BY-SA 3.0",
   },
+  "scald-law": {
+    src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e6/Scald_Law.jpg/1280px-Scald_Law.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:Scald_Law.jpg",
+    author: "Stemonitis",
+    license: "CC BY-SA 3.0",
+  },
   "west-lomond": {
     src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/03/West_Lomond_at_sunset.jpg/1280px-West_Lomond_at_sunset.jpg",
     page: "https://commons.wikimedia.org/wiki/File:West_Lomond_at_sunset.jpg",
     author: "StuzzyW",
     license: "CC BY-SA 3.0",
+  },
+  "east-lomond": {
+    src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3a/Falkland_Hill_01.jpg/1280px-Falkland_Hill_01.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:Falkland_Hill_01.jpg",
+    author: "Immanuel Giel",
+    license: "Public domain",
   },
   "eildon-hills": {
     src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/88/EildonScottsView.jpg/1280px-EildonScottsView.jpg",
@@ -533,6 +815,12 @@ export const PHOTOS: Record<string, Photo> = {
     author: "Iangpark",
     license: "CC BY-SA 4.0",
   },
+  "criffel": {
+    src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/98/CriffelTinwald.jpg/1280px-CriffelTinwald.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:CriffelTinwald.jpg",
+    author: "Iangpark",
+    license: "CC BY-SA 4.0",
+  },
   "goatfell": {
     src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/67/Goatfell_Summit2.jpg/1280px-Goatfell_Summit2.jpg",
     page: "https://commons.wikimedia.org/wiki/File:Goatfell_Summit2.jpg",
@@ -544,6 +832,18 @@ export const PHOTOS: Record<string, Photo> = {
     page: "https://commons.wikimedia.org/wiki/File:Campsielong.JPG",
     author: "MacRusgail",
     license: "Public domain",
+  },
+  "dumyat": {
+    src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/be/Dumyat_south_elev.jpg/1280px-Dumyat_south_elev.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:Dumyat_south_elev.jpg",
+    author: "Adrianmckie",
+    license: "CC BY-SA 4.0",
+  },
+  "ben-cleuch": {
+    src: "https://upload.wikimedia.org/wikipedia/commons/0/09/Ben_Cleuch_-_geograph.org.uk_-_1578428.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:Ben_Cleuch_-_geograph.org.uk_-_1578428.jpg",
+    author: "Richard Webb",
+    license: "CC BY-SA 2.0",
   },
   "conic-hill": {
     src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2f/Conic_Hill_4.JPG/1280px-Conic_Hill_4.JPG",
@@ -563,11 +863,23 @@ export const PHOTOS: Record<string, Photo> = {
     author: "Dave souza",
     license: "CC BY-SA 2.5",
   },
+  "the-brack": {
+    src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/18/The_brack.JPG/1280px-The_brack.JPG",
+    page: "https://commons.wikimedia.org/wiki/File:The_brack.JPG",
+    author: "Grinner",
+    license: "CC BY-SA 3.0",
+  },
   "beinn-ime": {
     src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/22/Beinn_ime_from_the_butterbridge.jpg/1280px-Beinn_ime_from_the_butterbridge.jpg",
     page: "https://commons.wikimedia.org/wiki/File:Beinn_ime_from_the_butterbridge.jpg",
     author: "Grinner",
     license: "CC BY-SA 3.0",
+  },
+  "ben-vane": {
+    src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/42/Cloudy_Ben_Vane_%2814364068144%29.jpg/1280px-Cloudy_Ben_Vane_%2814364068144%29.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:Cloudy_Ben_Vane_(14364068144).jpg",
+    author: "portengaround",
+    license: "CC BY-SA 2.0",
   },
   "ben-aan": {
     src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/31/Ben_A%27an_from_the_SE.jpg/1280px-Ben_A%27an_from_the_SE.jpg",
@@ -617,10 +929,28 @@ export const PHOTOS: Record<string, Photo> = {
     author: "Rick Johnson",
     license: "CC BY 2.0",
   },
+  "meall-nan-tarmachan": {
+    src: "https://upload.wikimedia.org/wikipedia/commons/0/00/Meall_nan_tarmachan1.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:Meall_nan_tarmachan1.jpg",
+    author: "Ericoides",
+    license: "Public domain",
+  },
   "ben-chonzie": {
     src: "https://upload.wikimedia.org/wikipedia/commons/9/91/Ben_Chonzie_-_geograph.org.uk_-_911634.jpg",
     page: "https://commons.wikimedia.org/wiki/File:Ben_Chonzie_-_geograph.org.uk_-_911634.jpg",
     author: "Richard Webb",
+    license: "CC BY-SA 2.0",
+  },
+  "kinnoull-hill": {
+    src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/60/Kinnoull_Tower_and_the_River_Tay.jpg/1280px-Kinnoull_Tower_and_the_River_Tay.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:Kinnoull_Tower_and_the_River_Tay.jpg",
+    author: "BillC",
+    license: "CC BY-SA 4.0",
+  },
+  "birnam-hill": {
+    src: "https://upload.wikimedia.org/wikipedia/commons/d/da/Birnam_Hill_from_Torchuaig_Hill_-_geograph.org.uk_-_736968.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:Birnam_Hill_from_Torchuaig_Hill_-_geograph.org.uk_-_736968.jpg",
+    author: "Rob Burke",
     license: "CC BY-SA 2.0",
   },
   "schiehallion": {
@@ -634,6 +964,12 @@ export const PHOTOS: Record<string, Photo> = {
     page: "https://commons.wikimedia.org/wiki/File:Ben_Vrackie_and_Loch_a%27_Choire_-_geograph.org.uk_-_1324940.jpg",
     author: "Richard Webb",
     license: "CC BY-SA 2.0",
+  },
+  "beinn-a-ghlo": {
+    src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4e/The_northern_two_munros_of_Beinn_a_Ghlo.jpg/1280px-The_northern_two_munros_of_Beinn_a_Ghlo.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:The_northern_two_munros_of_Beinn_a_Ghlo.jpg",
+    author: "Mick Knapton",
+    license: "CC BY-SA 3.0",
   },
   "the-cairnwell": {
     src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/57/The_Cairnwell_%28An_C%C3%A0rn_Bhailg%29_%28Cairngorm_Mountains%2C_Aberdeenshire%2C_Scotland%29.JPG/1280px-The_Cairnwell_%28An_C%C3%A0rn_Bhailg%29_%28Cairngorm_Mountains%2C_Aberdeenshire%2C_Scotland%29.JPG",
@@ -695,6 +1031,12 @@ export const PHOTOS: Record<string, Photo> = {
     author: "Callum Black",
     license: "CC BY-SA 2.0",
   },
+  "ben-macdui": {
+    src: "https://upload.wikimedia.org/wikipedia/commons/f/f5/Ben_Macdui_-_geograph.org.uk_-_3477292.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:Ben_Macdui_-_geograph.org.uk_-_3477292.jpg",
+    author: "Richard Webb",
+    license: "CC BY-SA 2.0",
+  },
   "braeriach": {
     src: "https://upload.wikimedia.org/wikipedia/commons/c/ca/Braeriach_and_An_Garbh_Choire_-_geograph.org.uk_-_278991.jpg",
     page: "https://commons.wikimedia.org/wiki/File:Braeriach_and_An_Garbh_Choire_-_geograph.org.uk_-_278991.jpg",
@@ -705,6 +1047,12 @@ export const PHOTOS: Record<string, Photo> = {
     src: "https://upload.wikimedia.org/wikipedia/commons/1/19/Coire_Ardair.jpg",
     page: "https://commons.wikimedia.org/wiki/File:Coire_Ardair.jpg",
     author: "paul birrell",
+    license: "CC BY-SA 2.0",
+  },
+  "meall-fuar-mhonaidh": {
+    src: "https://upload.wikimedia.org/wikipedia/commons/3/3f/Meall_Fuar-mhonaidh_from_the_Bunloit_road_-_geograph.org.uk_-_46917.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:Meall_Fuar-mhonaidh_from_the_Bunloit_road_-_geograph.org.uk_-_46917.jpg",
+    author: "Richard Haworth",
     license: "CC BY-SA 2.0",
   },
   "ben-nevis": {
@@ -767,6 +1115,12 @@ export const PHOTOS: Record<string, Photo> = {
     author: "Graham Lewis",
     license: "CC BY 2.0",
   },
+  "ben-starav": {
+    src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/30/River_Etive_and_Ben_Starav_-_geograph.org.uk_-_3191494.jpg/1280px-River_Etive_and_Ben_Starav_-_geograph.org.uk_-_3191494.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:River_Etive_and_Ben_Starav_-_geograph.org.uk_-_3191494.jpg",
+    author: "Alan O'Dowd",
+    license: "CC BY-SA 2.0",
+  },
   "the-saddle": {
     src: "https://upload.wikimedia.org/wikipedia/commons/8/8f/Forcan_Ridge_The_Saddle_Glen_Sheil_-_geograph.org.uk_-_26570.jpg",
     page: "https://commons.wikimedia.org/wiki/File:Forcan_Ridge_The_Saddle_Glen_Sheil_-_geograph.org.uk_-_26570.jpg",
@@ -790,6 +1144,18 @@ export const PHOTOS: Record<string, Photo> = {
     page: "https://commons.wikimedia.org/wiki/File:Bruach_frithe.jpg",
     author: "Paulwebster",
     license: "CC BY 2.5",
+  },
+  "sgurr-nan-gillean": {
+    src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fd/Sg%C3%B9rr_nan_Gillean_from_Sligachan%2C_Isle_of_Skye%2C_Scotland_-_Diliff.jpg/1280px-Sg%C3%B9rr_nan_Gillean_from_Sligachan%2C_Isle_of_Skye%2C_Scotland_-_Diliff.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:Sg%C3%B9rr_nan_Gillean_from_Sligachan,_Isle_of_Skye,_Scotland_-_Diliff.jpg",
+    author: "Diliff",
+    license: "CC BY-SA 3.0",
+  },
+  "glamaig": {
+    src: "https://upload.wikimedia.org/wikipedia/commons/b/b9/Glamaig2.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:Glamaig2.jpg",
+    author: "Iain99",
+    license: "CC BY-SA 3.0",
   },
   "the-storr": {
     src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b4/The_Storr_by_Grinner.jpg/1280px-The_Storr_by_Grinner.jpg",
@@ -839,11 +1205,23 @@ export const PHOTOS: Record<string, Photo> = {
     author: "djmacpherson",
     license: "CC BY-SA 2.0",
   },
+  "ben-more-coigach": {
+    src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/38/Ben_Mor_Coigach.jpg/1280px-Ben_Mor_Coigach.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:Ben_Mor_Coigach.jpg",
+    author: "Viewfinder",
+    license: "Public domain",
+  },
   "stac-pollaidh": {
     src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1e/Stac_Pollaidh_3.jpg/1280px-Stac_Pollaidh_3.jpg",
     page: "https://commons.wikimedia.org/wiki/File:Stac_Pollaidh_3.jpg",
     author: "Mehmet Karatay",
     license: "CC BY-SA 3.0",
+  },
+  "cul-mor": {
+    src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a6/CulMor.jpg/1280px-CulMor.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:CulMor.jpg",
+    author: "Viewfinder",
+    license: "Public domain",
   },
   "suilven": {
     src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5f/2011_Schotland_Suilven_31-05-2011_14-58-40.png/1280px-2011_Schotland_Suilven_31-05-2011_14-58-40.png",
@@ -856,6 +1234,12 @@ export const PHOTOS: Record<string, Photo> = {
     page: "https://commons.wikimedia.org/wiki/File:Quinag.jpg",
     author: "Grinner",
     license: "CC BY-SA 2.0",
+  },
+  "ben-more-assynt": {
+    src: "https://upload.wikimedia.org/wikipedia/commons/8/84/Ben_More_Assynt_from_Conival.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:Ben_More_Assynt_from_Conival.jpg",
+    author: "Mick Knapton",
+    license: "CC BY-SA 3.0",
   },
   "ben-hope": {
     src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fb/BenHopefromLochEriboll.jpg/1280px-BenHopefromLochEriboll.jpg",

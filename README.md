@@ -1,6 +1,6 @@
 # Summit Planner
 
-Where should I hike, and when? Tell it where you're starting from (a postcode or a town), how long you'll drive and which day (up to two weeks ahead), and it ranks around 140 hikes across England, Wales and Scotland. The recommendation weighs three things: the weather while you'd be walking, the drive, and how good the hike is.
+Where should I hike, and when? Tell it where you're starting from (a postcode or a town), how long you'll drive and which day (up to two weeks ahead), and it ranks around 200 hikes across England, Wales and Scotland. The recommendation weighs three things: the weather while you'd be walking, the drive, and how good the hike is.
 
 The destinations run from easy South Downs and Peak District walks to the big days in the Lake District, Snowdonia, Glen Coe, Skye and Torridon. They live in `src/data/mountains/`, one file per country.
 

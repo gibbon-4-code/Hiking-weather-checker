@@ -1,6 +1,9 @@
 import Anthropic from "@anthropic-ai/sdk";
+import { betaZodOutputFormat } from "@anthropic-ai/sdk/helpers/beta/zod";
+import { checkAnswer, scoutAnswerSchema, type ScoutAnswer } from "@/lib/agent/guardrail";
 import { createScoutTools, type ScoutSource } from "@/lib/agent/tools";
 import { addDays, defaultHikeDate, londonParts } from "@/lib/dates";
+import type { PlanResponse } from "@/lib/types";
 
 export const SCOUT_MODEL = "claude-opus-5-5";
 /** Claude Opus 5.5 list prices, in dollars per million tokens. Thinking counts as output. */
@@ -23,7 +26,7 @@ Today is ${londonParts(now).date}. This weekend is Saturday ${saturday} and Sund
 Use the tools to look at the data before deciding. Only state facts about the weather, the hills or the drive that the tools gave you; don't add details from general knowledge.
 Never recommend a hill marked UNSAFE.
 
-Answer with a one-line verdict (go, wait or skip), then the hill and the day, then three or four short bullet points explaining why. Write in plain British English.`;
+When you've decided, give a verdict: go (worth it: here's where and when), wait (could be good, but check again nearer the day) or skip (not worth it, or not safe). Then the hill and the day, a one-line headline and three or four short reasons. Write in plain British English.`;
 }
 
 export const SCOUT_QUESTION = "Is this weekend worth a hike? If so, where should I go and which day?";
@@ -51,45 +54,126 @@ export interface ScoutStep {
 }
 
 export interface ScoutResult {
-  answer: string;
+  /** The answer after the guardrail: the model's own, a "wait" if the code downgraded it, or "skip". */
+  answer: ScoutAnswer;
+  /** Why the code overruled the model's final answer and replaced it with "skip", or null. */
+  overruled: string | null;
+  /** Why the code turned a "go" into a "wait", or null. */
+  downgraded: string | null;
+  /** Why the first answer failed the guardrail and Claude was asked to choose again, or null. */
+  retried: string | null;
   steps: ScoutStep[];
   usage: { input: number; output: number };
   cost: number;
   stopReason: string | null;
 }
 
+/** How many times Claude may try again after a pick fails the guardrail. */
+export const MAX_RETRIES = 1;
+
 /**
  * Runs the Scout with the SDK's Tool Runner: the same loop as `scripts/scout-loop.mts`, but the SDK
  * makes the calls, runs the tools and sends the results back. We still see every turn as it happens.
+ *
+ * Since stage 3, the final answer must match `scoutAnswerSchema` (the API enforces it), and
+ * `checkAnswer` then re-checks the pick against the app's rules in code. If the pick fails, Claude
+ * is told why and asked to choose again, once. If it fails again, the code's "skip" stands.
  */
 export async function runScout(
   source: ScoutSource,
   client: Anthropic,
   onStep?: (step: ScoutStep) => void,
 ): Promise<ScoutResult> {
-  const runner = client.beta.messages.toolRunner({
-    ...scoutRequest(source.now()),
-    tools: createScoutTools(source),
-    max_iterations: MAX_TURNS,
-    messages: [{ role: "user", content: SCOUT_QUESTION }],
-  });
+  source = rememberPlans(source);
+  const now = source.now();
+  const { saturday, sunday } = weekend(now);
+  const request = scoutRequest(now);
+  const tools = createScoutTools(source);
 
   const steps: ScoutStep[] = [];
   const usage = { input: 0, output: 0 };
-  let last: Anthropic.Beta.BetaMessage | null = null;
+  let messages: Anthropic.Beta.BetaMessageParam[] = [{ role: "user", content: SCOUT_QUESTION }];
+  let retried: string | null = null;
 
-  for await (const message of runner) {
-    last = message;
-    usage.input += message.usage.input_tokens;
-    usage.output += message.usage.output_tokens;
-    const toolCalls = message.content.flatMap((b) => (b.type === "tool_use" ? [{ name: b.name, input: b.input }] : []));
-    if (toolCalls.length) {
-      const step = { turn: steps.length + 1, toolCalls };
-      steps.push(step);
-      onStep?.(step);
+  for (let attempt = 0; ; attempt++) {
+    const runner = client.beta.messages.toolRunner({
+      ...request,
+      output_config: { ...request.output_config, format: betaZodOutputFormat(scoutAnswerSchema) },
+      tools,
+      max_iterations: MAX_TURNS,
+      messages,
+    });
+
+    let last: Anthropic.Beta.BetaMessage | null = null;
+    for await (const message of runner) {
+      last = message;
+      usage.input += message.usage.input_tokens;
+      usage.output += message.usage.output_tokens;
+      const toolCalls = message.content.flatMap((b) => (b.type === "tool_use" ? [{ name: b.name, input: b.input }] : []));
+      if (toolCalls.length) {
+        const step = { turn: steps.length + 1, toolCalls };
+        steps.push(step);
+        onStep?.(step);
+      }
     }
-  }
 
-  const answer = last?.content.flatMap((b) => (b.type === "text" ? [b.text] : [])).join("\n") ?? "";
-  return { answer, steps, usage, cost: costOf(usage), stopReason: last?.stop_reason ?? null };
+    const base = { steps, usage, cost: costOf(usage), stopReason: last?.stop_reason ?? null, retried };
+    const parsed = parseAnswer(last);
+    if (!parsed) {
+      const answer: ScoutAnswer = {
+        verdict: "skip",
+        mountainId: null,
+        date: null,
+        headline: "The Scout couldn't reach an answer this time.",
+        reasons: [`It stopped without a usable answer (${base.stopReason ?? "no reply"}).`],
+        confidence: "low",
+      };
+      return { ...base, answer, overruled: "no usable answer", downgraded: null };
+    }
+
+    // The guardrail. Check the pick against our own rules, using the plan the model saw for that day.
+    const plan = parsed.date && [saturday, sunday].includes(parsed.date) ? await source.plan(parsed.date) : null;
+    const checked = checkAnswer(parsed, plan, [saturday, sunday], now);
+    if (!checked.overruled || attempt >= MAX_RETRIES) return { ...base, ...checked };
+
+    // The pick failed. Carry on the same conversation (it already holds Claude's answer), tell
+    // Claude exactly what failed, and let it choose again.
+    retried = checked.overruled;
+    messages = [
+      ...runner.params.messages,
+      {
+        role: "user",
+        content:
+          `Your answer failed a check in the app: ${checked.overruled}. ` +
+          "Choose again, using only hills and days from the tool results, or answer skip if nothing this weekend is suitable.",
+      },
+    ];
+  }
+}
+
+/**
+ * Fetches each day's plan once per run. The guardrail then checks the pick against exactly the
+ * forecast the model saw, and the weather API isn't asked for the same day twice.
+ */
+function rememberPlans(source: ScoutSource): ScoutSource {
+  const plans = new Map<string, Promise<PlanResponse>>();
+  return {
+    ...source,
+    plan: (date) => {
+      if (!plans.has(date)) plans.set(date, source.plan(date));
+      return plans.get(date)!;
+    },
+  };
+}
+
+/** The final message's text, read as JSON and checked against the schema. Null if it doesn't fit. */
+function parseAnswer(message: Anthropic.Beta.BetaMessage | null): ScoutAnswer | null {
+  if (!message || message.stop_reason !== "end_turn") return null;
+  const text = message.content.flatMap((b) => (b.type === "text" ? [b.text] : [])).join("");
+  try {
+    const result = scoutAnswerSchema.safeParse(JSON.parse(text));
+    return result.success ? result.data : null;
+  } catch {
+    return null;
+  }
 }

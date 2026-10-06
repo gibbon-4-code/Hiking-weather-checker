@@ -10,6 +10,7 @@ const optional = z
 const schema = z.object({
   MET_OFFICE_API_KEY: optional,
   ORS_API_KEY: optional,
+  ANTHROPIC_API_KEY: optional,
   AUTH_SECRET: optional,
   AUTH_GITHUB_ID: optional,
   AUTH_GITHUB_SECRET: optional,
@@ -29,6 +30,7 @@ const list = (v?: string) =>
 export const env = {
   metOfficeKey: parsed.MET_OFFICE_API_KEY,
   orsKey: parsed.ORS_API_KEY,
+  anthropicKey: parsed.ANTHROPIC_API_KEY,
   forceDemoData: parsed.USE_DEMO_DATA === "1" || parsed.USE_DEMO_DATA === "true",
   allowedGithubUsers: list(parsed.ALLOWED_GITHUB_USERS),
   allowedEmails: list(parsed.ALLOWED_EMAILS),

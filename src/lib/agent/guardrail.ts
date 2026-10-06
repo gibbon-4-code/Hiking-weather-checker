@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { DEFAULT_PREFERENCES, inSearch, scoreDestination, type Preferences } from "@/lib/scoring";
-import type { PlanResponse } from "@/lib/types";
+import type { Destination, PlanResponse } from "@/lib/types";
 
 /**
  * The shape the Scout must answer in. The API enforces it (structured output), so the app gets
@@ -21,14 +21,17 @@ export type ScoutAnswer = z.infer<typeof scoutAnswerSchema>;
 
 export interface CheckedAnswer {
   answer: ScoutAnswer;
-  /** Why the code overruled the model, or null when the model's answer stood. */
+  /** Why the code overruled the model and replaced its answer with "skip", or null. */
   overruled: string | null;
+  /** Why the code turned a "go" into a "wait", or null. */
+  downgraded: string | null;
 }
 
 /**
  * The model judges; this code enforces. Whatever the model said, a pick must be a real hill, on a
  * day this weekend, that fits the search and passes every safety rule in `safetyVetoes`. If it
- * doesn't, the answer becomes "skip" and says why. `plan` is the plan for the picked day.
+ * doesn't, the answer becomes "skip" and says why. A "go" that rests on demo data (no real forecast)
+ * becomes a "wait". `plan` is the plan for the picked day.
  */
 export function checkAnswer(
   answer: ScoutAnswer,
@@ -37,30 +40,47 @@ export function checkAnswer(
   now: Date,
   prefs: Preferences = DEFAULT_PREFERENCES,
 ): CheckedAnswer {
-  if (answer.verdict === "skip") return { answer, overruled: null };
+  if (answer.verdict === "skip") return { answer, overruled: null, downgraded: null };
 
-  const problem = findProblem(answer, plan, weekendDates, now, prefs);
-  if (!problem) return { answer, overruled: null };
-  return {
-    answer: {
-      verdict: "skip",
-      mountainId: null,
-      date: null,
-      headline: "No safe recommendation this time.",
-      reasons: [`The Scout suggested something that failed a check: ${problem}.`],
-      confidence: "low",
-    },
-    overruled: problem,
-  };
+  const found = findPick(answer, plan, weekendDates, now, prefs);
+  if (typeof found === "string") {
+    return {
+      answer: {
+        verdict: "skip",
+        mountainId: null,
+        date: null,
+        headline: "No safe recommendation this time.",
+        reasons: [`The Scout suggested something that failed a check: ${found}.`],
+        confidence: "low",
+      },
+      overruled: found,
+      downgraded: null,
+    };
+  }
+
+  if (answer.verdict === "go" && found.forecast.source === "demo") {
+    return {
+      answer: {
+        ...answer,
+        verdict: "wait",
+        confidence: "low",
+        reasons: [...answer.reasons, "There's no real forecast for this hill yet (only demo data), so check again before you go."],
+      },
+      overruled: null,
+      downgraded: "the forecast is demo data",
+    };
+  }
+  return { answer, overruled: null, downgraded: null };
 }
 
-function findProblem(
+/** The picked hill's entry in the plan, or a sentence saying what's wrong with the pick. */
+function findPick(
   answer: ScoutAnswer,
   plan: PlanResponse | null,
   weekendDates: string[],
   now: Date,
   prefs: Preferences,
-): string | null {
+): Destination | string {
   if (!answer.mountainId || !answer.date) return `a "${answer.verdict}" verdict without a hill and a day`;
   if (!weekendDates.includes(answer.date)) return `${answer.date} isn't this weekend`;
   const destination = plan?.day.date === answer.date
@@ -74,5 +94,5 @@ function findProblem(
   if (!day) return `there's no usable forecast for ${name} on ${answer.date}`;
   if (day.vetoes.length) return `${name} is unsafe on ${answer.date} (${day.vetoes.join("; ")})`;
   if (!inSearch(score)) return `${name} is outside the search (too far, or the wrong length of walk)`;
-  return null;
+  return destination;
 }

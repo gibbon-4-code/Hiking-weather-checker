@@ -27,10 +27,11 @@ console.log(`\n--- The Scout's answer, as the app receives it ---`);
 console.log(JSON.stringify(answer, null, 2));
 console.log(`\n${answer.verdict.toUpperCase()}: ${answer.headline}`);
 for (const reason of answer.reasons) console.log(`  - ${reason}`);
-console.log(
-  result.overruled
-    ? `\nGuardrail: OVERRULED the model (${result.overruled}).\n`
-    : `\nGuardrail: passed. The pick is a real hill, this weekend, inside the search and safe.\n`,
-);
+console.log();
+if (result.retried) console.log(`Guardrail: rejected the first pick (${result.retried}), and asked Claude to choose again.`);
+if (result.overruled) console.log(`Guardrail: OVERRULED the model (${result.overruled}).`);
+else if (result.downgraded) console.log(`Guardrail: downgraded go to wait (${result.downgraded}).`);
+else console.log("Guardrail: passed.");
+console.log();
 console.log(`--- Usage ---\nInput: ${result.usage.input} tokens, output: ${result.usage.output} tokens`);
 console.log(`Cost: $${result.cost.toFixed(4)} (stopped because: ${result.stopReason})`);

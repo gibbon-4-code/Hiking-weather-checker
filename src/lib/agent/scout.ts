@@ -54,22 +54,30 @@ export interface ScoutStep {
 }
 
 export interface ScoutResult {
-  /** The answer after the guardrail: the model's own, or "skip" if the code overruled it. */
+  /** The answer after the guardrail: the model's own, a "wait" if the code downgraded it, or "skip". */
   answer: ScoutAnswer;
-  /** Why the code overruled the model, or null when the model's answer stood. */
+  /** Why the code overruled the model's final answer and replaced it with "skip", or null. */
   overruled: string | null;
+  /** Why the code turned a "go" into a "wait", or null. */
+  downgraded: string | null;
+  /** Why the first answer failed the guardrail and Claude was asked to choose again, or null. */
+  retried: string | null;
   steps: ScoutStep[];
   usage: { input: number; output: number };
   cost: number;
   stopReason: string | null;
 }
 
+/** How many times Claude may try again after a pick fails the guardrail. */
+export const MAX_RETRIES = 1;
+
 /**
  * Runs the Scout with the SDK's Tool Runner: the same loop as `scripts/scout-loop.mts`, but the SDK
  * makes the calls, runs the tools and sends the results back. We still see every turn as it happens.
  *
- * Two additions since stage 2: the final answer must match `scoutAnswerSchema` (the API enforces
- * it), and `checkAnswer` then re-checks the pick against the safety rules in code.
+ * Since stage 3, the final answer must match `scoutAnswerSchema` (the API enforces it), and
+ * `checkAnswer` then re-checks the pick against the app's rules in code. If the pick fails, Claude
+ * is told why and asked to choose again, once. If it fails again, the code's "skip" stands.
  */
 export async function runScout(
   source: ScoutSource,
@@ -78,49 +86,69 @@ export async function runScout(
 ): Promise<ScoutResult> {
   source = rememberPlans(source);
   const now = source.now();
+  const { saturday, sunday } = weekend(now);
   const request = scoutRequest(now);
-  const runner = client.beta.messages.toolRunner({
-    ...request,
-    output_config: { ...request.output_config, format: betaZodOutputFormat(scoutAnswerSchema) },
-    tools: createScoutTools(source),
-    max_iterations: MAX_TURNS,
-    messages: [{ role: "user", content: SCOUT_QUESTION }],
-  });
+  const tools = createScoutTools(source);
 
   const steps: ScoutStep[] = [];
   const usage = { input: 0, output: 0 };
-  let last: Anthropic.Beta.BetaMessage | null = null;
+  let messages: Anthropic.Beta.BetaMessageParam[] = [{ role: "user", content: SCOUT_QUESTION }];
+  let retried: string | null = null;
 
-  for await (const message of runner) {
-    last = message;
-    usage.input += message.usage.input_tokens;
-    usage.output += message.usage.output_tokens;
-    const toolCalls = message.content.flatMap((b) => (b.type === "tool_use" ? [{ name: b.name, input: b.input }] : []));
-    if (toolCalls.length) {
-      const step = { turn: steps.length + 1, toolCalls };
-      steps.push(step);
-      onStep?.(step);
+  for (let attempt = 0; ; attempt++) {
+    const runner = client.beta.messages.toolRunner({
+      ...request,
+      output_config: { ...request.output_config, format: betaZodOutputFormat(scoutAnswerSchema) },
+      tools,
+      max_iterations: MAX_TURNS,
+      messages,
+    });
+
+    let last: Anthropic.Beta.BetaMessage | null = null;
+    for await (const message of runner) {
+      last = message;
+      usage.input += message.usage.input_tokens;
+      usage.output += message.usage.output_tokens;
+      const toolCalls = message.content.flatMap((b) => (b.type === "tool_use" ? [{ name: b.name, input: b.input }] : []));
+      if (toolCalls.length) {
+        const step = { turn: steps.length + 1, toolCalls };
+        steps.push(step);
+        onStep?.(step);
+      }
     }
-  }
 
-  const base = { steps, usage, cost: costOf(usage), stopReason: last?.stop_reason ?? null };
-  const parsed = parseAnswer(last);
-  if (!parsed) {
-    const answer: ScoutAnswer = {
-      verdict: "skip",
-      mountainId: null,
-      date: null,
-      headline: "The Scout couldn't reach an answer this time.",
-      reasons: [`It stopped without a usable answer (${base.stopReason ?? "no reply"}).`],
-      confidence: "low",
-    };
-    return { ...base, answer, overruled: "no usable answer" };
-  }
+    const base = { steps, usage, cost: costOf(usage), stopReason: last?.stop_reason ?? null, retried };
+    const parsed = parseAnswer(last);
+    if (!parsed) {
+      const answer: ScoutAnswer = {
+        verdict: "skip",
+        mountainId: null,
+        date: null,
+        headline: "The Scout couldn't reach an answer this time.",
+        reasons: [`It stopped without a usable answer (${base.stopReason ?? "no reply"}).`],
+        confidence: "low",
+      };
+      return { ...base, answer, overruled: "no usable answer", downgraded: null };
+    }
 
-  // The guardrail. Fetch the plan for the day it picked, and check the pick against our own rules.
-  const { saturday, sunday } = weekend(now);
-  const plan = parsed.date && [saturday, sunday].includes(parsed.date) ? await source.plan(parsed.date) : null;
-  return { ...base, ...checkAnswer(parsed, plan, [saturday, sunday], now) };
+    // The guardrail. Check the pick against our own rules, using the plan the model saw for that day.
+    const plan = parsed.date && [saturday, sunday].includes(parsed.date) ? await source.plan(parsed.date) : null;
+    const checked = checkAnswer(parsed, plan, [saturday, sunday], now);
+    if (!checked.overruled || attempt >= MAX_RETRIES) return { ...base, ...checked };
+
+    // The pick failed. Carry on the same conversation (it already holds Claude's answer), tell
+    // Claude exactly what failed, and let it choose again.
+    retried = checked.overruled;
+    messages = [
+      ...runner.params.messages,
+      {
+        role: "user",
+        content:
+          `Your answer failed a check in the app: ${checked.overruled}. ` +
+          "Choose again, using only hills and days from the tool results, or answer skip if nothing this weekend is suitable.",
+      },
+    ];
+  }
 }
 
 /**

@@ -87,6 +87,15 @@ That was exactly the right call, and it only happened because the tool reported 
 
 I also made each run fetch each day's forecast only once, which is kinder to the free weather service.
 
-**What it cost.** About 5.5 cents per run.
+**Two product decisions after that run.**
+
+1. **No "go" on demo data.** If the forecast behind a "go" is demo data, the code now turns it into a "wait" with low confidence. Last time Claude happened to notice the demo data; now the code guarantees it.
+2. **One retry before overruling.** If a pick fails the guardrail (a made-up hill, an unsafe one, the wrong weekend), the code doesn't just give up. It carries on the same conversation, tells Claude exactly which check failed, and asks it to choose again. If the second pick fails too, the code's "skip" stands. That's safe either way, because the second answer goes through the same checks.
+
+The retry is tested with a stand-in for Claude that gives canned answers, so the tests are free and give the same result every time. One test checks that when the first pick is a made-up hill, "sheltered-dyke", Claude is told `there's no hill with the id "sheltered-dyke"`, and the second pick is accepted.
+
+**What it cost.** About 5.5 cents per run. A retry would add roughly one more turn.
+
+**Still to watch.** On the last run Claude called Ditchling Beacon "more sheltered". Is that a fair reading of "low wind exposure", or another made-up detail? It's a grey area, so it's a job for the judge in stage 4.
 
 **PM takeaway.** _To fill in._

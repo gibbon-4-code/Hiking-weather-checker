@@ -32,3 +32,36 @@ The parts of an API call:
 One thing it got wrong: it suggested Devil's Dyke as "a sheltered alternative". The data says nothing about shelter, and Devil's Dyke had the same 26 mph gusts. It sounded confident and plausible, and it was made up. That one goes straight into the evals in stage 4.
 
 **PM takeaway.** The model was the easy part. Almost all the work was in the code before the call: fetching live forecasts and drive times, scoring 140 hills, and boiling them down to ten clear lines. The answer was only as good as that data, and where the data was silent (shelter), the model filled the gap itself. However impressive LLMs are, building reliable tools and data sources for them to use is still the fundamental work.
+
+## Stage 2: Tools and the loop
+
+**What I built.** The Scout now has two tools, in `src/lib/agent/tools.ts`:
+
+- `get_day_ranking(date)` wraps the ranking from stage 1.
+- `get_second_opinion(mountainId, date)` asks the Met Office about one hill.
+
+Each tool is a name, a description, an input schema and a `run` function. Only the first three are sent to Claude; the code stays on my side. Claude decides what to call from the description alone, so the descriptions are really product copy written for the model.
+
+I wrote the loop by hand first, in `scripts/scout-loop.mts` (`npm run scout:loop`). It goes like this:
+
+1. Send the conversation and the list of tools.
+2. Keep Claude's reply in the conversation.
+3. If it asked for tools, run them and send the results back.
+4. Repeat until it answers, or until it hits six turns, the harness's safety limit.
+
+Then I ran the same agent through the SDK's Tool Runner (`npm run scout`), which replaces about 40 lines of loop with one call.
+
+**What happened.** I asked "Is this weekend worth a hike? If so, where and which day?" and didn't say how to work it out. Claude:
+
+1. checked Saturday and Sunday at the same time (two tool calls in one turn);
+2. saw Seven Sisters came top on both days, so asked the Met Office about it for both days;
+3. got "not available" back (I haven't set up a Met Office key), and said so honestly in its answer rather than pretending;
+4. picked **Seven Sisters on Sunday**, because gusts drop from 29 to 20 mph on an exposed coastal walk, with Ditchling Beacon and Devil's Dyke as sheltered-from-the-coast backups.
+
+Both versions of the loop made the same calls and gave the same answer.
+
+**What it cost.** About **5 cents** per run (around 7,500 tokens in, 900 out), four times stage 1. That's because every turn resends the whole conversation so far, including every tool result. In an agent, cost grows with each step, not just with the final answer.
+
+**This time it stuck to the data.** The system prompt now says to only state facts the tools gave, and there was no made-up "sheltered" claim. One good run doesn't prove that, though. That's what the evals in stage 4 are for.
+
+**PM takeaway.** _To fill in._

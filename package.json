@@ -10,6 +10,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "scout:hello": "tsx --conditions=react-server --env-file-if-exists=.env.local scripts/scout-hello.mts",
+    "scout:loop": "tsx --conditions=react-server --env-file-if-exists=.env.local scripts/scout-loop.mts",
+    "scout": "tsx --conditions=react-server --env-file-if-exists=.env.local scripts/scout.mts",
     "check:mountains": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-mountains.mts"
   },
   "dependencies": {

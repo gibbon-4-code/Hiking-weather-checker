@@ -55,8 +55,8 @@ Then I ran the same agent through the SDK's Tool Runner (`npm run scout`), which
 
 1. checked Saturday and Sunday at the same time (two tool calls in one turn);
 2. saw Seven Sisters came top on both days, so asked the Met Office about it for both days;
-3. got "not available" back (I haven't set up a Met Office key), and said so honestly in its answer rather than pretending;
-4. picked **Seven Sisters on Sunday**, because gusts drop from 29 to 20 mph on an exposed coastal walk, with Ditchling Beacon and Devil's Dyke as sheltered-from-the-coast backups.
+3. got "not available" back (the Met Office isn't set up on my machine), and said so honestly in its answer rather than pretending;
+4. picked **Seven Sisters on Sunday**, because gusts drop from 29 to 20 mph on a walk with medium wind exposure, with Ditchling Beacon and Devil's Dyke (low exposure, 25 minutes away) as backups.
 
 Both versions of the loop made the same calls and gave the same answer.
 

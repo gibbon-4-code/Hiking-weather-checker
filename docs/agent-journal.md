@@ -27,6 +27,8 @@ The parts of an API call:
 
 **Why this isn't an agent yet.** My code decided everything: which day, which data, how much of it. Claude could only answer what it was shown. If Sunday looked better, it had no way to check. In stage 2 it gets tools, so it can ask for things itself.
 
-**What came back, and what it cost.** _To fill in after the first run._
+**What came back, and what it cost.** For Saturday 10 October, Claude picked Seven Sisters, the same hill as the app's own scoring. Its reasons were sensible: it's only 20 minutes further than the closest hills for a much better walk, and Golden Cap scores almost as well but is nearly four hours away. It also warned about wind on the cliff edge and told me to bring a windproof layer. The call used 962 tokens in and 390 out, and cost **$0.0116**.
 
-**PM takeaway.** _To fill in._
+One thing it got wrong: it suggested Devil's Dyke as "a sheltered alternative". The data says nothing about shelter, and Devil's Dyke had the same 26 mph gusts. It sounded confident and plausible, and it was made up. That one goes straight into the evals in stage 4.
+
+**PM takeaway.** The model was the easy part. Almost all the work was in the code before the call: fetching live forecasts and drive times, scoring 140 hills, and boiling them down to ten clear lines. The answer was only as good as that data, and where the data was silent (shelter), the model filled the gap itself. However impressive LLMs are, building reliable tools and data sources for them to use is still the fundamental work.

@@ -65,3 +65,28 @@ Both versions of the loop made the same calls and gave the same answer.
 **This time it stuck to the data.** The system prompt now says to only state facts the tools gave, and there was no made-up "sheltered" claim. One good run doesn't prove that, though. That's what the evals in stage 4 are for.
 
 **PM takeaway.** _To fill in._
+
+## Stage 3: A fixed answer format and a safety check in code
+
+**What I built.** Two changes to the Scout (`npm run scout`).
+
+1. **The answer has a fixed shape.** Claude must now reply with exactly these fields: `verdict` (go, wait or skip), `mountainId`, `date`, `headline`, `reasons` and `confidence`. The API enforces the shape (it's called structured output), so the app gets fields it can check and display instead of a paragraph it would have to interpret.
+2. **The code checks the pick.** After Claude answers, `checkAnswer` in `src/lib/agent/guardrail.ts` re-checks it against the app's own rules: a real hill, a day this weekend, inside the search, and passing every safety rule. If anything fails, the answer becomes "skip" and says why. This runs on exactly the forecast Claude saw.
+
+The prompt still says "never recommend an unsafe hill". The guardrail exists because a prompt is a request, not a guarantee. **The model judges; the code enforces.**
+
+The guardrail has eight tests. They need no API key and cost nothing, because they test my code, not the model. For example, a pick of Tryfan with 60 mph gusts gets overruled with the reason "Summit gusts 60 mph".
+
+**What happened.** An accidental real-world test. I'd run the Scout a few times in quick succession, and the free weather service (Open-Meteo) started refusing requests. The app fell back to demo forecasts, as it's designed to, and the tool passed on its note: "Some or all forecasts are demo data". Claude read that note and answered:
+
+- **verdict:** wait
+- **confidence:** low
+- **headline:** "Blackdown on Saturday looks best on paper, but the forecast is only placeholder data, so check again nearer the day."
+
+That was exactly the right call, and it only happened because the tool reported its own problem honestly. The guardrail passed it, since Blackdown was a real, safe hill this weekend, *according to the data*. But the guardrail can only check against the data it has. If the data is fake, the check is too.
+
+I also made each run fetch each day's forecast only once, which is kinder to the free weather service.
+
+**What it cost.** About 5.5 cents per run.
+
+**PM takeaway.** _To fill in._

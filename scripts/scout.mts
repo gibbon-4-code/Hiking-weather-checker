@@ -1,5 +1,6 @@
 /**
- * Weekend Scout, stage 2: the same agent as `scout-loop.mts`, run by the SDK's Tool Runner.
+ * Weekend Scout: the same agent as `scout-loop.mts`, run by the SDK's Tool Runner. Since stage 3
+ * it answers in a fixed format, and the code checks the pick against the safety rules.
  *
  *   npm run scout
  *
@@ -21,6 +22,15 @@ const result = await runScout(liveSource, new Anthropic({ apiKey: env.anthropicK
   for (const call of step.toolCalls) console.log(`Turn ${step.turn}: Claude asks for ${call.name}(${JSON.stringify(call.input)})`);
 });
 
-console.log(`\n--- Claude's answer ---\n${result.answer}\n`);
+const { answer } = result;
+console.log(`\n--- The Scout's answer, as the app receives it ---`);
+console.log(JSON.stringify(answer, null, 2));
+console.log(`\n${answer.verdict.toUpperCase()}: ${answer.headline}`);
+for (const reason of answer.reasons) console.log(`  - ${reason}`);
+console.log(
+  result.overruled
+    ? `\nGuardrail: OVERRULED the model (${result.overruled}).\n`
+    : `\nGuardrail: passed. The pick is a real hill, this weekend, inside the search and safe.\n`,
+);
 console.log(`--- Usage ---\nInput: ${result.usage.input} tokens, output: ${result.usage.output} tokens`);
 console.log(`Cost: $${result.cost.toFixed(4)} (stopped because: ${result.stopReason})`);

@@ -18,7 +18,7 @@ if (!env.anthropicKey) {
 
 console.log(`You: ${SCOUT_QUESTION}\n`);
 
-const result = await runScout(liveSource, new Anthropic({ apiKey: env.anthropicKey }), (step) => {
+const result = await runScout(liveSource(), new Anthropic({ apiKey: env.anthropicKey }), (step) => {
   for (const call of step.toolCalls) console.log(`Turn ${step.turn}: Claude asks for ${call.name}(${JSON.stringify(call.input)})`);
 });
 

@@ -11,6 +11,7 @@ import { BestBet, primaryButton } from "@/components/results/best-bet";
 import { ResultCards, type ResultItem } from "@/components/results/result-cards";
 import { SearchSummary } from "@/components/results/search-summary";
 import { SortToggle, type SortKey } from "@/components/results/sort-toggle";
+import { ScoutButton } from "@/components/scout-dialog";
 import { SettingsDialog } from "@/components/settings-dialog";
 import { formatDayName } from "@/lib/dates";
 import { saveSettings, useSettings } from "@/lib/preferences";
@@ -170,6 +171,14 @@ export function ResultsPage({
                 </p>
               </section>
             ) : null}
+
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+              {/* Keyed by the search, so a new search starts a fresh question. */}
+              <ScoutButton key={`${query}|${JSON.stringify(settings.weights)}`} search={search} weights={settings.weights} onShowHill={setOpenId} />
+              <p className="text-sm text-muted-foreground">
+                An AI agent reads these forecasts, checks the day either side, and gives you its pick.
+              </p>
+            </div>
 
             {items.length > 0 ? (
               <section aria-labelledby="more-hills" className="pt-10">

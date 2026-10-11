@@ -1,9 +1,9 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getViewer } from "@/auth";
-import { BRIGHTON } from "@/data/mountains";
 import { defaultHikeDate, isPlannableDate } from "@/lib/dates";
 import { authMode } from "@/lib/env";
-import { LocationError, lookupLocation, normalisePostcode } from "@/lib/providers/location";
+import { resolveHome } from "@/lib/home";
+import { LocationError } from "@/lib/providers/location";
 import { buildPlan } from "@/lib/plan";
 
 export async function GET(request: NextRequest) {
@@ -19,16 +19,13 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Pick a day between today and two weeks from now." }, { status: 400 });
   }
 
-  // A UK postcode or a town name. Brighton is the default, so it skips the lookup.
-  const from = request.nextUrl.searchParams.get("from")?.trim();
-  let home = BRIGHTON;
-  if (from && !isBrighton(from)) {
-    try {
-      home = await lookupLocation(from);
-    } catch (err) {
-      if (err instanceof LocationError) return NextResponse.json({ error: err.message }, { status: 400 });
-      return NextResponse.json({ error: "Couldn't look up that place right now." }, { status: 502 });
-    }
+  // A UK postcode or a town name.
+  let home;
+  try {
+    home = await resolveHome(request.nextUrl.searchParams.get("from"));
+  } catch (err) {
+    if (err instanceof LocationError) return NextResponse.json({ error: err.message }, { status: 400 });
+    return NextResponse.json({ error: "Couldn't look up that place right now." }, { status: 502 });
   }
 
   try {
@@ -38,8 +35,4 @@ export async function GET(request: NextRequest) {
     console.error("buildPlan failed", err);
     return NextResponse.json({ error: "Couldn't build the forecast for that day." }, { status: 500 });
   }
-}
-
-function isBrighton(from: string) {
-  return from.toLowerCase() === "brighton" || normalisePostcode(from) === BRIGHTON.postcode;
 }

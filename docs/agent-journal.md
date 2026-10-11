@@ -155,3 +155,25 @@ The card is built from the answer's fields: verdict, hill, day and confidence. T
 **What happened.** The first real press gave: *Worth going: Seven Sisters, Saturday 17 October.* The last reason said "If you want something closer or **more sheltered**, Ditchling Beacon…". That's the exact made-up fact the eval caught in 2 of 30 runs, now in the real product. The eval predicted precisely what a user would see, which makes it the first thing to fix if I pick up stage 5.
 
 **PM takeaway.** _To fill in._
+
+## After stage 6: the Scout follows your search
+
+**The problem.** Once it was live, the gap was obvious: the Scout ignored everything the user typed. The search form collects a starting point, a day, a drive limit and a walk length, and the Scout still assumed Brighton, this weekend, any drive and any walk.
+
+**What changed.** The Scout moved from the home page to the results page, as "Ask the Scout about this search". It now takes a **brief** (`src/lib/agent/brief.ts`): where you're setting off from, your filters, your Settings weights, and the days it may pick (your day plus the day either side). The brief shapes three things at once:
+
+- **the prompt:** "They're setting off from Leeds and want a drive of up to 2 hrs…";
+- **the tools:** the ranking only shows hills that fit your filters, and only for the allowed days;
+- **the guardrail:** a pick beyond your drive limit, or on a day you didn't ask about, is rejected.
+
+When the Scout picks your day, "Show Kinder Scout" opens that hill's details right there. If it picks the day either side, it links to that day's results.
+
+**Kept on purpose.** The original weekend-from-Brighton wording is unchanged, word for word, which I checked against what the stage 4 eval sent. So those eval results still describe that version. The search version hasn't been evaluated yet: the frozen snapshot only has drive times from Brighton.
+
+**First run.** From Leeds, up to 2 hours, Saturday 17 October:
+- **the pick:** Kinder Scout, 1h 32m away;
+- **what it compared:** it looked at Friday and Sunday too, and explained why Saturday beat both;
+- **an alternative:** Simon's Seat, as a shorter drive;
+- **how long and how much:** 17 seconds and 9 cents. It's a little more than before, because it now compares three days.
+
+**PM takeaway.** _To fill in._

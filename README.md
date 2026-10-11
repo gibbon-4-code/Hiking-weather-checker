@@ -15,12 +15,12 @@ Browser ──> /api/plan (Next.js server, needs sign-in)
                └─ postcodes.io                 (no key: turns your postcode or town into coordinates)
         ──> /api/second-opinion (needs sign-in, when you open a destination's details)
                └─ Met Office Weather DataHub   (MET_OFFICE_API_KEY, optional)
-        ──> /api/scout (needs sign-in, when you press "Ask the Weekend Scout")
+        ──> /api/scout (needs sign-in, when you press "Ask the Scout about this search")
                └─ Claude, via the Anthropic API (ANTHROPIC_API_KEY, optional): an agent that calls
                   the app's own ranking and Met Office lookups as tools, then recommends a hill and a day
 ```
 
-- **The Weekend Scout is an AI agent** (`src/lib/agent/`). Claude decides which days and hills to look at using two tools, answers in a fixed format, and the app then checks the pick against its own safety rules before showing it. Each answer costs about 6 cents, so the same weekend's answer is reused for an hour. How it was built, stage by stage, is in [docs/agent-journal.md](docs/agent-journal.md), and `npm run eval` measures it against 15 test weekends (`evals/scout/`).
+- **The Scout is an AI agent** (`src/lib/agent/`) on the results page. It works from the search you ran (starting point, day, drive limit, walk length and your Settings weights) and may suggest the day either side instead. Claude decides which days and hills to look at using two tools, answers in a fixed format, and the app then checks the pick against its own safety rules and your filters before showing it. Each answer costs about 6–9 cents, so the same search's answer is reused for an hour. How it was built, stage by stage, is in [docs/agent-journal.md](docs/agent-journal.md), and `npm run eval` measures it against 15 test weekends (`evals/scout/`).
 
 - **API keys never reach the browser.** Only the server reads them (`src/lib/env.ts` is marked `server-only`).
 - **One request covers every destination.** Open-Meteo forecasts all of them in a single batched call, and OpenRouteService returns every drive time in one matrix call. The Met Office charges one call per mountain, so it's only asked about the mountain you open.

@@ -2,6 +2,7 @@ import { betaZodTool } from "@anthropic-ai/sdk/helpers/beta/zod";
 import type { BetaRunnableTool } from "@anthropic-ai/sdk/lib/tools/BetaRunnableTool";
 import { z } from "zod";
 import { MOUNTAINS } from "@/data/mountains";
+import { weekendBrief, type ScoutBrief } from "@/lib/agent/brief";
 import { describeWeather, formatRanking, rankDay } from "@/lib/agent/ranking";
 import { isPlannableDate } from "@/lib/dates";
 import { summariseDay } from "@/lib/scoring";
@@ -25,21 +26,24 @@ const date = z.string().describe("The day to check, written YYYY-MM-DD.");
  * written like product copy), an input schema, and a `run` function that is our own code.
  * The model never runs anything: it asks, and the harness calls `run`.
  */
-export function createScoutTools(source: ScoutSource): BetaRunnableTool[] {
+export function createScoutTools(source: ScoutSource, brief: ScoutBrief = weekendBrief(source.now())): BetaRunnableTool[] {
+  const filtered = brief.prefs.maxDriveMinutes !== null || brief.prefs.walk !== null;
   const getDayRanking = betaZodTool({
     name: "get_day_ranking",
     description:
-      "Ranks hill walks within reach of Brighton for one day. Returns the top 10 by the app's score " +
+      `Ranks hill walks within reach of ${brief.home.label} for one day. Returns the top 10 by the app's score ` +
       "(weather during walking hours 09:00 to 16:00, drive time and how good the walk is), with each " +
       "hill's id, drive time, difficulty, wind exposure and weather. Hills marked UNSAFE fail a hard " +
-      "safety rule and must not be recommended. Call once per day you want to compare.",
+      "safety rule and must not be recommended. Call once per day you want to compare." +
+      (filtered ? " Only hills that fit the person's drive limit and walk length are included." : ""),
     inputSchema: z.object({ date }),
     run: async ({ date }) => {
       if (!isPlannableDate(date, source.now())) {
         return `Can't plan ${date}: pick a day from today up to two weeks ahead, written YYYY-MM-DD.`;
       }
+      if (!brief.days.includes(date)) return `The Scout can only look at ${brief.days.join(", ")}.`;
       const plan = await source.plan(date);
-      const text = formatRanking(date, rankDay(plan, undefined, 10, source.now()));
+      const text = formatRanking(date, rankDay(plan, brief.prefs, 10, source.now()));
       return plan.notices.length ? `${text}\n\nNotes: ${plan.notices.join(" ")}` : text;
     },
   });

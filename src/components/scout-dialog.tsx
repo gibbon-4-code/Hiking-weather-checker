@@ -5,9 +5,11 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { CircleCheck, CircleSlash, Clock, LoaderCircle, ShieldCheck, Sparkles } from "lucide-react";
 import type { ScoutResponse } from "@/app/api/scout/route";
-import { primaryButton } from "@/components/results/best-bet";
+import { primaryButton, secondaryButton } from "@/components/results/best-bet";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { formatDayName } from "@/lib/dates";
+import type { Weights } from "@/lib/scoring";
+import { searchQuery, type Search } from "@/lib/search";
 import { cn } from "@/lib/utils";
 
 type State = { status: "idle" } | { status: "asking" } | { status: "error"; message: string } | { status: "done"; data: ScoutResponse };
@@ -25,8 +27,22 @@ const GUARDRAIL_NOTE = {
   overruled: "The app overruled the Scout's pick",
 } as const;
 
-/** "Ask the Weekend Scout": runs the AI agent for this weekend and shows its answer. */
-export function ScoutButton({ className }: { className?: string }) {
+/**
+ * "Ask the Scout": runs the AI agent on the search the person just ran (their starting point, day,
+ * drive limit, walk length and scoring weights) and shows its answer.
+ */
+export function ScoutButton({
+  search,
+  weights,
+  onShowHill,
+  className,
+}: {
+  search: Search;
+  weights: Weights;
+  /** Opens a hill's details on the results page. */
+  onShowHill: (id: string) => void;
+  className?: string;
+}) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [state, setState] = useState<State>({ status: "idle" });
@@ -36,7 +52,11 @@ export function ScoutButton({ className }: { className?: string }) {
     if (state.status === "asking" || state.status === "done") return;
     setState({ status: "asking" });
     try {
-      const res = await fetch("/api/scout", { method: "POST" });
+      const res = await fetch("/api/scout", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ ...search, weights }),
+      });
       if (res.status === 401) {
         router.replace("/signin");
         return;
@@ -62,32 +82,30 @@ export function ScoutButton({ className }: { className?: string }) {
 
   return (
     <>
-      <button
-        type="button"
-        onClick={ask}
-        className={cn(
-          "inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold text-white ring-1 ring-inset ring-white/40 transition-colors hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white",
-          className,
-        )}
-      >
+      <button type="button" onClick={ask} className={cn(secondaryButton, className)}>
         <Sparkles className="size-4" aria-hidden="true" />
-        Not sure? Ask the Weekend Scout
+        Ask the Scout about this search
       </button>
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-h-[90svh] overflow-y-auto text-left sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle className="font-display text-xl">The Weekend Scout</DialogTitle>
+            <DialogTitle className="font-display text-xl">The Scout</DialogTitle>
             <DialogDescription>
-              An AI agent that checks this weekend&apos;s forecasts for hills within reach of Brighton, then
-              recommends where and when to go.
+              An AI agent that reads the forecasts for your search and recommends where to go, checking the day
+              either side too.
             </DialogDescription>
           </DialogHeader>
           <ScoutBody
             state={state}
+            search={search}
             onRetry={() => {
               setState({ status: "idle" });
               void ask();
+            }}
+            onShowHill={(id) => {
+              setOpen(false);
+              onShowHill(id);
             }}
           />
         </DialogContent>
@@ -96,12 +114,25 @@ export function ScoutButton({ className }: { className?: string }) {
   );
 }
 
-function ScoutBody({ state, onRetry }: { state: State; onRetry: () => void }) {
+function ScoutBody({
+  state,
+  search,
+  onRetry,
+  onShowHill,
+}: {
+  state: State;
+  search: Search;
+  onRetry: () => void;
+  onShowHill: (id: string) => void;
+}) {
   if (state.status === "idle" || state.status === "asking") {
     return (
       <div className="flex items-center gap-3 rounded-xl bg-sand px-4 py-5 text-pine" role="status">
         <LoaderCircle className="size-5 animate-spin" aria-hidden="true" />
-        <p>Checking Saturday and Sunday across every hill. This takes about 15 seconds.</p>
+        <p>
+          Checking {formatDayName(search.date)} from {search.from}, and the days either side. This takes about 15
+          seconds.
+        </p>
       </div>
     );
   }
@@ -151,9 +182,14 @@ function ScoutBody({ state, onRetry }: { state: State; onRetry: () => void }) {
         </span>
       </p>
 
-      {hill && answer.date && (
-        <Link href={`/results?${new URLSearchParams({ from: "Brighton", date: answer.date })}`} className={primaryButton}>
-          See {formatDayName(answer.date, "short")}&apos;s full forecast
+      {hill && answer.date === search.date && (
+        <button type="button" onClick={() => onShowHill(hill.id)} className={primaryButton}>
+          Show {hill.name}
+        </button>
+      )}
+      {hill && answer.date && answer.date !== search.date && (
+        <Link href={`/results?${searchQuery({ ...search, date: answer.date })}`} className={primaryButton}>
+          See {formatDayName(answer.date, "short")}&apos;s results
         </Link>
       )}
     </div>

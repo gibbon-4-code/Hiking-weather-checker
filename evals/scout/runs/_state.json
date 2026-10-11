@@ -1,0 +1,31 @@
+{
+  "flow": "weekend-scout",
+  "metrics": [
+    {
+      "id": "passes_checks",
+      "label": "Passes checks",
+      "kind": "binary"
+    },
+    {
+      "id": "grounded",
+      "label": "No made-up",
+      "kind": "binary"
+    }
+  ],
+  "perf_fields": [
+    "cost_usd",
+    "latency_s",
+    "tool_calls",
+    "turns"
+  ],
+  "prices": {
+    "claude-opus-5-5": {
+      "in": 4,
+      "out": 20
+    },
+    "claude-sonnet-5-5": {
+      "in": 2,
+      "out": 10
+    }
+  }
+}

@@ -1,0 +1,54 @@
+[
+  {
+    "role": "system",
+    "content": "You are the Weekend Scout for Summit Planner. You help one person who lives in Brighton decide whether this weekend is worth a hill walk, and if so where and on which day.\n\nToday is 2026-10-06. This weekend is Saturday 2026-10-10 and Sunday 2026-10-11.\n\nUse the tools to look at the data before deciding. Only state facts about the weather, the hills or the drive that the tools gave you; don't add details from general knowledge.\nNever recommend a hill marked UNSAFE.\n\nWhen you've decided, give a verdict: go (worth it: here's where and when), wait (could be good, but check again nearer the day) or skip (not worth it, or not safe). Then the hill and the day, a one-line headline and three or four short reasons. Write in plain British English."
+  },
+  {
+    "role": "user",
+    "content": "Is this weekend worth a hike? If so, where should I go and which day?"
+  },
+  {
+    "role": "tool_call",
+    "name": "get_day_ranking",
+    "content": "{\n  \"date\": \"2026-10-10\"\n}"
+  },
+  {
+    "role": "tool_call",
+    "name": "get_day_ranking",
+    "content": "{\n  \"date\": \"2026-10-11\"\n}"
+  },
+  {
+    "role": "tool_result",
+    "content": "Top hills for 2026-10-10:\n1. Ditchling Beacon (South Downs) [id: ditchling-beacon], score 38/100, Easy, low exposure, 25 min drive. Heavy rain, rain chance up to 90%, gusts 40 mph, 9–13°C (feels like 5°C).\n2. Devil's Dyke (South Downs) [id: devils-dyke], score 38/100, Easy, low exposure, 24 min drive. Heavy rain, rain chance up to 90%, gusts 40 mph, 10–14°C (feels like 6°C).\n3. Chanctonbury Ring (South Downs) [id: chanctonbury-ring], score 38/100, Easy, low exposure, 42 min drive. Heavy rain, rain chance up to 90%, gusts 40 mph, 10–13°C (feels like 6°C).\n4. Firle Beacon (South Downs) [id: firle-beacon], score 38/100, Easy, low exposure, 37 min drive. Heavy rain, rain chance up to 90%, gusts 40 mph, 10–14°C (feels like 6°C).\n5. Windover Hill (South Downs) [id: windover-hill], score 38/100, Easy, low exposure, 50 min drive. Heavy rain, rain chance up to 90%, gusts 40 mph, 10–14°C (feels like 6°C).\n6. Leith Hill (Surrey Hills) [id: leith-hill], score 38/100, Easy, low exposure, 1h 21m drive. Heavy rain, rain chance up to 90%, gusts 40 mph, 9–13°C (feels like 5°C).\n7. Blackdown (South Downs) [id: black-down-sussex], score 37/100, Easy, low exposure, 1h 27m drive. Heavy rain, rain chance up to 90%, gusts 40 mph, 9–13°C (feels like 6°C).\n8. Gibbet Hill (Surrey Hills) [id: gibbet-hill], score 37/100, Easy, low exposure, 1h 33m drive. Heavy rain, rain chance up to 90%, gusts 40 mph, 9–13°C (feels like 6°C).\n9. Butser Hill (South Downs) [id: butser-hill], score 37/100, Easy, low exposure, 1h 44m drive. Heavy rain, rain chance up to 90%, gusts 40 mph, 9–13°C (feels like 6°C).\n10. Holmbury Hill (Surrey Hills) [id: holmbury-hill], score 37/100, Easy, low exposure, 1h 24m drive. Heavy rain, rain chance up to 90%, gusts 40 mph, 9–13°C (feels like 5°C)."
+  },
+  {
+    "role": "tool_result",
+    "content": "Top hills for 2026-10-11:\n1. Ditchling Beacon (South Downs) [id: ditchling-beacon], score 41/100, Easy, low exposure, 25 min drive. Heavy rain, rain chance up to 90%, gusts 40 mph, 8–13°C (feels like 5°C).\n2. Devil's Dyke (South Downs) [id: devils-dyke], score 41/100, Easy, low exposure, 24 min drive. Heavy rain, rain chance up to 90%, gusts 40 mph, 8–13°C (feels like 6°C).\n3. Chanctonbury Ring (South Downs) [id: chanctonbury-ring], score 41/100, Easy, low exposure, 42 min drive. Heavy rain, rain chance up to 90%, gusts 40 mph, 8–13°C (feels like 6°C).\n4. Firle Beacon (South Downs) [id: firle-beacon], score 41/100, Easy, low exposure, 37 min drive. Heavy rain, rain chance up to 90%, gusts 40 mph, 8–13°C (feels like 6°C).\n5. Windover Hill (South Downs) [id: windover-hill], score 41/100, Easy, low exposure, 50 min drive. Heavy rain, rain chance up to 90%, gusts 40 mph, 8–13°C (feels like 6°C).\n6. Blackdown (South Downs) [id: black-down-sussex], score 40/100, Easy, low exposure, 1h 27m drive. Heavy rain, rain chance up to 90%, gusts 40 mph, 8–12°C (feels like 5°C).\n7. Gibbet Hill (Surrey Hills) [id: gibbet-hill], score 40/100, Easy, low exposure, 1h 33m drive. Heavy rain, rain chance up to 90%, gusts 40 mph, 8–13°C (feels like 5°C).\n8. Leith Hill (Surrey Hills) [id: leith-hill], score 40/100, Easy, low exposure, 1h 21m drive. Heavy rain, rain chance up to 90%, gusts 40 mph, 8–12°C (feels like 5°C).\n9. Holmbury Hill (Surrey Hills) [id: holmbury-hill], score 40/100, Easy, low exposure, 1h 24m drive. Heavy rain, rain chance up to 90%, gusts 40 mph, 8–12°C (feels like 5°C).\n10. Box Hill (Surrey Hills) [id: box-hill], score 40/100, Easy, low exposure, 1h 29m drive. Heavy rain, rain chance up to 90%, gusts 40 mph, 8–13°C (feels like 5°C)."
+  },
+  {
+    "role": "tool_call",
+    "name": "get_second_opinion",
+    "content": "{\n  \"mountainId\": \"ditchling-beacon\",\n  \"date\": \"2026-10-11\"\n}"
+  },
+  {
+    "role": "tool_call",
+    "name": "get_second_opinion",
+    "content": "{\n  \"mountainId\": \"ditchling-beacon\",\n  \"date\": \"2026-10-10\"\n}"
+  },
+  {
+    "role": "tool_result",
+    "content": "No Met Office forecast is available for Ditchling Beacon on 2026-10-11."
+  },
+  {
+    "role": "tool_result",
+    "content": "No Met Office forecast is available for Ditchling Beacon on 2026-10-10."
+  },
+  {
+    "role": "assistant",
+    "content": "{\"verdict\":\"skip\",\"mountainId\":null,\"date\":null,\"headline\":\"Not worth it this weekend: heavy rain and 40 mph gusts are forecast at every hill within reach on both days, so I'd give it a miss.\",\"reasons\":[\"Saturday's forecast is heavy rain, a rain chance of up to 90% and gusts of 40 mph at every hill in the top 10. Even the best scored only 38 out of 100.\",\"Sunday is barely better. The top hills score 41 out of 100, with the same heavy rain, rain chance of up to 90% and 40 mph gusts. It feels like only 5 to 6°C.\",\"The nearest options, Devil's Dyke (24 minutes) and Ditchling Beacon (25 minutes), have the same weather as hills nearly 1h 45m away, so driving further won't get you out of it.\",\"I asked the Met Office for a second opinion on Ditchling Beacon for both days, but they had no forecast available. Nothing backs up any hope of a better day.\"],\"confidence\":\"medium\"}"
+  },
+  {
+    "role": "assistant",
+    "content": "Final answer after the app's checks:\n{\n  \"verdict\": \"skip\",\n  \"mountainId\": null,\n  \"date\": null,\n  \"headline\": \"Not worth it this weekend: heavy rain and 40 mph gusts are forecast at every hill within reach on both days, so I'd give it a miss.\",\n  \"reasons\": [\n    \"Saturday's forecast is heavy rain, a rain chance of up to 90% and gusts of 40 mph at every hill in the top 10. Even the best scored only 38 out of 100.\",\n    \"Sunday is barely better. The top hills score 41 out of 100, with the same heavy rain, rain chance of up to 90% and 40 mph gusts. It feels like only 5 to 6°C.\",\n    \"The nearest options, Devil's Dyke (24 minutes) and Ditchling Beacon (25 minutes), have the same weather as hills nearly 1h 45m away, so driving further won't get you out of it.\",\n    \"I asked the Met Office for a second opinion on Ditchling Beacon for both days, but they had no forecast available. Nothing backs up any hope of a better day.\"\n  ],\n  \"confidence\": \"medium\"\n}"
+  }
+]

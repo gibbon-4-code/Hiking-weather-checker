@@ -40,3 +40,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# eval reports are generated (npm run eval rebuilds the data; the report builder rebuilds the page)
+/evals/scout/runs/report.html
+/evals/scout/runs/trajectory/

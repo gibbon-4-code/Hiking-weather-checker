@@ -99,3 +99,35 @@ The retry is tested with a stand-in for Claude that gives canned answers, so the
 **Still to watch.** On the last run Claude called Ditchling Beacon "more sheltered". Is that a fair reading of "low wind exposure", or another made-up detail? It's a grey area, so it's a job for the judge in stage 4.
 
 **PM takeaway.** _To fill in._
+
+## Stage 4: Evals
+
+**What I built.** A way to measure the Scout instead of eyeballing single runs (`npm run eval`).
+
+- **A frozen weekend.** The real forecasts for 10–11 October, for all 206 hills, saved to disk (`npm run eval:snapshot`). Only Claude's behaviour can vary between runs.
+- **15 test cases** in `evals/scout/cases.json`. Each one is a small edit of that weekend: a washed-out Saturday, a gale on the top pick, an unsafe ridge at the top of the ranking, everything dangerous, no real forecast, a Met Office forecast that disagrees, and so on. Every case asks the same question; only the world changes. `npm run eval:preview` writes them all out, with exactly what the tool will show, in `evals/scout/cases.md`.
+- **Two graders:**
+  - **code checks:** right verdict, day and hill. These are free and give the same result every time.
+  - **an LLM judge** (Claude Sonnet 5.5) for made-up facts. It reads the briefing, the tool results and the answer, and marks every claim supported or not.
+
+**The baseline: 15 cases × 2 runs, $2.30.**
+
+| | Score |
+|---|---|
+| Passes the checks | **30 / 30** |
+| No made-up facts | **24 / 30** |
+| Guardrail had to step in | 0 / 30 |
+| Bad tool calls (wrong date, unknown hill) | 0 |
+
+The 6 made-up facts fall into two patterns:
+- **"Sheltered" came back twice**, despite the prompt rule.
+- **Overreaching from limited data three times:** "every hill", when the tool only showed the top 10, and "the inland hills", when it had checked two. There was also one slip, "under 25 minutes", for a hill exactly 25 minutes away.
+
+**What building it taught me.**
+- **I had to fix the judge three times before trusting it.** It flagged claims it agreed were true. It was too strict on casual words like "fine". And it hadn't been shown the briefing Claude was given, so "47 minutes from Brighton" counted as made up. The first full run said 47% of answers had made-up facts; after fixing the judge it was 80%. Reading the grader's failures by hand before believing its score matters more than anything else here.
+- **My own test cases had bugs.** I gave one a hill that doesn't exist. My "tempting unsafe ridge" tempted nothing, because gale-force gusts lower a hill's score so much that it drops out of the ranking. And one fake forecast contradicted itself, which Claude noticed.
+- **100% on the checks isn't perfect.** A lazy "always Seven Sisters on Sunday" answer would pass 7 of the 15 cases, so the "should go" cases are easy. The safety, "don't go" and second-opinion cases do most of the work.
+
+**What I'd try next (stage 5, skipped for now to save credit).** Reword the tool so "low exposure" can't be read as "sheltered", have the ranking say "top 10 of 206 hills", re-run, and see whether 24/30 goes up. Then try cheaper models on the same 15 cases.
+
+**PM takeaway.** _To fill in._

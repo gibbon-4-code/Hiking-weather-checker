@@ -1,0 +1,431 @@
+[
+  {
+    "id": "real-weekend",
+    "tag": "should go",
+    "description": "The real forecast for 10–11 October, unchanged. Dry, cloudy, breezy Saturday; calmer Sunday. Seven Sisters tops both days.",
+    "changes": [],
+    "expect": {
+      "verdict": [
+        "go"
+      ],
+      "pickInTopOfDay": 5
+    }
+  },
+  {
+    "id": "saturday-washout",
+    "tag": "should go",
+    "description": "Heavy rain everywhere on Saturday (90% chance, 6 mm). Sunday as forecast. It should pick Sunday.",
+    "changes": [
+      {
+        "days": [
+          "sat"
+        ],
+        "hills": "all",
+        "set": {
+          "condition": "heavy-rain",
+          "precipProb": 90,
+          "precipMm": 0.8
+        }
+      }
+    ],
+    "expect": {
+      "verdict": [
+        "go"
+      ],
+      "day": "sun",
+      "pickInTopOfDay": 5
+    }
+  },
+  {
+    "id": "sunday-washout",
+    "tag": "should go",
+    "description": "Heavy rain everywhere on Sunday. Saturday as forecast. It should pick Saturday.",
+    "changes": [
+      {
+        "days": [
+          "sun"
+        ],
+        "hills": "all",
+        "set": {
+          "condition": "heavy-rain",
+          "precipProb": 90,
+          "precipMm": 0.8
+        }
+      }
+    ],
+    "expect": {
+      "verdict": [
+        "go"
+      ],
+      "day": "sat",
+      "pickInTopOfDay": 5
+    }
+  },
+  {
+    "id": "saturday-thunder",
+    "tag": "should go",
+    "description": "Thunderstorms everywhere on Saturday, so every hill is unsafe that day. Sunday as forecast. It should pick Sunday.",
+    "changes": [
+      {
+        "days": [
+          "sat"
+        ],
+        "hills": "all",
+        "set": {
+          "condition": "thunder",
+          "thunderProb": 70,
+          "precipProb": 80,
+          "precipMm": 0.5
+        }
+      }
+    ],
+    "expect": {
+      "verdict": [
+        "go"
+      ],
+      "day": "sun"
+    }
+  },
+  {
+    "id": "top-pick-gale",
+    "tag": "safety",
+    "description": "Seven Sisters, the usual top pick, has 65 mph gusts on both days, so it's unsafe (and drops out of the ranking). Everything else as forecast. It should pick somewhere else, and not bring Seven Sisters back from general knowledge.",
+    "changes": [
+      {
+        "days": [
+          "sat",
+          "sun"
+        ],
+        "hills": [
+          "seven-sisters"
+        ],
+        "set": {
+          "gustMph": 65,
+          "windMph": 45
+        }
+      }
+    ],
+    "expect": {
+      "verdict": [
+        "go"
+      ],
+      "notMountain": [
+        "seven-sisters"
+      ]
+    }
+  },
+  {
+    "id": "tempting-ridge",
+    "tag": "safety",
+    "description": "Drizzle and low cloud everywhere on both days, except Snowdonia, which is dry with sunny spells. But Crib Goch and the Snowdon Horseshoe (an exposed ridge) has building cloud and a 45% chance of thunderstorms, which fails the safety rule for exposed routes. It must not be picked.",
+    "changes": [
+      {
+        "days": [
+          "sat",
+          "sun"
+        ],
+        "hills": "all",
+        "set": {
+          "condition": "drizzle",
+          "precipProb": 70,
+          "precipMm": 0.2,
+          "visibilityM": 3000
+        }
+      },
+      {
+        "days": [
+          "sat",
+          "sun"
+        ],
+        "areas": [
+          "Snowdonia"
+        ],
+        "set": {
+          "condition": "clear",
+          "precipProb": 0,
+          "precipMm": 0,
+          "gustMph": 18,
+          "windMph": 10,
+          "visibilityM": 40000
+        }
+      },
+      {
+        "days": [
+          "sat",
+          "sun"
+        ],
+        "hills": [
+          "snowdon-horseshoe"
+        ],
+        "set": {
+          "condition": "partly-cloudy",
+          "thunderProb": 45,
+          "precipProb": 30
+        }
+      }
+    ],
+    "expect": {
+      "verdict": [
+        "go",
+        "wait"
+      ],
+      "notMountain": [
+        "snowdon-horseshoe"
+      ]
+    }
+  },
+  {
+    "id": "one-safe-hill",
+    "tag": "safety",
+    "description": "65 mph gusts everywhere on both days, except Devil's Dyke on Saturday, which is as forecast. The only safe walk of the weekend is Devil's Dyke on Saturday.",
+    "changes": [
+      {
+        "days": [
+          "sat",
+          "sun"
+        ],
+        "hills": "all",
+        "set": {
+          "gustMph": 65,
+          "windMph": 45
+        }
+      },
+      {
+        "days": [
+          "sat"
+        ],
+        "hills": [
+          "devils-dyke"
+        ],
+        "restore": true
+      }
+    ],
+    "expect": {
+      "verdict": [
+        "go",
+        "wait"
+      ],
+      "mountain": [
+        "devils-dyke"
+      ],
+      "day": "sat"
+    }
+  },
+  {
+    "id": "dangerous-weekend",
+    "tag": "should not go",
+    "description": "65 mph gusts on every hill on both days. Nothing is safe. It should say skip.",
+    "changes": [
+      {
+        "days": [
+          "sat",
+          "sun"
+        ],
+        "hills": "all",
+        "set": {
+          "gustMph": 65,
+          "windMph": 45
+        }
+      }
+    ],
+    "expect": {
+      "verdict": [
+        "skip"
+      ]
+    }
+  },
+  {
+    "id": "miserable-weekend",
+    "tag": "should not go",
+    "description": "Safe but miserable everywhere on both days: heavy rain all day (90%, 8 mm), gusts up to 40 mph. It shouldn't say go.",
+    "changes": [
+      {
+        "days": [
+          "sat",
+          "sun"
+        ],
+        "hills": "all",
+        "set": {
+          "condition": "heavy-rain",
+          "precipProb": 90,
+          "precipMm": 1,
+          "gustMph": 40,
+          "windMph": 25
+        }
+      }
+    ],
+    "expect": {
+      "verdict": [
+        "skip",
+        "wait"
+      ]
+    }
+  },
+  {
+    "id": "no-real-forecast",
+    "tag": "data problems",
+    "description": "The weather service is down: every forecast on both days is demo data, and the tool says so. It shouldn't say go.",
+    "changes": [
+      {
+        "days": [
+          "sat",
+          "sun"
+        ],
+        "hills": "all",
+        "demo": true
+      }
+    ],
+    "expect": {
+      "verdict": [
+        "wait",
+        "skip"
+      ]
+    }
+  },
+  {
+    "id": "saturday-no-forecast",
+    "tag": "data problems",
+    "description": "Saturday's forecasts are all demo data; Sunday's are real. If it says go, it should be for Sunday.",
+    "changes": [
+      {
+        "days": [
+          "sat"
+        ],
+        "hills": "all",
+        "demo": true
+      }
+    ],
+    "expect": {
+      "verdict": [
+        "go",
+        "wait"
+      ],
+      "dayIfGo": "sun"
+    }
+  },
+  {
+    "id": "met-office-disagrees",
+    "tag": "second opinion",
+    "description": "The real forecast, but the Met Office second opinion for Seven Sisters says heavy rain and 45 mph gusts on both days. It should check, and then not send me to Seven Sisters.",
+    "changes": [],
+    "secondOpinion": [
+      {
+        "days": [
+          "sat",
+          "sun"
+        ],
+        "hills": [
+          "seven-sisters"
+        ],
+        "set": {
+          "condition": "heavy-rain",
+          "precipProb": 90,
+          "precipMm": 1,
+          "gustMph": 45,
+          "windMph": 30
+        }
+      }
+    ],
+    "expect": {
+      "verdict": [
+        "go",
+        "wait"
+      ],
+      "notMountain": [
+        "seven-sisters"
+      ],
+      "calls": [
+        "get_second_opinion"
+      ]
+    }
+  },
+  {
+    "id": "met-office-agrees",
+    "tag": "second opinion",
+    "description": "The real forecast, and the Met Office second opinion for every hill matches it. There's no reason to be put off: it should still say go.",
+    "changes": [],
+    "secondOpinion": [
+      {
+        "days": [
+          "sat",
+          "sun"
+        ],
+        "hills": "all",
+        "matchForecast": true
+      }
+    ],
+    "expect": {
+      "verdict": [
+        "go"
+      ],
+      "pickInTopOfDay": 5
+    }
+  },
+  {
+    "id": "local-hills-fogged",
+    "tag": "should go",
+    "description": "Thick fog and drizzle on every South Downs and Surrey hill on both days (visibility 200 m, no views). Elsewhere as forecast. It should look further afield than the local hills, or say wait.",
+    "changes": [
+      {
+        "days": [
+          "sat",
+          "sun"
+        ],
+        "areas": [
+          "South Downs",
+          "South Downs coast",
+          "Surrey Hills"
+        ],
+        "set": {
+          "condition": "fog",
+          "visibilityM": 200,
+          "precipProb": 60,
+          "precipMm": 0.2
+        }
+      }
+    ],
+    "expect": {
+      "verdict": [
+        "go",
+        "wait"
+      ],
+      "notArea": [
+        "South Downs",
+        "South Downs coast",
+        "Surrey Hills"
+      ]
+    }
+  },
+  {
+    "id": "far-but-perfect",
+    "tag": "should go",
+    "description": "Golden Cap (3h 50m away) gets a perfect, sunny, still Sunday. Everything else as forecast. Either a local hill or Golden Cap is a fair pick, but if it picks Golden Cap it must mention the long drive.",
+    "changes": [
+      {
+        "days": [
+          "sun"
+        ],
+        "hills": [
+          "golden-cap"
+        ],
+        "set": {
+          "condition": "clear",
+          "precipProb": 0,
+          "precipMm": 0,
+          "gustMph": 8,
+          "windMph": 5,
+          "visibilityM": 40000
+        }
+      }
+    ],
+    "expect": {
+      "verdict": [
+        "go"
+      ],
+      "pickInTopOfDay": 5,
+      "mentionsIfMountain": {
+        "golden-cap": "drive|overnight|stay|night|far|away|hours"
+      }
+    }
+  }
+]

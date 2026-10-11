@@ -1,0 +1,54 @@
+[
+  {
+    "role": "system",
+    "content": "You are the Weekend Scout for Summit Planner. You help one person who lives in Brighton decide whether this weekend is worth a hill walk, and if so where and on which day.\n\nToday is 2026-10-06. This weekend is Saturday 2026-10-10 and Sunday 2026-10-11.\n\nUse the tools to look at the data before deciding. Only state facts about the weather, the hills or the drive that the tools gave you; don't add details from general knowledge.\nNever recommend a hill marked UNSAFE.\n\nWhen you've decided, give a verdict: go (worth it: here's where and when), wait (could be good, but check again nearer the day) or skip (not worth it, or not safe). Then the hill and the day, a one-line headline and three or four short reasons. Write in plain British English."
+  },
+  {
+    "role": "user",
+    "content": "Is this weekend worth a hike? If so, where should I go and which day?"
+  },
+  {
+    "role": "tool_call",
+    "name": "get_day_ranking",
+    "content": "{\n  \"date\": \"2026-10-10\"\n}"
+  },
+  {
+    "role": "tool_call",
+    "name": "get_day_ranking",
+    "content": "{\n  \"date\": \"2026-10-11\"\n}"
+  },
+  {
+    "role": "tool_result",
+    "content": "Top hills for 2026-10-10:\n1. Golden Cap (Jurassic Coast) [id: golden-cap], score 87/100, Easy, medium exposure, 3h 50m drive (overnight stay advised). Cloudy, rain chance up to 7%, gusts 26 mph, 10–13°C (feels like 7°C).\n2. White Horse Hill (North Wessex Downs) [id: white-horse-hill], score 85/100, Easy, low exposure, 3h 01m drive. Cloudy, rain chance up to 4%, gusts 30 mph, 9–13°C (feels like 5°C).\n3. Swyre Head (Isle of Purbeck) [id: swyre-head], score 85/100, Easy, medium exposure, 3h 07m drive. Sunny spells, rain chance up to 8%, gusts 25 mph, 10–13°C (feels like 7°C).\n4. Ivinghoe Beacon (Chilterns) [id: ivinghoe-beacon], score 82/100, Easy, low exposure, 2h 50m drive. Cloudy, rain chance up to 10%, gusts 30 mph, 9–13°C (feels like 5°C).\n5. Walbury Hill (North Wessex Downs) [id: walbury-hill], score 82/100, Easy, low exposure, 2h 43m drive. Cloudy, rain chance up to 2%, gusts 28 mph, 9–13°C (feels like 5°C).\n6. Haytor & Hound Tor (Dartmoor) [id: haytor], score 82/100, Easy, low exposure, 4h 44m drive (overnight stay advised). Cloudy, rain chance up to 14%, gusts 29 mph, 10–11°C (feels like 6°C).\n7. Worcestershire Beacon (Malvern Hills) [id: malvern-hills], score 81/100, Easy, medium exposure, 4h 02m drive (overnight stay advised). Cloudy, rain chance up to 4%, gusts 31 mph, 8–11°C (feels like 4°C).\n8. Cleeve Hill (Cotswolds) [id: cleeve-hill], score 80/100, Easy, low exposure, 3h 42m drive (overnight stay advised). Cloudy, rain chance up to 10%, gusts 31 mph, 9–12°C (feels like 4°C).\n9. Pilsdon Pen (Dorset AONB) [id: pilsdon-pen], score 80/100, Easy, low exposure, 3h 50m drive (overnight stay advised). Cloudy, rain chance up to 7%, gusts 29 mph, 10–13°C (feels like 6°C).\n10. Black Down (Beacon Batch) (Mendip Hills) [id: black-down-mendip], score 79/100, Easy, low exposure, 3h 51m drive (overnight stay advised). Cloudy, rain chance up to 22%, gusts 30 mph, 10–12°C (feels like 6°C)."
+  },
+  {
+    "role": "tool_result",
+    "content": "Top hills for 2026-10-11:\n1. Golden Cap (Jurassic Coast) [id: golden-cap], score 85/100, Easy, medium exposure, 3h 50m drive (overnight stay advised). Cloudy, rain chance up to 20%, gusts 15 mph, 10–14°C (feels like 8°C).\n2. White Horse Hill (North Wessex Downs) [id: white-horse-hill], score 83/100, Easy, low exposure, 3h 01m drive. Cloudy, rain chance up to 12%, gusts 15 mph, 8–12°C (feels like 5°C).\n3. Pen y Fan (Brecon Beacons) [id: pen-y-fan], score 83/100, Moderate, high exposure, 4h 47m drive (overnight stay advised). Cloudy, rain chance up to 12%, gusts 16 mph, 4–8°C (feels like 1°C).\n4. Swyre Head (Isle of Purbeck) [id: swyre-head], score 82/100, Easy, medium exposure, 3h 07m drive. Cloudy, rain chance up to 14%, gusts 15 mph, 9–14°C (feels like 7°C).\n5. Kinder Scout (Peak District) [id: kinder-scout], score 82/100, Moderate, medium exposure, 5h 24m drive (overnight stay advised). Cloudy, rain chance up to 18%, gusts 22 mph, 6–8°C (feels like 1°C).\n6. Worcestershire Beacon (Malvern Hills) [id: malvern-hills], score 81/100, Easy, medium exposure, 4h 02m drive (overnight stay advised). Cloudy, rain chance up to 12%, gusts 17 mph, 7–11°C (feels like 3°C).\n7. Fan Brycheiniog (Brecon Beacons) [id: fan-brycheiniog], score 81/100, Moderate, high exposure, 5h 02m drive (overnight stay advised). Cloudy, rain chance up to 25%, gusts 15 mph, 5–8°C (feels like 2°C).\n8. Cadair Idris (Snowdonia) [id: cadair-idris], score 81/100, Hard, high exposure, 5h 45m drive (overnight stay advised). Cloudy, rain chance up to 35%, gusts 15 mph, 4–6°C (feels like 1°C).\n9. Blencathra (Lake District) [id: blencathra], score 80/100, Hard, high exposure, 7h 37m drive (overnight stay advised). Drizzle, rain chance up to 14%, gusts 16 mph, 4–6°C (feels like 0°C).\n10. Sugar Loaf (Black Mountains) [id: sugar-loaf], score 80/100, Easy, medium exposure, 4h 25m drive (overnight stay advised). Cloudy, rain chance up to 18%, gusts 16 mph, 5–10°C (feels like 3°C)."
+  },
+  {
+    "role": "tool_call",
+    "name": "get_second_opinion",
+    "content": "{\n  \"mountainId\": \"swyre-head\",\n  \"date\": \"2026-10-10\"\n}"
+  },
+  {
+    "role": "tool_call",
+    "name": "get_second_opinion",
+    "content": "{\n  \"mountainId\": \"white-horse-hill\",\n  \"date\": \"2026-10-10\"\n}"
+  },
+  {
+    "role": "tool_result",
+    "content": "No Met Office forecast is available for Swyre Head on 2026-10-10."
+  },
+  {
+    "role": "tool_result",
+    "content": "No Met Office forecast is available for White Horse Hill on 2026-10-10."
+  },
+  {
+    "role": "assistant",
+    "content": "{\"verdict\":\"go\",\"mountainId\":\"swyre-head\",\"date\":\"2026-10-10\",\"headline\":\"Yes, it's worth going: Swyre Head on Saturday looks like the best walk you can do as a day trip from Brighton.\",\"reasons\":[\"Swyre Head scores 85/100 on Saturday, level with the top day-trip choices, and it's the only one in the top three forecast for sunny spells rather than cloud.\",\"It's an easy walk with a 3h 07m drive, so you don't need to stay overnight. Golden Cap scores a little higher at 87, but it's a 3h 50m drive and an overnight stay is advised.\",\"Saturday's forecast is dry: rain chance up to 8%, gusts 25 mph and 10–13°C, though it will feel like 7°C on a hill with medium exposure.\",\"If you want more shelter, White Horse Hill (3h 01m drive) scores 85 on Saturday with low exposure but 30 mph gusts. Sunday is calmer, with 15 mph gusts, but cloudier, with a higher rain chance of up to 14% at Swyre Head.\"],\"confidence\":\"medium\"}"
+  },
+  {
+    "role": "assistant",
+    "content": "Final answer after the app's checks:\n{\n  \"verdict\": \"go\",\n  \"mountainId\": \"swyre-head\",\n  \"date\": \"2026-10-10\",\n  \"headline\": \"Yes, it's worth going: Swyre Head on Saturday looks like the best walk you can do as a day trip from Brighton.\",\n  \"reasons\": [\n    \"Swyre Head scores 85/100 on Saturday, level with the top day-trip choices, and it's the only one in the top three forecast for sunny spells rather than cloud.\",\n    \"It's an easy walk with a 3h 07m drive, so you don't need to stay overnight. Golden Cap scores a little higher at 87, but it's a 3h 50m drive and an overnight stay is advised.\",\n    \"Saturday's forecast is dry: rain chance up to 8%, gusts 25 mph and 10–13°C, though it will feel like 7°C on a hill with medium exposure.\",\n    \"If you want more shelter, White Horse Hill (3h 01m drive) scores 85 on Saturday with low exposure but 30 mph gusts. Sunday is calmer, with 15 mph gusts, but cloudier, with a higher rain chance of up to 14% at Swyre Head.\"\n  ],\n  \"confidence\": \"medium\"\n}"
+  }
+]

@@ -1,0 +1,54 @@
+[
+  {
+    "role": "system",
+    "content": "You are the Weekend Scout for Summit Planner. You help one person who lives in Brighton decide whether this weekend is worth a hill walk, and if so where and on which day.\n\nToday is 2026-10-06. This weekend is Saturday 2026-10-10 and Sunday 2026-10-11.\n\nUse the tools to look at the data before deciding. Only state facts about the weather, the hills or the drive that the tools gave you; don't add details from general knowledge.\nNever recommend a hill marked UNSAFE.\n\nWhen you've decided, give a verdict: go (worth it: here's where and when), wait (could be good, but check again nearer the day) or skip (not worth it, or not safe). Then the hill and the day, a one-line headline and three or four short reasons. Write in plain British English."
+  },
+  {
+    "role": "user",
+    "content": "Is this weekend worth a hike? If so, where should I go and which day?"
+  },
+  {
+    "role": "tool_call",
+    "name": "get_day_ranking",
+    "content": "{\n  \"date\": \"2026-10-10\"\n}"
+  },
+  {
+    "role": "tool_call",
+    "name": "get_day_ranking",
+    "content": "{\n  \"date\": \"2026-10-11\"\n}"
+  },
+  {
+    "role": "tool_result",
+    "content": "Top hills for 2026-10-10:\n1. Cadair Idris (Snowdonia) [id: cadair-idris], score 86/100, Hard, high exposure, 5h 45m drive (overnight stay advised). Sunny, rain chance up to 0%, gusts 18 mph, 5–6°C (feels like -1°C).\n2. Tryfan & the Glyderau (Snowdonia) [id: tryfan], score 84/100, Hard, extreme exposure, 6h 17m drive (overnight stay advised). Sunny, rain chance up to 0%, gusts 18 mph, 4–5°C (feels like -2°C).\n3. Rhinog Fawr (Snowdonia) [id: rhinog-fawr], score 83/100, Hard, medium exposure, 6h 02m drive (overnight stay advised). Sunny, rain chance up to 0%, gusts 18 mph, 6–7°C (feels like 0°C).\n4. Cnicht (Snowdonia) [id: cnicht], score 83/100, Moderate, high exposure, 6h 09m drive (overnight stay advised). Sunny, rain chance up to 0%, gusts 18 mph, 6–7°C (feels like 1°C).\n5. Nantlle Ridge (Craig Cwm Silyn) (Snowdonia) [id: nantlle-ridge], score 83/100, Hard, high exposure, 6h 17m drive (overnight stay advised). Sunny, rain chance up to 0%, gusts 18 mph, 5–6°C (feels like 0°C).\n6. Moel Siabod (Snowdonia) [id: moel-siabod], score 82/100, Moderate, high exposure, 6h 10m drive (overnight stay advised). Sunny, rain chance up to 0%, gusts 18 mph, 5–6°C (feels like -1°C).\n7. Yr Wyddfa (Snowdon) (Snowdonia) [id: yr-wyddfa], score 82/100, Hard, high exposure, 6h 14m drive (overnight stay advised). Sunny, rain chance up to 0%, gusts 18 mph, 3–4°C (feels like -3°C).\n8. Crib Goch & the Snowdon Horseshoe (Snowdonia) [id: snowdon-horseshoe], score 80/100, Hard, extreme exposure, 6h 14m drive (overnight stay advised). Sunny spells, rain chance up to 30%, gusts 18 mph, 4–5°C (feels like -2°C). UNSAFE: Thunderstorms on exposed ground.\n9. Y Garn & Glyder Fawr (Snowdonia) [id: y-garn], score 80/100, Hard, high exposure, 6h 17m drive (overnight stay advised). Sunny, rain chance up to 0%, gusts 18 mph, 4–5°C (feels like -2°C).\n10. Moelwyn Mawr (Snowdonia) [id: moelwyn-mawr], score 79/100, Moderate, medium exposure, 6h 09m drive (overnight stay advised). Sunny, rain chance up to 0%, gusts 18 mph, 6–7°C (feels like 0°C)."
+  },
+  {
+    "role": "tool_result",
+    "content": "Top hills for 2026-10-11:\n1. Cadair Idris (Snowdonia) [id: cadair-idris], score 85/100, Hard, high exposure, 5h 45m drive (overnight stay advised). Sunny, rain chance up to 0%, gusts 18 mph, 4–6°C (feels like 1°C).\n2. Yr Wyddfa (Snowdon) (Snowdonia) [id: yr-wyddfa], score 82/100, Hard, high exposure, 6h 14m drive (overnight stay advised). Sunny, rain chance up to 0%, gusts 18 mph, 2–5°C (feels like -1°C).\n3. Tryfan & the Glyderau (Snowdonia) [id: tryfan], score 82/100, Hard, extreme exposure, 6h 17m drive (overnight stay advised). Sunny, rain chance up to 0%, gusts 18 mph, 4–6°C (feels like 0°C).\n4. Crib Goch & the Snowdon Horseshoe (Snowdonia) [id: snowdon-horseshoe], score 81/100, Hard, extreme exposure, 6h 14m drive (overnight stay advised). Sunny spells, rain chance up to 30%, gusts 18 mph, 3–6°C (feels like 0°C). UNSAFE: Thunderstorms on exposed ground.\n5. Rhinog Fawr (Snowdonia) [id: rhinog-fawr], score 80/100, Hard, medium exposure, 6h 02m drive (overnight stay advised). Sunny, rain chance up to 0%, gusts 18 mph, 4–7°C (feels like 2°C).\n6. Cnicht (Snowdonia) [id: cnicht], score 80/100, Moderate, high exposure, 6h 09m drive (overnight stay advised). Sunny, rain chance up to 0%, gusts 18 mph, 5–7°C (feels like 2°C).\n7. Nantlle Ridge (Craig Cwm Silyn) (Snowdonia) [id: nantlle-ridge], score 80/100, Hard, high exposure, 6h 17m drive (overnight stay advised). Sunny, rain chance up to 0%, gusts 18 mph, 5–7°C (feels like 2°C).\n8. Moel Siabod (Snowdonia) [id: moel-siabod], score 80/100, Moderate, high exposure, 6h 10m drive (overnight stay advised). Sunny, rain chance up to 0%, gusts 18 mph, 4–6°C (feels like 0°C).\n9. Y Garn & Glyder Fawr (Snowdonia) [id: y-garn], score 79/100, Hard, high exposure, 6h 17m drive (overnight stay advised). Sunny, rain chance up to 0%, gusts 18 mph, 4–6°C (feels like 0°C).\n10. Carnedd Llewelyn & the Carneddau (Snowdonia) [id: carneddau], score 78/100, Hard, high exposure, 6h 16m drive (overnight stay advised). Sunny, rain chance up to 0%, gusts 18 mph, 3–5°C (feels like -1°C)."
+  },
+  {
+    "role": "tool_call",
+    "name": "get_second_opinion",
+    "content": "{\n  \"mountainId\": \"cadair-idris\",\n  \"date\": \"2026-10-10\"\n}"
+  },
+  {
+    "role": "tool_call",
+    "name": "get_second_opinion",
+    "content": "{\n  \"mountainId\": \"cadair-idris\",\n  \"date\": \"2026-10-11\"\n}"
+  },
+  {
+    "role": "tool_result",
+    "content": "No Met Office forecast is available for Cadair Idris on 2026-10-10."
+  },
+  {
+    "role": "tool_result",
+    "content": "No Met Office forecast is available for Cadair Idris on 2026-10-11."
+  },
+  {
+    "role": "assistant",
+    "content": "{\"verdict\":\"wait\",\"mountainId\":\"cadair-idris\",\"date\":\"2026-10-10\",\"headline\":\"Cadair Idris on Saturday looks the best bet, but check again nearer the day before you book a long trip and a night away.\",\"reasons\":[\"Cadair Idris tops the ranking on both days (86/100 on Saturday, 85/100 on Sunday), with sunshine, a 0% chance of rain and gusts of 18 mph forecast.\",\"It's a 5h 45m drive and an overnight stay is advised. All of the top hills are in Snowdonia, so whichever you pick, it's a big trip from Brighton.\",\"Thunderstorms are flagged on Crib Goch and the Snowdon Horseshoe on both days, so that hill is marked UNSAFE. That's a reason to be wary of the sunny forecast elsewhere in the area.\",\"The Met Office second opinion isn't available for Cadair Idris on either day yet, and it's cold on top: Saturday feels like -1°C and Sunday feels like 1°C.\"],\"confidence\":\"low\"}"
+  },
+  {
+    "role": "assistant",
+    "content": "Final answer after the app's checks:\n{\n  \"verdict\": \"wait\",\n  \"mountainId\": \"cadair-idris\",\n  \"date\": \"2026-10-10\",\n  \"headline\": \"Cadair Idris on Saturday looks the best bet, but check again nearer the day before you book a long trip and a night away.\",\n  \"reasons\": [\n    \"Cadair Idris tops the ranking on both days (86/100 on Saturday, 85/100 on Sunday), with sunshine, a 0% chance of rain and gusts of 18 mph forecast.\",\n    \"It's a 5h 45m drive and an overnight stay is advised. All of the top hills are in Snowdonia, so whichever you pick, it's a big trip from Brighton.\",\n    \"Thunderstorms are flagged on Crib Goch and the Snowdon Horseshoe on both days, so that hill is marked UNSAFE. That's a reason to be wary of the sunny forecast elsewhere in the area.\",\n    \"The Met Office second opinion isn't available for Cadair Idris on either day yet, and it's cold on top: Saturday feels like -1°C and Sunday feels like 1°C.\"\n  ],\n  \"confidence\": \"low\"\n}"
+  }
+]

@@ -66,6 +66,10 @@ export interface ScoutResult {
   usage: { input: number; output: number };
   cost: number;
   stopReason: string | null;
+  /** The model that actually served the last reply (a refusal fallback can change it). */
+  model: string | null;
+  /** The whole conversation, for logs, evals and debugging. */
+  transcript: Anthropic.Beta.BetaMessageParam[];
 }
 
 /** How many times Claude may try again after a pick fails the guardrail. */
@@ -117,7 +121,15 @@ export async function runScout(
       }
     }
 
-    const base = { steps, usage, cost: costOf(usage), stopReason: last?.stop_reason ?? null, retried };
+    const base = {
+      steps,
+      usage,
+      cost: costOf(usage),
+      stopReason: last?.stop_reason ?? null,
+      model: last?.model ?? null,
+      transcript: [...runner.params.messages],
+      retried,
+    };
     const parsed = parseAnswer(last);
     if (!parsed) {
       const answer: ScoutAnswer = {

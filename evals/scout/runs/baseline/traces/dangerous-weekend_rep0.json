@@ -1,0 +1,54 @@
+[
+  {
+    "role": "system",
+    "content": "You are the Weekend Scout for Summit Planner. You help one person who lives in Brighton decide whether this weekend is worth a hill walk, and if so where and on which day.\n\nToday is 2026-10-06. This weekend is Saturday 2026-10-10 and Sunday 2026-10-11.\n\nUse the tools to look at the data before deciding. Only state facts about the weather, the hills or the drive that the tools gave you; don't add details from general knowledge.\nNever recommend a hill marked UNSAFE.\n\nWhen you've decided, give a verdict: go (worth it: here's where and when), wait (could be good, but check again nearer the day) or skip (not worth it, or not safe). Then the hill and the day, a one-line headline and three or four short reasons. Write in plain British English."
+  },
+  {
+    "role": "user",
+    "content": "Is this weekend worth a hike? If so, where should I go and which day?"
+  },
+  {
+    "role": "tool_call",
+    "name": "get_day_ranking",
+    "content": "{\n  \"date\": \"2026-10-10\"\n}"
+  },
+  {
+    "role": "tool_call",
+    "name": "get_day_ranking",
+    "content": "{\n  \"date\": \"2026-10-11\"\n}"
+  },
+  {
+    "role": "tool_result",
+    "content": "Top hills for 2026-10-10:\n1. Ditchling Beacon (South Downs) [id: ditchling-beacon], score 73/100, Easy, low exposure, 25 min drive. Cloudy, rain chance up to 2%, gusts 65 mph, 9–13°C (feels like 5°C). UNSAFE: Summit gusts 65 mph.\n2. Devil's Dyke (South Downs) [id: devils-dyke], score 73/100, Easy, low exposure, 24 min drive. Cloudy, rain chance up to 0%, gusts 65 mph, 10–14°C (feels like 6°C). UNSAFE: Summit gusts 65 mph.\n3. Chanctonbury Ring (South Downs) [id: chanctonbury-ring], score 73/100, Easy, low exposure, 42 min drive. Cloudy, rain chance up to 2%, gusts 65 mph, 10–13°C (feels like 6°C). UNSAFE: Summit gusts 65 mph.\n4. Firle Beacon (South Downs) [id: firle-beacon], score 73/100, Easy, low exposure, 37 min drive. Cloudy, rain chance up to 2%, gusts 65 mph, 10–14°C (feels like 6°C). UNSAFE: Summit gusts 65 mph.\n5. Windover Hill (South Downs) [id: windover-hill], score 73/100, Easy, low exposure, 50 min drive. Cloudy, rain chance up to 0%, gusts 65 mph, 10–14°C (feels like 6°C). UNSAFE: Summit gusts 65 mph.\n6. White Horse Hill (North Wessex Downs) [id: white-horse-hill], score 73/100, Easy, low exposure, 3h 01m drive. Cloudy, rain chance up to 4%, gusts 65 mph, 9–13°C (feels like 5°C). UNSAFE: Summit gusts 65 mph.\n7. Blackdown (South Downs) [id: black-down-sussex], score 72/100, Easy, low exposure, 1h 27m drive. Cloudy, rain chance up to 4%, gusts 65 mph, 9–13°C (feels like 6°C). UNSAFE: Summit gusts 65 mph.\n8. Gibbet Hill (Surrey Hills) [id: gibbet-hill], score 72/100, Easy, low exposure, 1h 33m drive. Cloudy, rain chance up to 4%, gusts 65 mph, 9–13°C (feels like 6°C). UNSAFE: Summit gusts 65 mph.\n9. Butser Hill (South Downs) [id: butser-hill], score 72/100, Easy, low exposure, 1h 44m drive. Cloudy, rain chance up to 6%, gusts 65 mph, 9–13°C (feels like 6°C). UNSAFE: Summit gusts 65 mph.\n10. Leith Hill (Surrey Hills) [id: leith-hill], score 72/100, Easy, low exposure, 1h 21m drive. Sunny spells, rain chance up to 4%, gusts 65 mph, 9–13°C (feels like 5°C). UNSAFE: Summit gusts 65 mph."
+  },
+  {
+    "role": "tool_result",
+    "content": "Top hills for 2026-10-11:\n1. Ditchling Beacon (South Downs) [id: ditchling-beacon], score 72/100, Easy, low exposure, 25 min drive. Cloudy, rain chance up to 8%, gusts 65 mph, 8–13°C (feels like 5°C). UNSAFE: Summit gusts 65 mph.\n2. Devil's Dyke (South Downs) [id: devils-dyke], score 72/100, Easy, low exposure, 24 min drive. Cloudy, rain chance up to 10%, gusts 65 mph, 8–13°C (feels like 6°C). UNSAFE: Summit gusts 65 mph.\n3. Chanctonbury Ring (South Downs) [id: chanctonbury-ring], score 72/100, Easy, low exposure, 42 min drive. Cloudy, rain chance up to 8%, gusts 65 mph, 8–13°C (feels like 6°C). UNSAFE: Summit gusts 65 mph.\n4. Firle Beacon (South Downs) [id: firle-beacon], score 72/100, Easy, low exposure, 37 min drive. Cloudy, rain chance up to 8%, gusts 65 mph, 8–13°C (feels like 6°C). UNSAFE: Summit gusts 65 mph.\n5. Windover Hill (South Downs) [id: windover-hill], score 72/100, Easy, low exposure, 50 min drive. Cloudy, rain chance up to 8%, gusts 65 mph, 8–13°C (feels like 6°C). UNSAFE: Summit gusts 65 mph.\n6. Blackdown (South Downs) [id: black-down-sussex], score 71/100, Easy, low exposure, 1h 27m drive. Cloudy, rain chance up to 10%, gusts 65 mph, 8–12°C (feels like 5°C). UNSAFE: Summit gusts 65 mph.\n7. Gibbet Hill (Surrey Hills) [id: gibbet-hill], score 71/100, Easy, low exposure, 1h 33m drive. Cloudy, rain chance up to 10%, gusts 65 mph, 8–13°C (feels like 5°C). UNSAFE: Summit gusts 65 mph.\n8. Leith Hill (Surrey Hills) [id: leith-hill], score 71/100, Easy, low exposure, 1h 21m drive. Cloudy, rain chance up to 8%, gusts 65 mph, 8–12°C (feels like 5°C). UNSAFE: Summit gusts 65 mph.\n9. Holmbury Hill (Surrey Hills) [id: holmbury-hill], score 71/100, Easy, low exposure, 1h 24m drive. Cloudy, rain chance up to 8%, gusts 65 mph, 8–12°C (feels like 5°C). UNSAFE: Summit gusts 65 mph.\n10. Box Hill (Surrey Hills) [id: box-hill], score 71/100, Easy, low exposure, 1h 29m drive. Cloudy, rain chance up to 8%, gusts 65 mph, 8–13°C (feels like 5°C). UNSAFE: Summit gusts 65 mph."
+  },
+  {
+    "role": "tool_call",
+    "name": "get_second_opinion",
+    "content": "{\n  \"mountainId\": \"devils-dyke\",\n  \"date\": \"2026-10-10\"\n}"
+  },
+  {
+    "role": "tool_call",
+    "name": "get_second_opinion",
+    "content": "{\n  \"mountainId\": \"devils-dyke\",\n  \"date\": \"2026-10-11\"\n}"
+  },
+  {
+    "role": "tool_result",
+    "content": "No Met Office forecast is available for Devil's Dyke on 2026-10-10."
+  },
+  {
+    "role": "tool_result",
+    "content": "No Met Office forecast is available for Devil's Dyke on 2026-10-11."
+  },
+  {
+    "role": "assistant",
+    "content": "{\"verdict\":\"skip\",\"mountainId\":null,\"date\":null,\"headline\":\"Give the hills a miss this weekend: every hill in the top 10 is marked unsafe on both Saturday and Sunday because of 65 mph gusts at the summit.\",\"reasons\":[\"All 10 top-ranked hills on Saturday 10 October are marked UNSAFE for 65 mph summit gusts, from Devil's Dyke and Ditchling Beacon (about 25 minutes away) to White Horse Hill (about 3 hours away).\",\"Sunday 11 October looks the same: every hill in the top 10 is marked UNSAFE for 65 mph summit gusts, and it's slightly wetter, with up to a 10% chance of rain.\",\"Apart from the wind, both days look mild and mostly dry, with highs of 12 to 14°C, but it will feel more like 5 to 6°C.\",\"I couldn't get a Met Office second opinion for either day. It's odd that every hill shows exactly the same 65 mph gust, so check again on Friday in case the forecast changes.\"],\"confidence\":\"medium\"}"
+  },
+  {
+    "role": "assistant",
+    "content": "Final answer after the app's checks:\n{\n  \"verdict\": \"skip\",\n  \"mountainId\": null,\n  \"date\": null,\n  \"headline\": \"Give the hills a miss this weekend: every hill in the top 10 is marked unsafe on both Saturday and Sunday because of 65 mph gusts at the summit.\",\n  \"reasons\": [\n    \"All 10 top-ranked hills on Saturday 10 October are marked UNSAFE for 65 mph summit gusts, from Devil's Dyke and Ditchling Beacon (about 25 minutes away) to White Horse Hill (about 3 hours away).\",\n    \"Sunday 11 October looks the same: every hill in the top 10 is marked UNSAFE for 65 mph summit gusts, and it's slightly wetter, with up to a 10% chance of rain.\",\n    \"Apart from the wind, both days look mild and mostly dry, with highs of 12 to 14°C, but it will feel more like 5 to 6°C.\",\n    \"I couldn't get a Met Office second opinion for either day. It's odd that every hill shows exactly the same 65 mph gust, so check again on Friday in case the forecast changes.\"\n  ],\n  \"confidence\": \"medium\"\n}"
+  }
+]

@@ -12,6 +12,10 @@
     "scout:hello": "tsx --conditions=react-server --env-file-if-exists=.env.local scripts/scout-hello.mts",
     "scout:loop": "tsx --conditions=react-server --env-file-if-exists=.env.local scripts/scout-loop.mts",
     "scout": "tsx --conditions=react-server --env-file-if-exists=.env.local scripts/scout.mts",
+    "eval:snapshot": "tsx --conditions=react-server --env-file-if-exists=.env.local scripts/snapshot-plan.mts",
+    "eval": "tsx --conditions=react-server --env-file-if-exists=.env.local evals/scout/run.mts",
+    "eval:rejudge": "tsx --conditions=react-server --env-file-if-exists=.env.local evals/scout/rejudge.mts",
+    "eval:preview": "tsx --conditions=react-server evals/scout/preview.mts",
     "check:mountains": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-mountains.mts"
   },
   "dependencies": {

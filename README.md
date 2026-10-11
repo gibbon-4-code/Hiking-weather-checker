@@ -15,7 +15,12 @@ Browser ──> /api/plan (Next.js server, needs sign-in)
                └─ postcodes.io                 (no key: turns your postcode or town into coordinates)
         ──> /api/second-opinion (needs sign-in, when you open a destination's details)
                └─ Met Office Weather DataHub   (MET_OFFICE_API_KEY, optional)
+        ──> /api/scout (needs sign-in, when you press "Ask the Weekend Scout")
+               └─ Claude, via the Anthropic API (ANTHROPIC_API_KEY, optional): an agent that calls
+                  the app's own ranking and Met Office lookups as tools, then recommends a hill and a day
 ```
+
+- **The Weekend Scout is an AI agent** (`src/lib/agent/`). Claude decides which days and hills to look at using two tools, answers in a fixed format, and the app then checks the pick against its own safety rules before showing it. Each answer costs about 6 cents, so the same weekend's answer is reused for an hour. How it was built, stage by stage, is in [docs/agent-journal.md](docs/agent-journal.md), and `npm run eval` measures it against 15 test weekends (`evals/scout/`).
 
 - **API keys never reach the browser.** Only the server reads them (`src/lib/env.ts` is marked `server-only`).
 - **One request covers every destination.** Open-Meteo forecasts all of them in a single batched call, and OpenRouteService returns every drive time in one matrix call. The Met Office charges one call per mountain, so it's only asked about the mountain you open.
@@ -43,7 +48,8 @@ All of these are free. Put the values in `.env.local`, which git ignores, and ne
 
 1. **Met Office Weather DataHub.** Sign up at <https://datahub.metoffice.gov.uk>, subscribe to the free **Site Specific** plan, and copy the API key into `MET_OFFICE_API_KEY`. It is optional: the app only calls it when you open a destination, once per mountain per hour.
 2. **OpenRouteService.** Sign up at <https://openrouteservice.org/dev/#/signup>, create a token, and put it in `ORS_API_KEY`.
-3. **GitHub sign-in.**
+3. **Anthropic API (optional, for the Weekend Scout).** Create a key at <https://platform.claude.com>, **set a monthly spend limit** there, and put the key in `ANTHROPIC_API_KEY`. Without it the Scout button says it isn't set up; everything else works.
+4. **GitHub sign-in.**
    - Go to <https://github.com/settings/developers> and choose **New OAuth App**.
    - Set the homepage to `http://localhost:4317` and the callback URL to `http://localhost:4317/api/auth/callback/github`.
    - Copy the Client ID into `AUTH_GITHUB_ID`, then generate a secret and put it in `AUTH_GITHUB_SECRET`.

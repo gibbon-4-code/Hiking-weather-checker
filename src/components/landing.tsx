@@ -4,6 +4,7 @@ import { useState } from "react";
 import type { Viewer } from "@/auth";
 import { AppHeader } from "@/components/app-header";
 import { HillPhoto, PhotoCredit } from "@/components/hill-photo";
+import { ScoutButton } from "@/components/scout-dialog";
 import { SearchForm } from "@/components/search-form";
 import { SettingsDialog } from "@/components/settings-dialog";
 import { defaultHikeDate } from "@/lib/dates";
@@ -54,6 +55,7 @@ export function Landing({
         </p>
         {/* Keyed so the form refills once the browser's saved search has been read. */}
         <SearchForm key={`${hasSaved}`} initial={initial} className="mt-10" />
+        <ScoutButton className="mt-6" />
       </main>
 
       <PhotoCredit id={COVER_PHOTO} className="absolute bottom-3 right-4 text-white/60" />

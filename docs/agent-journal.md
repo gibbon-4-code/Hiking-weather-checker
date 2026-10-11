@@ -131,3 +131,27 @@ The 6 made-up facts fall into two patterns:
 **What I'd try next (stage 5, skipped for now to save credit).** Reword the tool so "low exposure" can't be read as "sheltered", have the ranking say "top 10 of 206 hills", re-run, and see whether 24/30 goes up. Then try cheaper models on the same 15 cases.
 
 **PM takeaway.** _To fill in._
+
+## Stage 6: The Scout in the app
+
+**What I built.** An "Ask the Weekend Scout" button under the search on the home page. It opens a card with:
+- the verdict, as a badge;
+- the hill and the day;
+- Claude's headline and reasons;
+- a note on what the app's safety check did;
+- a link through to that day's full forecast.
+
+Behind it, `POST /api/scout` runs the same agent as `npm run scout`, with the same tools and the same guardrail.
+
+The card is built from the answer's fields: verdict, hill, day and confidence. The user never sees the raw fields, but the hill name and day on screen come from the *checked* fields, not from Claude's prose, so they can't disagree.
+
+**Keeping it safe to put online:**
+- **It needs sign-in,** using the existing allowlist, so strangers can't spend my API budget.
+- **It's a POST, not a GET,** so a link preview or a crawler can never trigger a paid run.
+- **One answer per weekend per hour.** The first press costs about 7 cents, and presses within the hour reuse it for free.
+- **A spend limit is set in the Anthropic Console,** as the last line of defence.
+- **Without an API key it just says it isn't set up,** and the rest of the app is unaffected.
+
+**What happened.** The first real press gave: *Worth going: Seven Sisters, Saturday 17 October.* The last reason said "If you want something closer or **more sheltered**, Ditchling Beacon…". That's the exact made-up fact the eval caught in 2 of 30 runs, now in the real product. The eval predicted precisely what a user would see, which makes it the first thing to fix if I pick up stage 5.
+
+**PM takeaway.** _To fill in._

@@ -22,7 +22,7 @@ if (!env.anthropicKey) {
 }
 
 const client = new Anthropic({ apiKey: env.anthropicKey });
-const tools = createScoutTools(liveSource);
+const tools = createScoutTools(liveSource());
 // Each tool is a name, a description, an input schema and a `run` function. Only the first three are
 // sent to the API (code can't travel as JSON, so `run` stays here, on our side). Claude decides what
 // to call from the description alone.
@@ -36,7 +36,7 @@ console.log(`You: ${SCOUT_QUESTION}\n`);
 for (let turn = 1; turn <= MAX_TURNS; turn++) {
   // 1. Send the whole conversation, plus the list of tools Claude may ask for.
   const response = await client.beta.messages.create({
-    ...scoutRequest(liveSource.now()),
+    ...scoutRequest(liveSource().now()),
     tools,
     messages,
   });

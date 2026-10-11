@@ -2,7 +2,8 @@ import Anthropic from "@anthropic-ai/sdk";
 import { betaZodOutputFormat } from "@anthropic-ai/sdk/helpers/beta/zod";
 import { checkAnswer, scoutAnswerSchema, type ScoutAnswer } from "@/lib/agent/guardrail";
 import { createScoutTools, type ScoutSource } from "@/lib/agent/tools";
-import { addDays, defaultHikeDate, londonParts } from "@/lib/dates";
+import { describeFilters, weekendBrief, type ScoutBrief } from "@/lib/agent/brief";
+import { formatDayName, londonParts } from "@/lib/dates";
 import type { PlanResponse } from "@/lib/types";
 
 export const SCOUT_MODEL = "claude-opus-5-5";
@@ -11,28 +12,46 @@ const PRICE = { input: 4, output: 20 };
 /** The harness's own safety limit: never let the loop run away, whatever the model asks for. */
 export const MAX_TURNS = 6;
 
-/** The coming weekend, from "today". */
-export function weekend(now: Date) {
-  const saturday = defaultHikeDate(now);
-  return { saturday, sunday: addDays(saturday, 1) };
-}
+export { weekend } from "@/lib/agent/brief";
 
-export function scoutSystemPrompt(now: Date) {
-  const { saturday, sunday } = weekend(now);
-  return `You are the Weekend Scout for Summit Planner. You help one person who lives in Brighton decide whether this weekend is worth a hill walk, and if so where and on which day.
-
-Today is ${londonParts(now).date}. This weekend is Saturday ${saturday} and Sunday ${sunday}.
-
-Use the tools to look at the data before deciding. Only state facts about the weather, the hills or the drive that the tools gave you; don't add details from general knowledge.
+const RULES = `Use the tools to look at the data before deciding. Only state facts about the weather, the hills or the drive that the tools gave you; don't add details from general knowledge.
 Never recommend a hill marked UNSAFE.
 
 When you've decided, give a verdict: go (worth it: here's where and when), wait (could be good, but check again nearer the day) or skip (not worth it, or not safe). Then the hill and the day, a one-line headline and three or four short reasons. Write in plain British English.`;
+
+/** The Scout's briefing. The weekend version is word for word what the stage 4 evals measured. */
+export function scoutSystemPrompt(now: Date, brief: ScoutBrief = weekendBrief(now)) {
+  const today = londonParts(now).date;
+  if (brief.kind === "weekend") {
+    const [saturday, sunday] = brief.days;
+    return `You are the Weekend Scout for Summit Planner. You help one person who lives in Brighton decide whether this weekend is worth a hill walk, and if so where and on which day.
+
+Today is ${today}. This weekend is Saturday ${saturday} and Sunday ${sunday}.
+
+${RULES}`;
+  }
+  const [chosen, ...others] = brief.days;
+  const filters = describeFilters(brief.prefs);
+  const alternatives = others.length
+    ? `Focus on the day they chose. You may also check ${others.map((d) => `${formatDayName(d)} (${d})`).join(" or ")}, and suggest it instead if it's clearly better.`
+    : "Focus on the day they chose.";
+  return `You are the Scout for Summit Planner. You help one person decide whether a day is worth a hill walk, and if so where to go. They're setting off from ${brief.home.label}${filters ? ` and want ${filters}` : ""}. The ranking tool already applies those limits.
+
+Today is ${today}. They've asked about ${formatDayName(chosen)} (${chosen}). ${alternatives}
+
+${RULES}`;
 }
 
 export const SCOUT_QUESTION = "Is this weekend worth a hike? If so, where should I go and which day?";
 
+/** What the person asks, in words. */
+export function scoutQuestion(brief: ScoutBrief) {
+  if (brief.kind === "weekend") return SCOUT_QUESTION;
+  return `Is ${formatDayName(brief.days[0])} a good day for a hill walk from ${brief.home.label}? If so, where should I go?`;
+}
+
 /** The request settings shared by the hand-written loop and the Tool Runner. */
-export function scoutRequest(now: Date) {
+export function scoutRequest(now: Date, brief: ScoutBrief = weekendBrief(now)) {
   return {
     model: SCOUT_MODEL,
     max_tokens: 16000,
@@ -40,7 +59,7 @@ export function scoutRequest(now: Date) {
     // If a safety check declines the request, the API retries on another model instead of failing.
     betas: ["server-side-fallback-2026-07-01"],
     fallbacks: "default" as const,
-    system: scoutSystemPrompt(now),
+    system: scoutSystemPrompt(now, brief),
   };
 }
 
@@ -87,16 +106,16 @@ export async function runScout(
   source: ScoutSource,
   client: Anthropic,
   onStep?: (step: ScoutStep) => void,
+  brief: ScoutBrief = weekendBrief(source.now()),
 ): Promise<ScoutResult> {
   source = rememberPlans(source);
   const now = source.now();
-  const { saturday, sunday } = weekend(now);
-  const request = scoutRequest(now);
-  const tools = createScoutTools(source);
+  const request = scoutRequest(now, brief);
+  const tools = createScoutTools(source, brief);
 
   const steps: ScoutStep[] = [];
   const usage = { input: 0, output: 0 };
-  let messages: Anthropic.Beta.BetaMessageParam[] = [{ role: "user", content: SCOUT_QUESTION }];
+  let messages: Anthropic.Beta.BetaMessageParam[] = [{ role: "user", content: scoutQuestion(brief) }];
   let retried: string | null = null;
 
   for (let attempt = 0; ; attempt++) {
@@ -144,8 +163,8 @@ export async function runScout(
     }
 
     // The guardrail. Check the pick against our own rules, using the plan the model saw for that day.
-    const plan = parsed.date && [saturday, sunday].includes(parsed.date) ? await source.plan(parsed.date) : null;
-    const checked = checkAnswer(parsed, plan, [saturday, sunday], now);
+    const plan = parsed.date && brief.days.includes(parsed.date) ? await source.plan(parsed.date) : null;
+    const checked = checkAnswer(parsed, plan, brief.days, now, brief.prefs);
     if (!checked.overruled || attempt >= MAX_RETRIES) return { ...base, ...checked };
 
     // The pick failed. Carry on the same conversation (it already holds Claude's answer), tell
@@ -157,7 +176,7 @@ export async function runScout(
         role: "user",
         content:
           `Your answer failed a check in the app: ${checked.overruled}. ` +
-          "Choose again, using only hills and days from the tool results, or answer skip if nothing this weekend is suitable.",
+          `Choose again, using only hills and days from the tool results, or answer skip if nothing ${brief.kind === "weekend" ? "this weekend" : "on these days"} is suitable.`,
       },
     ];
   }

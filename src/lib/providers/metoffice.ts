@@ -77,6 +77,7 @@ export async function fetchMetOffice(
   const res = await fetch(url, {
     headers: { apikey: apiKey, accept: "application/json" },
     next: { revalidate: 3600 },
+    signal: AbortSignal.timeout(15_000),
   });
   if (!res.ok) throw new Error(`Met Office ${res.status} for ${mountain.id}`);
   return normaliseMetOffice((await res.json()) as MetOfficeResponse, mountain, dates);

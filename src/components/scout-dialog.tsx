@@ -41,7 +41,18 @@ export function ScoutButton({ className }: { className?: string }) {
         router.replace("/signin");
         return;
       }
-      const body = await res.json();
+      // The host replies with its own plain-text error page if the server stops before answering.
+      const text = await res.text();
+      let body: { error?: string } & Partial<ScoutResponse>;
+      try {
+        body = JSON.parse(text);
+      } catch {
+        const code = text.match(/[A-Z_]{8,}/)?.[0];
+        throw new Error(
+          `The server stopped before the Scout could answer (${res.status}${code ? `, ${code}` : ""}). ` +
+            "It may have run out of time. Try again in a minute.",
+        );
+      }
       if (!res.ok) throw new Error(body.error ?? `Request failed (${res.status})`);
       setState({ status: "done", data: body as ScoutResponse });
     } catch (err) {

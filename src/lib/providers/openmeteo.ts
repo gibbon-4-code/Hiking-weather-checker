@@ -69,7 +69,8 @@ export async function fetchOpenMeteo(
     start_date: dates[0],
     end_date: dates[dates.length - 1],
   });
-  const res = await fetch(`${BASE}?${params}`, { next: { revalidate: 3600 } });
+  // A hung request would otherwise hold up the whole page (or the Scout) until the host gives up.
+  const res = await fetch(`${BASE}?${params}`, { next: { revalidate: 3600 }, signal: AbortSignal.timeout(20_000) });
   if (!res.ok) throw new Error(`Open-Meteo ${res.status}`);
   const body = (await res.json()) as OpenMeteoLocation | OpenMeteoLocation[];
   const list = Array.isArray(body) ? body : [body];

@@ -8,6 +8,10 @@ import { authMode, env } from "@/lib/env";
 
 /** The Scout usually answers in 10–20 seconds; allow for a retry and a slow weather API. */
 export const maxDuration = 120;
+/** Give up a little before `maxDuration`, so the reply is a clear message rather than the host's error page. */
+const DEADLINE_MS = 100_000;
+
+class DeadlineError extends Error {}
 
 /** Asking the Scout costs about 6 cents, so the same weekend's answer is reused for an hour. */
 const CACHE_MS = 60 * 60 * 1000;
@@ -43,8 +47,19 @@ export async function POST() {
   const key = `${saturday}|${sunday}`;
   if (cached?.key === key && now.getTime() - cached.at < CACHE_MS) return NextResponse.json(cached.body);
 
+  const started = Date.now();
+  const elapsed = () => `${((Date.now() - started) / 1000).toFixed(1)}s`;
+  let deadline: ReturnType<typeof setTimeout> | undefined;
   try {
-    const result = await runScout(liveSource, new Anthropic({ apiKey: env.anthropicKey }));
+    // Stop waiting before the host's own limit, so the reply is always ours (and says what happened).
+    const result = await Promise.race([
+      runScout(liveSource, new Anthropic({ apiKey: env.anthropicKey, timeout: DEADLINE_MS }), (step) =>
+        console.log(`Scout ${elapsed()}: turn ${step.turn} asked for ${step.toolCalls.map((t) => t.name).join(", ")}`),
+      ),
+      new Promise<never>((_, reject) => {
+        deadline = setTimeout(() => reject(new DeadlineError()), DEADLINE_MS);
+      }),
+    ]);
     const mountain = MOUNTAINS.find((m) => m.id === result.answer.mountainId);
     const body: ScoutResponse = {
       answer: result.answer,
@@ -59,13 +74,15 @@ export async function POST() {
       weekend: { saturday, sunday },
       askedAt: now.toISOString(),
     };
-    console.log(`Scout: ${body.answer.verdict} ${body.answer.mountainId ?? ""}, guardrail ${body.guardrail.action}, $${result.cost.toFixed(3)}`);
+    console.log(`Scout ${elapsed()}: ${body.answer.verdict} ${body.answer.mountainId ?? ""}, guardrail ${body.guardrail.action}, $${result.cost.toFixed(3)}`);
     // Don't keep an answer the Scout couldn't finish; let the next press try again.
     if (result.overruled !== "no usable answer") cached = { key, at: now.getTime(), body };
     return NextResponse.json(body);
   } catch (err) {
-    console.error("Scout failed", err);
+    console.error(`Scout failed after ${elapsed()}`, err);
     return NextResponse.json({ error: explainFailure(err) }, { status: 502 });
+  } finally {
+    clearTimeout(deadline);
   }
 }
 
@@ -74,6 +91,9 @@ export async function POST() {
  * (a bad key, no credit) from a passing one. Anthropic's error messages never contain the key itself.
  */
 function explainFailure(err: unknown): string {
+  if (err instanceof DeadlineError || err instanceof Anthropic.APIConnectionTimeoutError) {
+    return "The Scout took too long (over 100 seconds) and gave up. Try again in a minute.";
+  }
   if (err instanceof Anthropic.AuthenticationError || err instanceof Anthropic.PermissionDeniedError) {
     return "Anthropic rejected the API key. Check ANTHROPIC_API_KEY in the hosting settings (just the key, no quotes or spaces), then redeploy.";
   }

@@ -65,6 +65,29 @@ export async function POST() {
     return NextResponse.json(body);
   } catch (err) {
     console.error("Scout failed", err);
-    return NextResponse.json({ error: "The Scout couldn't finish this time. Try again in a minute." }, { status: 502 });
+    return NextResponse.json({ error: explainFailure(err) }, { status: 502 });
   }
+}
+
+/**
+ * A plain-English reason the Scout failed, so whoever is signed in can tell a fixable setup problem
+ * (a bad key, no credit) from a passing one. Anthropic's error messages never contain the key itself.
+ */
+function explainFailure(err: unknown): string {
+  if (err instanceof Anthropic.AuthenticationError || err instanceof Anthropic.PermissionDeniedError) {
+    return "Anthropic rejected the API key. Check ANTHROPIC_API_KEY in the hosting settings (just the key, no quotes or spaces), then redeploy.";
+  }
+  if (err instanceof Anthropic.RateLimitError) {
+    return "The Scout is being rate-limited by Anthropic. Try again in a minute.";
+  }
+  if (err instanceof Anthropic.BadRequestError && /credit/i.test(err.message)) {
+    return "The Anthropic account is out of API credit. Top it up in the Anthropic Console, then try again.";
+  }
+  if (err instanceof Anthropic.InternalServerError || err instanceof Anthropic.APIConnectionError) {
+    return "Anthropic is busy or unreachable right now. Try again in a minute.";
+  }
+  if (err instanceof Anthropic.APIError) {
+    return `The Scout couldn't finish: Anthropic returned an error (${err.status ?? "no status"}). Try again in a minute.`;
+  }
+  return "The Scout couldn't finish this time. Try again in a minute.";
 }

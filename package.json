@@ -16,11 +16,13 @@
     "eval": "tsx --conditions=react-server --env-file-if-exists=.env.local evals/scout/run.mts",
     "eval:rejudge": "tsx --conditions=react-server --env-file-if-exists=.env.local evals/scout/rejudge.mts",
     "eval:preview": "tsx --conditions=react-server evals/scout/preview.mts",
+    "mcp": "tsx --conditions=react-server --env-file-if-exists=.env.local scripts/mcp-server.mts",
     "check:mountains": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-mountains.mts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.131.0",
     "@base-ui/react": "^1.8.0",
+    "@modelcontextprotocol/sdk": "^1.32.2",
     "class-variance-authority": "^0.7.1",
     "cn": "^0.4.0",
     "lucide-react": "^1.48.0",

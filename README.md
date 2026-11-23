@@ -42,6 +42,31 @@ With no keys at all, you get live Open-Meteo forecasts, estimated drive times, a
 
 Other commands: `npm test`, `npm run lint`, `npm run typecheck`, `npm run build`.
 
+## Use it from Claude (MCP server)
+
+`scripts/mcp-server.mts` serves the same ranking as an [MCP](https://modelcontextprotocol.io) server, so Claude can ask for suitable hikes in a normal chat. It has two read-only tools: `find_hikes` (a day, a starting postcode or town, an optional drive limit and walk length) and `get_second_opinion` (the Met Office view of one hill). It runs on your machine, reads keys from `.env.local` like the app, and needs no sign-in.
+
+Claude Code, from this folder:
+
+```bash
+claude mcp add summit-planner -- npm run --silent --prefix "$PWD" mcp
+```
+
+Claude Desktop: open **Settings > Developer > Edit Config** and add the following, using the absolute path to this folder, then restart Claude Desktop.
+
+```json
+{
+  "mcpServers": {
+    "summit-planner": {
+      "command": "npm",
+      "args": ["run", "--silent", "--prefix", "/absolute/path/to/summit-planner", "mcp"]
+    }
+  }
+}
+```
+
+Keep `--silent`: MCP talks over stdout, and npm's banner would corrupt it.
+
 ## Getting the API keys
 
 All of these are free. Put the values in `.env.local`, which git ignores, and never in the code.
